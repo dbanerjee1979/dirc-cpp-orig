@@ -1,12 +1,12 @@
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 3.0)
 project (dirc)
+
+enable_testing ()
 
 find_package (Boost COMPONENTS system REQUIRED)
 find_package (Threads REQUIRED)
 
-add_executable (test
-  main.cpp)
+set (GMOCK_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third-party/googletest")
 
-target_link_libraries (test
-  ${Boost_SYSTEM_LIBRARY}
-  ${CMAKE_THREAD_LIBS_INIT})
+add_subdirectory (core)
+add_subdirectory (text)
