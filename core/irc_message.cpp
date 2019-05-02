@@ -92,6 +92,30 @@ namespace core {
       return nick;
     }
 
+    bool is_user() {
+      if (!is_char('!')) {
+	return false;
+      }
+      it++;
+      
+      while (!is_char('@')) {
+	ss << *it++;
+      }
+      return is_char('@');
+    }
+
+    bool is_host() {
+      if (!is_char('@')) {
+	return false;
+      }
+      it++;
+      
+      while (!is_char(' ')) {
+	ss << *it++;
+      }
+      return is_char(' ');
+    }
+
     bool is_command() {
       while (is_letter()) {
 	ss << *it++;
@@ -139,6 +163,12 @@ namespace core {
       }
       else if (p.is_nickname()) {
 	nick = p.str();
+	if (p.is_user()) {
+	  user = p.str();
+	}
+	if (p.is_host()) {
+	  host = p.str();
+	}
       }
       if (p.is_char(' ')) {
 	p.skip();

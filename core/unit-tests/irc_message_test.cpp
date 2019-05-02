@@ -67,4 +67,41 @@ namespace core {
       EXPECT_EQ("#Dust", msg.params[1]);
     }
   }
+
+  TEST_F(IrcMessageTest, test_message_with_nick_with_special_chars) {
+    IrcMessage msg(msg_str = ":_A`{ngel}|[1-2-3]\\^!wings@irc.org INVITE Wiz #Dust\r\n");
+
+    EXPECT_EQ("_A`{ngel}|[1-2-3]\\^", msg.nick);
+    EXPECT_EQ("INVITE", msg.command);
+    EXPECT_EQ(2, msg.params.size());
+    EXPECT_EQ("Wiz", msg.params[0]);
+    EXPECT_EQ("#Dust", msg.params[1]);
+  }
+
+  TEST_F(IrcMessageTest, test_message_with_nick_and_host) {
+    IrcMessage msg(msg_str = ":Angel@irc.org INVITE Wiz #Dust\r\n");
+
+    EXPECT_EQ("Angel", msg.nick);
+    EXPECT_EQ("irc.org", msg.host);
+    EXPECT_EQ("INVITE", msg.command);
+    EXPECT_EQ(2, msg.params.size());
+    if (msg.params.size() == 2) {
+      EXPECT_EQ("Wiz", msg.params[0]);
+      EXPECT_EQ("#Dust", msg.params[1]);
+    }
+  }
+  
+  TEST_F(IrcMessageTest, test_message_with_nick_and_user_and_host) {
+    IrcMessage msg(msg_str = ":Angel!wings@irc.org INVITE Wiz #Dust\r\n");
+
+    EXPECT_EQ("Angel", msg.nick);
+    EXPECT_EQ("wings", msg.user);
+    EXPECT_EQ("irc.org", msg.host);
+    EXPECT_EQ("INVITE", msg.command);
+    EXPECT_EQ(2, msg.params.size());
+    if (msg.params.size() == 2) {
+      EXPECT_EQ("Wiz", msg.params[0]);
+      EXPECT_EQ("#Dust", msg.params[1]);
+    }
+  }
 }
