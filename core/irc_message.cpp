@@ -50,10 +50,6 @@ namespace core {
       return it == end || (*it != ' ' && *it != '\r' && *it != '\n' && *it != ':');
     }
 
-    bool is_end() {
-      return it == end || *it == ' ' || *it == '\r';
-    }
-
     bool is_servername() {
       bool dot = false;
       auto start = it;
@@ -117,10 +113,12 @@ namespace core {
     }
 
     bool is_command() {
+      bool command = false;
       while (is_letter()) {
 	ss << *it++;
+	command = true;
       }
-      return is_end();
+      return command;
     }
 
     bool is_param() {
