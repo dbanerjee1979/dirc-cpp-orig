@@ -4,12 +4,12 @@
 
 namespace core {
 
-  struct Parser {
+  struct IrcMessageParser {
     std::stringstream ss;
     std::string::const_iterator it;
     std::string::const_iterator end;
 
-    Parser(const std::string& msg) :
+    IrcMessageParser(const std::string& msg) :
       it(msg.begin()),
       end(msg.end()) {
     }
@@ -165,7 +165,7 @@ namespace core {
   };
 
   IrcMessage::IrcMessage(const std::string &msg) {
-    Parser p(msg);
+    IrcMessageParser p(msg);
 
     if (p.is_char(':')) {
       p.skip();
