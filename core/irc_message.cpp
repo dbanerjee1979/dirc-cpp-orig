@@ -189,13 +189,15 @@ namespace core {
     if (p.is_command()) {
       command = p.str();
     }
-    
-    while (p.is_param()) {
-      params.push_back(p.str());
-    }
 
-    if (p.is_trailing()) {
-      trailing = p.str();
+    if (!command.empty()) {
+      while (p.is_param()) {
+	params.push_back(p.str());
+      }
+
+      if (p.is_trailing()) {
+	trailing = p.str();
+      }
     }
   }
 }
