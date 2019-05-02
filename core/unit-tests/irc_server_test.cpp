@@ -2,6 +2,7 @@
 #include <gtest/gtest.h>
 #include <core/irc_server.h>
 #include <core/server_event_handler.h>
+#include <core/config.h>
 
 namespace core {
   class StubServerEventHandler : public core::ServerEventHandler {
@@ -21,7 +22,8 @@ namespace core {
   class IrcServerTest : public testing::Test {
   protected:
     IrcServerTest() :
-      server(ss, sh) {
+      user_info({ "nick" }),
+      server(user_info, ss, sh) {
     }
 
     ~IrcServerTest() {
@@ -33,6 +35,7 @@ namespace core {
     virtual void TearDown() {
     }
 
+    config::UserInfo user_info;
     std::stringstream ss;
     StubServerEventHandler sh;
     IrcServer server;
