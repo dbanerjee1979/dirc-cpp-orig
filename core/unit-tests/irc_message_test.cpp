@@ -166,6 +166,14 @@ namespace core {
     EXPECT_EQ("Goodbye, cruel world!", msg.trailing);
   }
 
+  TEST_F(IrcMessageTest, test_trailing_param_only_with_no_length) {
+    IrcMessage msg(msg_str = "QUIT :\r\n");
+
+    EXPECT_EQ("QUIT", msg.command);
+    EXPECT_EQ(0, msg.params.size());
+    EXPECT_EQ("", msg.trailing);
+  }
+
   TEST_F(IrcMessageTest, test_numeric_message) {
     IrcMessage msg(msg_str = ":rajaniemi.freenode.net 001 nick :Welcome to the freenode Internet Relay Chat Network nick\r\n");
 
@@ -181,6 +189,15 @@ namespace core {
   
   TEST_F(IrcMessageTest, test_numeric_message_with_too_many_digits) {
     IrcMessage msg(msg_str = ":rajaniemi.freenode.net 0013 nick :Welcome to the freenode Internet Relay Chat Network nick\r\n");
+
+    EXPECT_EQ("rajaniemi.freenode.net", msg.servername);
+    EXPECT_EQ("", msg.command);
+    EXPECT_EQ(0, msg.params.size());
+    EXPECT_EQ("", msg.trailing);
+  }
+
+  TEST_F(IrcMessageTest, test_numeric_message_with_too_few_digits) {
+    IrcMessage msg(msg_str = ":rajaniemi.freenode.net 13 nick :Welcome to the freenode Internet Relay Chat Network nick\r\n");
 
     EXPECT_EQ("rajaniemi.freenode.net", msg.servername);
     EXPECT_EQ("", msg.command);

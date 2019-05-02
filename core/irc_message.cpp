@@ -106,6 +106,8 @@ namespace core {
 	it++;
       }
 
+      // Username must be followed by start of hostname
+      // and must have nonzero characters after !
       if (is_char('@') && it - st > 1) {
 	st++;
 	return true;
@@ -125,6 +127,9 @@ namespace core {
       while (it != end && !is_char(' ')) {
 	it++;
       }
+
+      // Hostname must be followed by space
+      // and must have nonzero characters after @
       if (is_char(' ') && it - st > 1) {
 	st++;
 	return true;
@@ -136,15 +141,18 @@ namespace core {
     bool is_command() {
       st = it;
 
+      // Try alphabetic command
       while (is_letter()) {
 	it++;
       }
 
+      // If not alpabetic, try numeric
       if (st == it) {
 	while (is_digit()) {
 	  it++;
 	}
-	if (it - st > 3) {
+	// Numeric commands are three in length
+	if (it - st != 3) {
 	  st = it;
 	}
       }
