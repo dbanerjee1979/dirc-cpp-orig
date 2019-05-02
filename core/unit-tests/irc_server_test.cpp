@@ -23,7 +23,8 @@ namespace core {
   protected:
     IrcServerTest() :
       user_info({ "nick" }),
-      server(user_info, ss, sh) {
+      network("jdoe", "John Doe"),
+      server(user_info, network, ss, sh) {
     }
 
     ~IrcServerTest() {
@@ -36,6 +37,7 @@ namespace core {
     }
 
     config::UserInfo user_info;
+    config::Network network;
     std::stringstream ss;
     StubServerEventHandler sh;
     IrcServer server;
@@ -68,7 +70,7 @@ namespace core {
     getline(ss, line);
     EXPECT_EQ("NICK nick\r", line);
     getline(ss, line);
-    EXPECT_EQ("USER foo 8 * :John\r", line);
+    EXPECT_EQ("USER jdoe 8 * :John Doe\r", line);
     EXPECT_EQ(true, sh.is_connected);
   }
 }

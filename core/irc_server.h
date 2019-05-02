@@ -13,7 +13,7 @@ namespace core {
 
   class IrcServer {
   public:
-    IrcServer(config::UserInfo &, std::ostream &, ServerEventHandler &);
+    IrcServer(config::UserInfo &, config::Network &, std::ostream &, ServerEventHandler &);
     void handle_message(std::string &);
   private:
     void handle_connection_registration(IrcMessage &);
@@ -21,7 +21,6 @@ namespace core {
     std::ostream &m_out;
     ServerEventHandler &m_server_event_handler;
     std::unordered_map<std::string, std::function<void(IrcMessage&)>> m_msg_handlers;
-    std::string m_nickname;
   };
   
 }

@@ -6,4 +6,9 @@ namespace config {
     nicks(_nicks) {
   }
 
+  Network::Network(std::string _username, std::string _realname) :
+    username(_username),
+    realname(_realname) {
+  }
+
 }

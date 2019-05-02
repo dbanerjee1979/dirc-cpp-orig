@@ -10,6 +10,13 @@ namespace config {
     
     UserInfo(std::vector<std::string>);
   };
+
+  struct Network {
+    const std::string username;
+    const std::string realname;
+
+    Network(std::string, std::string);
+  };
 }
 
 #endif
