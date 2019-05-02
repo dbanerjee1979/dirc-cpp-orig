@@ -3,7 +3,10 @@
 
 #include <string>
 #include <iostream>
+#include <unordered_map>
+#include <functional>
 #include "server_event_handler.h"
+#include "irc_message.h"
 
 namespace core {
 
@@ -12,8 +15,11 @@ namespace core {
     IrcServer(std::ostream &, ServerEventHandler &);
     void handle_message(std::string &);
   private:
+    void handle_connection_registration(IrcMessage &);
+    
     std::ostream &m_out;
     ServerEventHandler &m_server_event_handler;
+    std::unordered_map<std::string, std::function<void(IrcMessage&)>> m_msg_handlers;
   };
   
 }

@@ -54,7 +54,7 @@ namespace core {
     }
 
     bool is_nospcrlfcl() {
-      return it == end || (*it != ' ' && *it != '\r' && *it != '\n' && *it != ':');
+      return it != end && (*it != ' ' && *it != '\r' && *it != '\n' && *it != ':');
     }
 
     //
