@@ -132,11 +132,11 @@ namespace core {
       if (!is_nospcrlfcl()) {
 	return false;
       }
-      ss << *it++;
-      
-      while (is_char(':') || is_nospcrlfcl()) {
+
+      do {
 	ss << *it++;
       }
+      while (is_char(':') || is_nospcrlfcl());
       return true;
     }
 
