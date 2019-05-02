@@ -10,6 +10,9 @@ namespace core {
 
     virtual ~ServerEventHandler() {
     }
+
+    virtual void connected() {
+    }
   };
     
 }

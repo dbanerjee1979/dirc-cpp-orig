@@ -6,6 +6,10 @@
 namespace core {
   class StubServerEventHandler : public core::ServerEventHandler {
   public:
+    void connected() {
+      is_connected = true;
+    }
+    
     bool is_connected;
   };
   

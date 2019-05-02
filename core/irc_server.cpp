@@ -10,8 +10,8 @@ namespace core {
   }
 
   void IrcServer::handle_message(std::string &msg) {
+    m_server_event_handler.connected();
   }
-  
 }
 
 
