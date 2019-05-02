@@ -48,4 +48,11 @@ namespace core {
     }
     EXPECT_EQ("Ronnie Reagan", msg.trailing);
   }
+
+  TEST_F(IrcMessageTest, test_message_with_server_name) {
+    IrcMessage msg(msg_str = ":tolsun.oulu.fi PING\r\n");
+
+    EXPECT_EQ("tolsun.oulu.fi", msg.servername);
+    EXPECT_EQ("PING", msg.command);
+  }
 }

@@ -20,8 +20,16 @@ namespace core {
       return ret;
     }
 
+    void skip() {
+      it++;
+    }
+
     bool is_char(char ch) {
       return it != end && *it == ch;
+    }
+
+    bool is_char(char cbegin, char cend) {
+      return it != end && *it >= cbegin && *it <= cend;
     }
 
     bool is_letter() {
@@ -34,6 +42,17 @@ namespace core {
 
     bool is_end() {
       return it == end || *it == ' ' || *it == '\r';
+    }
+
+    bool is_servername() {
+      bool dot = false;
+      while (is_char('A', 'Z') || is_char('a', 'z') || is_char('0', '9') || is_char('-') || is_char('.')) {
+	if (is_char('.')) {
+	  dot = true;
+	}
+	ss << *it++;
+      }
+      return dot;
     }
 
     bool is_command() {
@@ -75,6 +94,16 @@ namespace core {
 
   IrcMessage::IrcMessage(const std::string &msg) {
     Parser p(msg);
+
+    if (p.is_char(':')) {
+      p.skip();
+      if (p.is_servername()) {
+	servername = p.str();
+      }
+      if (p.is_char(' ')) {
+	p.skip();
+      }
+    }
 
     if (p.is_command()) {
       command = p.str();
