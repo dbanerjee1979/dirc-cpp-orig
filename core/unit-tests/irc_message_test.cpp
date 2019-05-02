@@ -104,4 +104,12 @@ namespace core {
       EXPECT_EQ("#Dust", msg.params[1]);
     }
   }
+    
+  TEST_F(IrcMessageTest, test_trailing_param_only) {
+    IrcMessage msg(msg_str = "QUIT :Goodbye, cruel world!\r\n");
+
+    EXPECT_EQ("QUIT", msg.command);
+    EXPECT_EQ(0, msg.params.size());
+    EXPECT_EQ("Goodbye, cruel world!", msg.trailing);
+  }
 }

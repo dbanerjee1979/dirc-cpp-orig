@@ -141,6 +141,7 @@ namespace core {
     }
 
     bool is_trailing() {
+      // Leading space check unnecessary, because is_param already checked
       if (!is_char(':')) {
 	return false;
       }
