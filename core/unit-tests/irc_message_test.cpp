@@ -104,6 +104,17 @@ namespace core {
       EXPECT_EQ("#Dust", msg.params[1]);
     }
   }
+
+  TEST_F(IrcMessageTest, test_message_with_with_user_and_no_host) {
+    IrcMessage msg(msg_str = ":Angel!wings INVITE Wiz #Dust\r\n");
+
+    EXPECT_EQ("Angel", msg.nick);
+    EXPECT_EQ("", msg.user);
+    EXPECT_EQ("", msg.host);
+    EXPECT_EQ("", msg.command);
+    EXPECT_EQ(0, msg.params.size());
+    EXPECT_EQ("", msg.trailing);
+  }
     
   TEST_F(IrcMessageTest, test_trailing_param_only) {
     IrcMessage msg(msg_str = "QUIT :Goodbye, cruel world!\r\n");

@@ -94,7 +94,7 @@ namespace core {
       }
       it++;
       
-      while (!is_char('@')) {
+      while (it != end && !is_char('@')) {
 	ss << *it++;
       }
       return is_char('@');
@@ -106,7 +106,7 @@ namespace core {
       }
       it++;
       
-      while (!is_char(' ')) {
+      while (it != end && !is_char(' ')) {
 	ss << *it++;
       }
       return is_char(' ');
