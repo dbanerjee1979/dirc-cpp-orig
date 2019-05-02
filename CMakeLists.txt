@@ -1,6 +1,8 @@
 cmake_minimum_required (VERSION 3.0)
 project (dirc)
 
+set (CMAKE_BUILD_TYPE Debug)
+
 enable_testing ()
 
 find_package (Boost COMPONENTS system REQUIRED)

@@ -5,6 +5,7 @@ include_directories (
   ${GMOCK_DIR}/googlemock/include)
 
 add_executable (core-test
+  irc_message_test.cpp
   irc_server_test.cpp)
 
 target_link_libraries (core-test
