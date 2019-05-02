@@ -56,6 +56,20 @@ namespace core {
     EXPECT_EQ("PING", msg.command);
   }
 
+  TEST_F(IrcMessageTest, test_server_name_cannot_be_just_a_dot) {
+    IrcMessage msg(msg_str = ":. PING\r\n");
+
+    EXPECT_EQ("", msg.servername);
+    EXPECT_EQ("", msg.command);
+  }
+
+  TEST_F(IrcMessageTest, test_server_name_cannot_start_with_a_dot) {
+    IrcMessage msg(msg_str = ":.com PING\r\n");
+
+    EXPECT_EQ("", msg.servername);
+    EXPECT_EQ("", msg.command);
+  }
+
   TEST_F(IrcMessageTest, test_message_with_nick) {
     IrcMessage msg(msg_str = ":Angel INVITE Wiz #Dust\r\n");
 

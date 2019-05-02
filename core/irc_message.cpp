@@ -5,19 +5,25 @@
 namespace core {
 
   struct IrcMessageParser {
-    std::stringstream ss;
+    // Current position
     std::string::const_iterator it;
+    // Token start
+    std::string::const_iterator st;
+    // End position
     std::string::const_iterator end;
 
     IrcMessageParser(const std::string& msg) :
       it(msg.begin()),
+      st(it),
       end(msg.end()) {
     }
 
+    //
+    // Predicates
+    //
+
     std::string str() {
-      std::string ret = ss.str();
-      ss.str("");
-      return ret;
+      return std::string(st, it);
     }
 
     void skip() {
@@ -50,115 +56,139 @@ namespace core {
       return it == end || (*it != ' ' && *it != '\r' && *it != '\n' && *it != ':');
     }
 
+    //
+    // Tokens
+    //
+
     bool is_servername() {
+      st = it;
       bool dot = false;
-      auto start = it;
-      ss.str("");
       
       while (is_char('A', 'Z') || is_char('a', 'z') || is_char('0', '9') || is_char('-') || is_char('.')) {
 	if (is_char('.')) {
 	  dot = true;
 	}
-	ss << *it++;
+	it++;
       }
-      
-      if (!dot) {
-	it = start;
+
+      // A servername token must have a dot, not only a dot and can't start with a dot
+      if (!dot || it - st == 1 || *st == '.') {
+	it = st;
+	return false;
       }
-      return dot;
+      return true;
     }
 
     bool is_nickname() {
-      bool nick = false;
-      auto start = it;
-      ss.str("");
+      st = it;
       
       if (!is_letter() && !is_special()) {
 	return false;
       }
       do {
-	ss << *it++;
-	nick = true;
+	it++;
       }
       while (is_letter() || is_digit() || is_special() || is_char('-'));
 
-      if (!nick) {
-	it = start;
-      }
-      return nick;
+      return it != st;
     }
 
     bool is_user() {
+      st = it;
+      
       if (!is_char('!')) {
 	return false;
       }
       it++;
       
       while (it != end && !is_char('@')) {
-	ss << *it++;
+	it++;
       }
-      return is_char('@');
+
+      if (is_char('@') && it - st > 1) {
+	st++;
+	return true;
+      }
+      it = st;
+      return false;
     }
 
     bool is_host() {
+      st = it;
+      
       if (!is_char('@')) {
 	return false;
       }
       it++;
       
       while (it != end && !is_char(' ')) {
-	ss << *it++;
+	it++;
       }
-      return is_char(' ');
+      if (is_char(' ') && it - st > 1) {
+	st++;
+	return true;
+      }
+      it = st;
+      return false;
     }
 
     bool is_command() {
-      bool command = false;
+      st = it;
 
       while (is_letter()) {
-	ss << *it++;
-	command = true;
+	it++;
       }
 
-      if (!command) {
-	ss.str("");
-	int n = 0;
+      if (st == it) {
 	while (is_digit()) {
-	  ss << *it++;
-	  n++;
+	  it++;
 	}
-	command = n == 3;
+	if (it - st > 3) {
+	  st = it;
+	}
       }
       
-      return command;
+      return st != it;
     }
 
     bool is_param() {
+      st = it;
+      
       if (!is_char(' ')) {
         return false;
       }
       it++;
 
       if (!is_nospcrlfcl()) {
+	it = st;
 	return false;
       }
 
+      st = it;
       do {
-	ss << *it++;
+	it++;
       }
       while (is_char(':') || is_nospcrlfcl());
       return true;
     }
 
     bool is_trailing() {
-      // Leading space check unnecessary, because is_param already checked
+      st = it;
+
+      if (!is_char(' ')) {
+        return false;
+      }
+      it++;
+
       if (!is_char(':')) {
+	it = st;
 	return false;
       }
       it++;
 
+      st = it;
       while (is_char(':') || is_char(' ') || is_nospcrlfcl()) {
-	ss << *it++;
+	it++;
       }
       return true;
     }
