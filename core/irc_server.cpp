@@ -15,6 +15,7 @@ namespace core {
   }
 
   void IrcServer::handle_message(std::string &msg_str) {
+    m_server_event_handler.recieved_message(msg_str);
     IrcMessage msg(msg_str);
     auto it = m_msg_handlers.find(msg.command);
     if (it != m_msg_handlers.end()) {

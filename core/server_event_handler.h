@@ -11,6 +11,9 @@ namespace core {
     virtual ~ServerEventHandler() {
     }
 
+    virtual void recieved_message(std::string &msg) {
+    }
+
     virtual void connected() {
     }
   };
