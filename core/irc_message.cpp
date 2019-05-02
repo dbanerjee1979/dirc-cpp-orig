@@ -114,10 +114,22 @@ namespace core {
 
     bool is_command() {
       bool command = false;
+
       while (is_letter()) {
 	ss << *it++;
 	command = true;
       }
+
+      if (!command) {
+	ss.str("");
+	int n = 0;
+	while (is_digit()) {
+	  ss << *it++;
+	  n++;
+	}
+	command = n == 3;
+      }
+      
       return command;
     }
 
