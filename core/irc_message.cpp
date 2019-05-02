@@ -33,7 +33,17 @@ namespace core {
     }
 
     bool is_letter() {
-      return it != end && (*it >= 'A' && *it <= 'Z' || *it >= 'a' && *it <= 'z');
+      return is_char('A', 'Z') || is_char('a', 'z');
+    }
+
+    bool is_digit() {
+      return is_char('0', '9');
+    }
+
+    bool is_special() {
+      return is_char('[') || is_char(']') || is_char('\\')
+	|| is_char('`') || is_char('_') || is_char('^')
+	|| is_char('{') || is_char('|') || is_char('}');
     }
 
     bool is_nospcrlfcl() {
@@ -46,13 +56,40 @@ namespace core {
 
     bool is_servername() {
       bool dot = false;
+      auto start = it;
+      ss.str("");
+      
       while (is_char('A', 'Z') || is_char('a', 'z') || is_char('0', '9') || is_char('-') || is_char('.')) {
 	if (is_char('.')) {
 	  dot = true;
 	}
 	ss << *it++;
       }
+      
+      if (!dot) {
+	it = start;
+      }
       return dot;
+    }
+
+    bool is_nickname() {
+      bool nick = false;
+      auto start = it;
+      ss.str("");
+      
+      if (!is_letter() && !is_special()) {
+	return false;
+      }
+      do {
+	ss << *it++;
+	nick = true;
+      }
+      while (is_letter() || is_digit() || is_special() || is_char('-'));
+
+      if (!nick) {
+	it = start;
+      }
+      return nick;
     }
 
     bool is_command() {
@@ -99,6 +136,9 @@ namespace core {
       p.skip();
       if (p.is_servername()) {
 	servername = p.str();
+      }
+      else if (p.is_nickname()) {
+	nick = p.str();
       }
       if (p.is_char(' ')) {
 	p.skip();

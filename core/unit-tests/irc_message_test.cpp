@@ -55,4 +55,16 @@ namespace core {
     EXPECT_EQ("tolsun.oulu.fi", msg.servername);
     EXPECT_EQ("PING", msg.command);
   }
+
+  TEST_F(IrcMessageTest, test_message_with_nick) {
+    IrcMessage msg(msg_str = ":Angel INVITE Wiz #Dust\r\n");
+
+    EXPECT_EQ("Angel", msg.nick);
+    EXPECT_EQ("INVITE", msg.command);
+    EXPECT_EQ(2, msg.params.size());
+    if (msg.params.size() == 2) {
+      EXPECT_EQ("Wiz", msg.params[0]);
+      EXPECT_EQ("#Dust", msg.params[1]);
+    }
+  }
 }
