@@ -134,4 +134,12 @@ namespace core {
     EXPECT_EQ(0, msg.params.size());
     EXPECT_EQ("", msg.trailing);
   }
+
+  TEST_F(IrcMessageTest, command_can_only_have_alpha_and_digit) {
+    IrcMessage msg(msg_str = "!QUIT :Goodbye, cruel world!\r\n");
+
+    EXPECT_EQ("", msg.command);
+    EXPECT_EQ(0, msg.params.size());
+    EXPECT_EQ("", msg.trailing);
+  }
 }
