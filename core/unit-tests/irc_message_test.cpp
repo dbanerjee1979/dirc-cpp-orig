@@ -137,6 +137,16 @@ namespace core {
     }
   }
 
+  TEST_F(IrcMessageTest, test_message_cannot_have_user_symbol_with_no_user) {
+    IrcMessage msg(msg_str = ":Angel!@irc.org INVITE Wiz #Dust\r\n");
+
+    EXPECT_EQ("Angel", msg.nick);
+    EXPECT_EQ("", msg.user);
+    EXPECT_EQ("", msg.host);
+    EXPECT_EQ("", msg.command);
+    EXPECT_EQ(0, msg.params.size());
+  }
+
   TEST_F(IrcMessageTest, test_message_cannot_have_user_without_host) {
     IrcMessage msg(msg_str = ":Angel!wings INVITE Wiz #Dust\r\n");
 
