@@ -85,6 +85,7 @@ namespace core {
       if (!is_letter() && !is_special()) {
 	return false;
       }
+      
       do {
 	it++;
       }

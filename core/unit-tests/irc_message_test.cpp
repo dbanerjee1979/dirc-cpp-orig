@@ -104,6 +104,24 @@ namespace core {
       EXPECT_EQ("#Dust", msg.params[1]);
     }
   }
+
+  TEST_F(IrcMessageTest, test_message_cannot_have_host_symbol_and_no_host) {
+    IrcMessage msg(msg_str = ":Angel@ INVITE Wiz #Dust\r\n");
+
+    EXPECT_EQ("Angel", msg.nick);
+    EXPECT_EQ("", msg.host);
+    EXPECT_EQ("", msg.command);
+    EXPECT_EQ(0, msg.params.size());
+  }
+
+  TEST_F(IrcMessageTest, test_message_cannot_have_host_without_nick) {
+    IrcMessage msg(msg_str = ":@irc.org INVITE Wiz #Dust\r\n");
+
+    EXPECT_EQ("", msg.nick);
+    EXPECT_EQ("", msg.host);
+    EXPECT_EQ("", msg.command);
+    EXPECT_EQ(0, msg.params.size());
+  }
   
   TEST_F(IrcMessageTest, test_message_with_nick_and_user_and_host) {
     IrcMessage msg(msg_str = ":Angel!wings@irc.org INVITE Wiz #Dust\r\n");
@@ -119,7 +137,7 @@ namespace core {
     }
   }
 
-  TEST_F(IrcMessageTest, test_message_with_with_user_and_no_host) {
+  TEST_F(IrcMessageTest, test_message_cannot_have_user_without_host) {
     IrcMessage msg(msg_str = ":Angel!wings INVITE Wiz #Dust\r\n");
 
     EXPECT_EQ("Angel", msg.nick);
