@@ -18,17 +18,17 @@ namespace core {
       end(msg.end()) {
     }
 
-    //
-    // Predicates
-    //
-
-    std::string str() {
+    std::string token() {
       return std::string(st, it);
     }
 
     void skip() {
       it++;
     }
+
+    //
+    // Predicates
+    //
 
     bool is_char(char ch) {
       return it != end && *it == ch;
@@ -209,15 +209,15 @@ namespace core {
     if (p.is_char(':')) {
       p.skip();
       if (p.is_servername()) {
-	servername = p.str();
+	servername = p.token();
       }
       else if (p.is_nickname()) {
-	nick = p.str();
+	nick = p.token();
 	if (p.is_user()) {
-	  user = p.str();
+	  user = p.token();
 	}
 	if (p.is_host()) {
-	  host = p.str();
+	  host = p.token();
 	}
       }
       if (p.is_char(' ')) {
@@ -226,16 +226,16 @@ namespace core {
     }
 
     if (p.is_command()) {
-      command = p.str();
+      command = p.token();
     }
 
     if (!command.empty()) {
       while (p.is_param()) {
-	params.push_back(p.str());
+	params.push_back(p.token());
       }
 
       if (p.is_trailing()) {
-	trailing = p.str();
+	trailing = p.token();
       }
     }
   }
