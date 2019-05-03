@@ -13,10 +13,13 @@ namespace core {
     m_nick_id(0) {
 
     using std::placeholders::_1;
-    m_msg_handlers[RPL_WELCOME] = std::bind(&IrcServer::handle_connection_registration, *this, _1);
-    m_msg_handlers[ERR_NICKNAMEINUSE] = std::bind(&IrcServer::handle_nick_error, *this, _1);
-    m_msg_handlers[ERR_NICKCOLLISION] = std::bind(&IrcServer::handle_nick_error, *this, _1);
-    m_msg_handlers["NOTICE"] = std::bind(&IrcServer::handle_notice, *this, _1);
+    m_msg_handlers[RPL_WELCOME] = std::bind(&IrcServer::handle_connection_registration, this, _1);
+    m_msg_handlers[RPL_MOTDSTART] = std::bind(&IrcServer::handle_motd_start, this, _1);
+    m_msg_handlers[RPL_MOTD] = std::bind(&IrcServer::handle_motd, this, _1);
+    m_msg_handlers[RPL_ENDOFMOTD] = std::bind(&IrcServer::handle_motd_end, this, _1);
+    m_msg_handlers[ERR_NICKNAMEINUSE] = std::bind(&IrcServer::handle_nick_error, this, _1);
+    m_msg_handlers[ERR_NICKCOLLISION] = std::bind(&IrcServer::handle_nick_error, this, _1);
+    m_msg_handlers["NOTICE"] = std::bind(&IrcServer::handle_notice, this, _1);
 
     if (!network.user_info.password.empty()) {
       m_out << IrcMessage("PASSWORD", { network.user_info.password }).str() << std::flush;
@@ -67,5 +70,20 @@ namespace core {
 
   void IrcServer::handle_notice(IrcMessage &msg) {
     m_server_event_handler.notice(msg.params[0], msg.trailing);
+  }
+
+  void IrcServer::handle_motd_start(IrcMessage &msg) {
+    m_motd.str("");
+    m_motd << msg.trailing << std::endl;
+  }
+
+  void IrcServer::handle_motd(IrcMessage &msg) {
+    m_motd << msg.trailing << std::endl;
+  }
+
+  void IrcServer::handle_motd_end(IrcMessage &msg) {
+    std::string motd = m_motd.str();
+    m_server_event_handler.message_of_the_day(motd);
+    m_motd.str("");
   }
 }

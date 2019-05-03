@@ -25,6 +25,9 @@ namespace core {
 
     virtual void message(std::string &msg) {
     }
+
+    virtual void message_of_the_day(std::string &msg) {
+    }
   };
     
 }
