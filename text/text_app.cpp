@@ -28,6 +28,16 @@ namespace text {
       else if (cmd == "help") {
 	help();
       }
+      else {
+	auto it = m_commands.find(cmd);
+	if (it != m_commands.end()) {
+	  it->second(ss);
+	}
+	else {
+	  std::cout << "Unknown command: " << cmd << std::endl;
+	  help();
+	}
+      }
     }
   }
 

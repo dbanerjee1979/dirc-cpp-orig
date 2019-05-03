@@ -15,7 +15,7 @@ namespace text {
     void help();
   private:
     std::vector<config::Network> m_networks;
-    std::map<std::string, std::function<void(std::stringstream)>> m_commands;
+    std::map<std::string, std::function<void(std::stringstream &)>> m_commands;
   };
 
 }
