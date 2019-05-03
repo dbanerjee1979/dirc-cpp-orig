@@ -3,9 +3,17 @@
 
 namespace text {
 
+  TextServerEventHandler::TextServerEventHandler(const std::string &network) :
+    m_network(network) {
+  }
+
   void TextServerEventHandler::recieved_message(std::string &msg) {
     m_messages.push_back(msg);
     m_messages_unread++;
+  }
+
+  void TextServerEventHandler::connected() {
+    std::cout << "Successfully connected to " << m_network << std::endl;
   }
 
 }

@@ -53,6 +53,24 @@ namespace text {
     std::cout << "  quit" << std::endl;
   }
 
+  void ServerHandle::server_run_loop() {
+    std::string line;
+    while (!stream->eof()) {
+      getline(*stream, line);
+      server->handle_message(line);
+    }
+  }
+
+  void App::with_network(std::string& network, std::function<void(ServerHandle&)> action) {
+    boost::to_lower(network);
+    auto it = m_servers.find(network);
+    if (it == m_servers.end()) {
+      std::cout << "Unknown network" << std::endl;
+    }
+    else {
+      action(it->second);
+    }
+  }
   
   void App::connect_handler(std::stringstream &ss) {
     std::string network;
@@ -77,6 +95,7 @@ namespace text {
       }
     }
     else {
+      std::cout << "Connecting to " << it->name << "..." << std::endl;
       auto server_cfg = it->servers.begin();
       auto *ss = new boost::asio::ip::tcp::iostream(server_cfg->hostname, std::to_string(server_cfg->port));
       if (ss->fail()) {
@@ -88,31 +107,12 @@ namespace text {
         ServerHandle &s = m_servers[key];
         s.stream = std::unique_ptr<boost::asio::ip::tcp::iostream>(ss);
         s.server_event_handler = std::unique_ptr<text::TextServerEventHandler>(
-            new text::TextServerEventHandler());
+            new text::TextServerEventHandler(it->name));
         s.server = std::unique_ptr<core::IrcServer>(
             new core::IrcServer(*it, *s.stream, *s.server_event_handler));
         s.server_thread = std::thread(&ServerHandle::server_run_loop, &s);
         s.server_thread.detach();
       }
-    }
-  }
-
-  void ServerHandle::server_run_loop() {
-    std::string line;
-    while (!stream->eof()) {
-      getline(*stream, line);
-      server->handle_message(line);
-    }
-  }
-
-  void App::with_network(std::string& network, std::function<void(ServerHandle&)> action) {
-    boost::to_lower(network);
-    auto it = m_servers.find(network);
-    if (it == m_servers.end()) {
-      std::cout << "Unknown network" << std::endl;
-    }
-    else {
-      action(it->second);
     }
   }
 
