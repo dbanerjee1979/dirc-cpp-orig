@@ -4,7 +4,6 @@
 #include <sstream>
 #include <iostream>
 #include <boost/algorithm/string.hpp>
-#include <boost/asio.hpp>
 
 namespace text {
 
@@ -77,10 +76,30 @@ namespace text {
     }
     else {
       auto server_cfg = it->servers.begin();
-      boost::asio::ip::tcp::iostream ss(server_cfg->hostname, std::to_string(server_cfg->port));
-      if (!ss) {
-	std::cout << "Unable to connect: " << ss.error().message() << std::endl;
+      auto *ss = new boost::asio::ip::tcp::iostream(server_cfg->hostname, std::to_string(server_cfg->port));
+      if (ss->fail()) {
+	std::cout << "Unable to connect: " << ss->error().message() << std::endl;
       }
+      else {
+	std::string key(it->name);
+	boost::algorithm::to_lower(key);
+	ServerHandle &s = m_servers[key];
+	s.stream = std::unique_ptr<boost::asio::ip::tcp::iostream>(ss);
+	s.server_event_handler = std::unique_ptr<text::TextServerEventHandler>(
+			new text::TextServerEventHandler());
+	s.server = std::unique_ptr<core::IrcServer>(
+			new core::IrcServer(*it, *s.stream, *s.server_event_handler));
+	s.server_thread = std::thread(&ServerHandle::server_run_loop, &s);
+	s.server_thread.detach();
+      }
+    }
+  }
+
+  void ServerHandle::server_run_loop() {
+    std::string line;
+    while (!stream->eof()) {
+      getline(*stream, line);
+      server->handle_message(line);
     }
   }
   

@@ -4,9 +4,23 @@
 #include <vector>
 #include <map>
 #include <functional>
+#include <memory>
+#include <thread>
+#include <boost/asio.hpp>
 #include <core/config.h>
+#include <core/irc_server.h>
+#include "text_server_event_handler.h"
 
 namespace text {
+
+  struct ServerHandle {
+    std::unique_ptr<boost::asio::ip::tcp::iostream> stream;
+    std::unique_ptr<text::TextServerEventHandler> server_event_handler;
+    std::unique_ptr<core::IrcServer> server;
+    std::thread server_thread;
+
+    void server_run_loop();
+  };
 
   class App {
   public:
@@ -18,6 +32,7 @@ namespace text {
     
     std::vector<config::Network> m_networks;
     std::map<std::string, std::function<void(std::stringstream &)>> m_commands;
+    std::map<std::string, ServerHandle> m_servers;
   };
 
 }
