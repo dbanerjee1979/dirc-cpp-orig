@@ -28,8 +28,10 @@ namespace text {
     void run();
     void help();
   private:
+    void with_network(std::string &, std::function<void(ServerHandle &)>);
     void connect_handler(std::stringstream &);
     void info_handler(std::stringstream &);
+    void list_handler(std::stringstream &);
     
     std::vector<config::Network> m_networks;
     std::map<std::string, std::function<void(std::stringstream &)>> m_commands;

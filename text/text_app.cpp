@@ -12,6 +12,7 @@ namespace text {
     using namespace std::placeholders;
     m_commands["connect"] = std::bind(&App::connect_handler, this, _1);
     m_commands["info"] = std::bind(&App::info_handler, this, _1);
+    m_commands["list"] = std::bind(&App::list_handler, this, _1);
   }
   
   void App::run() {
@@ -104,6 +105,17 @@ namespace text {
     }
   }
 
+  void App::with_network(std::string& network, std::function<void(ServerHandle&)> action) {
+    boost::to_lower(network);
+    auto it = m_servers.find(network);
+    if (it == m_servers.end()) {
+      std::cout << "Unknown network" << std::endl;
+    }
+    else {
+      action(it->second);
+    }
+  }
+
   void App::info_handler(std::stringstream &ss) {
     std::cout << "Networks:" << std::endl;
     for (auto it = m_servers.begin(); it != m_servers.end(); ++it) {
@@ -118,5 +130,36 @@ namespace text {
       std::cout << std::endl;
     }
   }
-  
+
+  void App::list_handler(std::stringstream &ss) {
+    std::string network;
+    std::string entity;
+    std::string nick;
+
+    std::getline(ss, network, ' ');
+    std::getline(ss, entity, ' ');
+    std::getline(ss, nick, ' ');
+
+    bool log = false;
+    bool messages = false;
+    bool chat = false;
+    if (network.empty() || (
+	!(log = boost::iequals(entity, "log")) &&
+	!(messages = boost::iequals(entity, "messages")) &&
+	!(chat = boost::iequals(entity, "chat") && !nick.empty()))) {
+      std::cout << "Usage: list <network> log|messages|chat <nick>" << std::endl;
+      return;
+    }
+
+    with_network(network, [nick, log, messages, chat, this](ServerHandle& h) {
+	TextServerEventHandler &sh = *h.server_event_handler;
+
+	if (log) {
+	  sh.m_messages_unread = 0;
+	  for (auto lit = sh.m_messages.begin(); lit != sh.m_messages.end(); ++lit) {
+	    std::cout << *lit << std::endl;
+	  }
+	}
+    });
+  }
 }
