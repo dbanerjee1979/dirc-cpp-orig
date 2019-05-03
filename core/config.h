@@ -13,11 +13,19 @@ namespace config {
     UserInfo(std::vector<std::string>, std::string, std::string);
   };
 
+  struct Server {
+    const std::string hostname;
+    const int port;
+
+    Server(std::string, int);
+  };
+
   struct Network {
     const std::string name;
+    const std::vector<Server> servers;
     const UserInfo user_info;
 
-    Network(std::string, UserInfo);
+    Network(std::string, std::vector<Server>, UserInfo);
   };
 }
 

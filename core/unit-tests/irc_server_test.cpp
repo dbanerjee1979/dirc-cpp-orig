@@ -23,7 +23,7 @@ namespace core {
   protected:
     IrcServerTest() :
       user_info({ "nick" }, "jdoe", "John Doe"),
-      network("Freenode", user_info),
+      network("Freenode", { config::Server("irc.freenode.net", 8001) }, user_info),
       server(network, ss, sh) {
     }
 

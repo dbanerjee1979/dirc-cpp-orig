@@ -10,8 +10,16 @@ namespace config {
     realname(_realname) {
   }
 
-  Network::Network(std::string _name, UserInfo _user_info) :
+  Server::Server(std::string _hostname, int _port) :
+    hostname(_hostname),
+    port(_port) {
+  }
+
+  Network::Network(std::string _name,
+		   std::vector<Server> _servers,
+		   UserInfo _user_info) :
     name(_name),
+    servers(_servers),
     user_info(_user_info) {
   }
 

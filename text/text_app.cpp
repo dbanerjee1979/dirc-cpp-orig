@@ -4,11 +4,14 @@
 #include <sstream>
 #include <iostream>
 #include <boost/algorithm/string.hpp>
+#include <boost/asio.hpp>
 
 namespace text {
 
   App::App(std::vector<config::Network> networks) :
     m_networks(networks) {
+    using namespace std::placeholders;
+    m_commands["connect"] = std::bind(&App::connect_handler, this, _1);
   }
   
   void App::run() {
@@ -47,6 +50,38 @@ namespace text {
       std::cout << "  " << it->first << std::endl;
     }
     std::cout << "  quit" << std::endl;
+  }
+
+  
+  void App::connect_handler(std::stringstream &ss) {
+    std::string network;
+    std::getline(ss, network, ' ');
+
+    if (network.empty()) {
+      std::cout << "Usage: connect <network>" << std::endl;
+    }
+
+    boost::algorithm::to_lower(network);
+    auto it = m_networks.begin();
+    for (; it != m_networks.end(); ++it) {
+      if (boost::iequals(it->name, network)) {
+	break;
+      }
+    }
+
+    if (it == m_networks.end()) {
+      std::cout << "Unknown network, choose from:" << std::endl;
+      for (auto it = m_networks.begin(); it != m_networks.end(); ++it) {
+	std::cout << "  " << it->name << std::endl;
+      }
+    }
+    else {
+      auto server_cfg = it->servers.begin();
+      boost::asio::ip::tcp::iostream ss(server_cfg->hostname, std::to_string(server_cfg->port));
+      if (!ss) {
+	std::cout << "Unable to connect: " << ss.error().message() << std::endl;
+      }
+    }
   }
   
 }
