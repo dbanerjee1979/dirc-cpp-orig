@@ -14,6 +14,7 @@ namespace core {
     using std::placeholders::_1;
     m_msg_handlers[RPL_WELCOME] = std::bind(&IrcServer::handle_connection_registration, *this, _1);
     m_msg_handlers[ERR_NICKNAMEINUSE] = std::bind(&IrcServer::handle_nick_error, *this, _1);
+    m_msg_handlers[ERR_NICKCOLLISION] = std::bind(&IrcServer::handle_nick_error, *this, _1);
 
     if (!network.user_info.password.empty()) {
       m_out << IrcMessage("PASSWORD", { network.user_info.password }).str() << std::flush;
