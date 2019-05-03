@@ -18,6 +18,7 @@ namespace core {
   private:
     void handle_connection_registration(IrcMessage &);
     void handle_nick_error(IrcMessage &);
+    void handle_notice(IrcMessage &);
 
     std::ostream &m_out;
     ServerEventHandler &m_server_event_handler;

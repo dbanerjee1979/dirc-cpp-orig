@@ -19,6 +19,9 @@ namespace core {
 
     virtual void connected() {
     }
+
+    virtual void notice(std::string &recipient, std::string &msg) {
+    }
   };
     
 }

@@ -23,10 +23,15 @@ namespace core {
     void error(std::string &msg) {
       errors.push_back(msg);
     }
+
+    void notice(std::string &recipient, std::string &msg) {
+      notices.push_back(std::pair<std::string, std::string>(recipient, msg));
+    }
     
     bool is_connected;
     std::vector<std::string> msgs;
     std::vector<std::string> errors;
+    std::vector<std::pair<std::string, std::string>> notices;
   };
   
   class IrcServerTest : public testing::Test {
@@ -198,6 +203,34 @@ namespace core {
     getline(ss, line);
     EXPECT_EQ("NICK __nick__\r", line);
     EXPECT_EQ(true, sh.is_connected);
+  }
+
+  TEST_F(IrcServerTest, send_notification_messages_to_handler) {
+    create_server();
+
+    std::string prefix = ":wolfe.freenode.net NOTICE * :";
+    std::string msg1 = "*** Looking up your hostname...";
+    std::string msg2 = "*** Checking Ident";
+    std::string msg3 = "*** Couldn't look up your hostname";
+    std::string msg4 = "*** No Ident response";
+
+    std::string msg;
+    server->handle_message(msg = prefix + msg1);
+    server->handle_message(msg = prefix + msg2);
+    server->handle_message(msg = prefix + msg3);
+    server->handle_message(msg = prefix + msg4);
+
+    EXPECT_EQ(4, sh.notices.size());
+    if (sh.notices.size() == 4) {
+      EXPECT_EQ("*", sh.notices[0].first);
+      EXPECT_EQ(msg1, sh.notices[0].second);
+      EXPECT_EQ("*", sh.notices[1].first);
+      EXPECT_EQ(msg2, sh.notices[1].second);
+      EXPECT_EQ("*", sh.notices[2].first);;
+      EXPECT_EQ(msg3, sh.notices[2].second);
+      EXPECT_EQ("*", sh.notices[3].first);
+      EXPECT_EQ(msg4, sh.notices[3].second);
+    }
   }
 
 }
