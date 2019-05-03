@@ -8,6 +8,10 @@
 namespace core {
   class StubServerEventHandler : public core::ServerEventHandler {
   public:
+    StubServerEventHandler() :
+      is_connected(false) {
+    }
+    
     void recieved_message(std::string &msg) {
       msgs.push_back(msg);
     }
@@ -28,7 +32,7 @@ namespace core {
   class IrcServerTest : public testing::Test {
   protected:
     IrcServerTest() :
-      user_info({ "nick", "_nick_" }, "jdoe", "John Doe", ""),
+      user_info({ "nick", "_nick_", "__nick__" }, "jdoe", "John Doe", ""),
       network("Freenode", { config::Server("irc.freenode.net", 8001) }, user_info),
       user_info_pass({ "nick" }, "jdoe", "John Doe", "secret"),
       network_pass("Freenode", { config::Server("irc.freenode.net", 8001) }, user_info_pass) {
@@ -153,6 +157,26 @@ namespace core {
     getline(ss, line);
     EXPECT_EQ("NICK _nick_\r", line);
     EXPECT_EQ(true, sh.is_connected);
+  }
+
+  TEST_F(IrcServerTest, fail_to_connect_if_all_nicks_taken) {
+    create_server();
+
+    std::string msg;
+    server->handle_message(msg = ":rajaniemi.freenode.net 433 * duke :Nickname is already in use.");
+    server->handle_message(msg = ":rajaniemi.freenode.net 433 * duke :Nickname is already in use.");
+    server->handle_message(msg = ":rajaniemi.freenode.net 433 * duke :Nickname is already in use.");
+
+    std::string line;
+    getline(ss, line);
+    EXPECT_EQ("NICK nick\r", line);
+    getline(ss, line);
+    EXPECT_EQ("USER jdoe 8 * :John Doe\r", line);
+    getline(ss, line);
+    EXPECT_EQ("NICK _nick_\r", line);
+    getline(ss, line);
+    EXPECT_EQ("NICK __nick__\r", line);
+    EXPECT_EQ(false, sh.is_connected);
   }
 
 }

@@ -37,7 +37,10 @@ namespace core {
   }
 
   void IrcServer::handle_nick_error(IrcMessage &msg) {
-    m_out << IrcMessage("NICK", { m_nicks[++m_nick_id] }).str() << std::flush;
-    m_server_event_handler.error(msg.trailing);    
+    m_nick_id++;
+    if (m_nick_id < m_nicks.size()) {
+      m_out << IrcMessage("NICK", { m_nicks[m_nick_id] }).str() << std::flush;
+      m_server_event_handler.error(msg.trailing);
+    }
   }
 }
