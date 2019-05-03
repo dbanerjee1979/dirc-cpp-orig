@@ -1,5 +1,6 @@
 #include "irc_server.h"
 #include "irc_server_commands.h"
+#include "irc_message.h"
 
 namespace core {
   IrcServer::IrcServer(config::Network &network,
@@ -12,10 +13,10 @@ namespace core {
     m_msg_handlers[RPL_WELCOME] = std::bind(&IrcServer::handle_connection_registration, *this, _1);
 
     if (!network.user_info.password.empty()) {
-      m_out << "PASSWORD " << network.user_info.password << "\r" << std::endl;
+      m_out << IrcMessage("PASSWORD", { network.user_info.password }).str() << std::flush;
     }
-    m_out << "NICK " << network.user_info.nicks[0] << "\r" << std::endl;
-    m_out << "USER " << network.user_info.username << " 8 * :" << network.user_info.realname << "\r" << std::endl;
+    m_out << IrcMessage("NICK", { network.user_info.nicks[0] }).str() << std::flush;
+    m_out << IrcMessage("USER", { network.user_info.username, "8", "*" }, network.user_info.realname).str() << std::flush;
   }
 
   void IrcServer::handle_message(std::string &msg_str) {

@@ -242,5 +242,37 @@ namespace core {
       }
     }
   }
+
+  IrcMessage::IrcMessage(std::string _command, std::vector<std::string> _params, std::string _trailing) :
+    command(_command),
+    params(_params),
+    trailing(_trailing) {
+  }
+
+  std::string IrcMessage::str() {
+    std::stringstream ss;
+    if (!servername.empty()) {
+      ss << ":" << servername << " ";
+    }
+    if (!nick.empty()) {
+      ss << ":" << nick;
+      if (!user.empty()) {
+        ss << "!" << user;
+      }
+      if (!host.empty()) {
+        ss << "@" << host;
+      }
+      ss << " ";
+    }
+    ss << command;
+    for (auto it = params.begin(); it != params.end(); ++it) {
+      ss << " " << *it;
+    }
+    if (!trailing.empty()) {
+      ss << " :" << trailing;
+    }
+    ss << "\r\n";
+    return ss.str();
+  }
 }
 

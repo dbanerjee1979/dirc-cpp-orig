@@ -16,6 +16,8 @@ namespace core {
     std::string trailing;
     
     IrcMessage(const std::string &);
+    IrcMessage(std::string, std::vector<std::string>, std::string = "");
+    std::string str();
   };
   
 }
