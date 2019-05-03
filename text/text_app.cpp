@@ -11,6 +11,7 @@ namespace text {
     m_networks(networks) {
     using namespace std::placeholders;
     m_commands["connect"] = std::bind(&App::connect_handler, this, _1);
+    m_commands["info"] = std::bind(&App::info_handler, this, _1);
   }
   
   void App::run() {
@@ -100,6 +101,21 @@ namespace text {
     while (!stream->eof()) {
       getline(*stream, line);
       server->handle_message(line);
+    }
+  }
+
+  void App::info_handler(std::stringstream &ss) {
+    std::cout << "Networks:" << std::endl;
+    for (auto it = m_servers.begin(); it != m_servers.end(); ++it) {
+      std::cout << "  " << it->first << ":" << std::endl;
+
+      TextServerEventHandler &sh = *it->second.server_event_handler;
+
+      std::cout << "    log ";
+      if (sh.m_messages_unread > 0) {
+	std::cout << " (" << sh.m_messages_unread << ")";
+      }
+      std::cout << std::endl;
     }
   }
   

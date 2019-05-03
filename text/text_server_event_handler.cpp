@@ -4,7 +4,8 @@
 namespace text {
 
   void TextServerEventHandler::recieved_message(std::string &msg) {
-    std::cout << msg << std::endl;
+    m_messages.push_back(msg);
+    m_messages_unread++;
   }
 
 }

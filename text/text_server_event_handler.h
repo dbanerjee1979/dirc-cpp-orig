@@ -12,6 +12,9 @@ namespace text {
     void recieved_message(std::string &msg);
   private:
     std::vector<std::string> m_messages;
+    int m_messages_unread;
+
+    friend class App;
   };
     
 }
