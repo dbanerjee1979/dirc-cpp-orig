@@ -14,11 +14,13 @@
 namespace text {
 
   struct ServerHandle {
-    std::unique_ptr<boost::asio::ip::tcp::iostream> stream;
-    std::unique_ptr<text::TextServerEventHandler> server_event_handler;
-    std::unique_ptr<core::IrcServer> server;
+    boost::asio::ip::tcp::iostream stream;
+    text::TextServerEventHandler server_event_handler;
+    core::IrcServer server;
     std::thread server_thread;
 
+    ServerHandle(config::Network &);
+    static boost::asio::ip::tcp::iostream connect(config::Network &);
     void server_run_loop();
   };
 
@@ -35,9 +37,10 @@ namespace text {
     
     std::vector<config::Network> m_networks;
     std::map<std::string, std::function<void(std::stringstream &)>> m_commands;
-    std::map<std::string, ServerHandle> m_servers;
+    std::map<std::string, std::unique_ptr<ServerHandle>> m_servers;
   };
 
 }
 
 #endif
+

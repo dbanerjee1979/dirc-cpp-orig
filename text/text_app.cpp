@@ -3,6 +3,7 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <stdexcept>
 #include <boost/algorithm/string.hpp>
 
 namespace text {
@@ -53,14 +54,6 @@ namespace text {
     std::cout << "  quit" << std::endl;
   }
 
-  void ServerHandle::server_run_loop() {
-    std::string line;
-    while (!stream->eof()) {
-      getline(*stream, line);
-      server->handle_message(line);
-    }
-  }
-
   void App::with_network(std::string& network, std::function<void(ServerHandle&)> action) {
     boost::to_lower(network);
     auto it = m_servers.find(network);
@@ -68,7 +61,32 @@ namespace text {
       std::cout << "Unknown network" << std::endl;
     }
     else {
-      action(it->second);
+      action(*(it->second));
+    }
+  }
+
+  ServerHandle::ServerHandle(config::Network &network) :
+    stream(ServerHandle::connect(network)),
+    server_event_handler(text::TextServerEventHandler(network.name)),
+    server(network, stream, server_event_handler) {
+    server_thread = std::thread(&ServerHandle::server_run_loop, this);
+    server_thread.detach();
+  }
+
+  boost::asio::ip::tcp::iostream ServerHandle::connect(config::Network &network) {
+    auto server_cfg = network.servers.begin();
+    auto ss = boost::asio::ip::tcp::iostream(server_cfg->hostname, std::to_string(server_cfg->port));
+    if (!ss) {
+      throw std::runtime_error("Unable to connect: " + ss.error().message());
+    }
+    return ss;
+  }
+
+  void ServerHandle::server_run_loop() {
+    std::string line;
+    while (!stream.eof()) {
+      getline(stream, line);
+      server.handle_message(line);
     }
   }
   
@@ -95,23 +113,14 @@ namespace text {
       }
     }
     else {
-      std::cout << "Connecting to " << it->name << "..." << std::endl;
-      auto server_cfg = it->servers.begin();
-      auto *ss = new boost::asio::ip::tcp::iostream(server_cfg->hostname, std::to_string(server_cfg->port));
-      if (ss->fail()) {
-        std::cout << "Unable to connect: " << ss->error().message() << std::endl;
-      }
-      else {
+      try {
+        std::cout << "Connecting to " << it->name << "..." << std::endl;
         std::string key(it->name);
         boost::algorithm::to_lower(key);
-        ServerHandle &s = m_servers[key];
-        s.stream = std::unique_ptr<boost::asio::ip::tcp::iostream>(ss);
-        s.server_event_handler = std::unique_ptr<text::TextServerEventHandler>(
-            new text::TextServerEventHandler(it->name));
-        s.server = std::unique_ptr<core::IrcServer>(
-            new core::IrcServer(*it, *s.stream, *s.server_event_handler));
-        s.server_thread = std::thread(&ServerHandle::server_run_loop, &s);
-        s.server_thread.detach();
+        m_servers[key] = std::unique_ptr<ServerHandle>(new ServerHandle(*it));
+      }
+      catch (std::runtime_error& ex) {
+        std::cout << ex.what() << std::endl;
       }
     }
   }
@@ -121,7 +130,7 @@ namespace text {
     for (auto it = m_servers.begin(); it != m_servers.end(); ++it) {
       std::cout << "  " << it->first << ":" << std::endl;
 
-      TextServerEventHandler &sh = *it->second.server_event_handler;
+      TextServerEventHandler &sh = it->second->server_event_handler;
 
       std::cout << "    log ";
       if (sh.m_messages_unread > 0) {
@@ -152,7 +161,7 @@ namespace text {
     }
 
     with_network(network, [nick, log, messages, chat, this](ServerHandle& h) {
-      TextServerEventHandler &sh = *h.server_event_handler;
+      TextServerEventHandler &sh = h.server_event_handler;
 
       if (log) {
         sh.m_messages_unread = 0;
