@@ -22,6 +22,9 @@ namespace core {
 
     virtual void notice(std::string &recipient, std::string &msg) {
     }
+
+    virtual void message(std::string &msg) {
+    }
   };
     
 }

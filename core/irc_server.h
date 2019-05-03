@@ -16,6 +16,7 @@ namespace core {
     IrcServer(config::Network &, std::ostream &, ServerEventHandler &);
     void handle_message(std::string &);
   private:
+    void handle_message_default(IrcMessage &);
     void handle_connection_registration(IrcMessage &);
     void handle_nick_error(IrcMessage &);
     void handle_notice(IrcMessage &);

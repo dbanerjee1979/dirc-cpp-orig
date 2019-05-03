@@ -1,6 +1,7 @@
+#include <boost/algorithm/string.hpp>
 #include "irc_server.h"
-#include "irc_server_commands.h"
 #include "irc_message.h"
+#include "irc_message_commands.h"
 
 namespace core {
   IrcServer::IrcServer(config::Network &network,
@@ -31,9 +32,28 @@ namespace core {
     if (it != m_msg_handlers.end()) {
       it->second(msg);
     }
+    else {
+      handle_message_default(msg);
+    }
+  }
+
+  void IrcServer::handle_message_default(IrcMessage &msg) {
+    auto it = msg.params.begin();
+    auto end = msg.params.end();
+    if (it != end && *it == m_nicks[m_nick_id]) {
+      auto msg_str = boost::join(std::vector<std::string>(++it, end), " ");
+      if (!msg.trailing.empty()) {
+        if (!msg_str.empty()) {
+          msg_str += " ";
+        }
+        msg_str += msg.trailing;
+      }
+      m_server_event_handler.message(msg_str);
+    }
   }
 
   void IrcServer::handle_connection_registration(IrcMessage &msg) {
+    handle_message_default(msg);
     m_server_event_handler.connected();
   }
 

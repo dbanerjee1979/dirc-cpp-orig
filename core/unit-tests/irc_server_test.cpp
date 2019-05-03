@@ -27,11 +27,16 @@ namespace core {
     void notice(std::string &recipient, std::string &msg) {
       notices.push_back(std::pair<std::string, std::string>(recipient, msg));
     }
+
+    void message(std::string &msg) {
+      messages.push_back(msg);
+    }
     
     bool is_connected;
     std::vector<std::string> msgs;
     std::vector<std::string> errors;
     std::vector<std::pair<std::string, std::string>> notices;
+    std::vector<std::string> messages;
   };
   
   class IrcServerTest : public testing::Test {
@@ -233,4 +238,44 @@ namespace core {
     }
   }
 
+  TEST_F(IrcServerTest, send_messages_to_handler_for_startup_messages) {
+    create_server();
+
+    std::string msg;
+    server->handle_message(msg = ":wolfe.freenode.net 001 nick :Welcome to the freenode Internet Relay Chat Network nick");
+    server->handle_message(msg = ":wolfe.freenode.net 002 nick :Your host is wolfe.freenode.net[2001:948:7:7::140/8001], running version ircd-seven-1.1.7");
+    server->handle_message(msg = ":wolfe.freenode.net 003 nick :This server was created Sat Sep 1 2018 at 18:07:18 UTC");
+    server->handle_message(msg = ":wolfe.freenode.net 004 nick wolfe.freenode.net ircd-seven-1.1.7 DOQRSZaghilopswz CFILMPQSbcefgijklmnopqrstvz bkloveqjfI");
+    server->handle_message(msg = ":wolfe.freenode.net 005 nick CHANTYPES=# EXCEPTS INVEX CHANMODES=eIbq,k,flj,CFLMPQScgimnprstz CHANLIMIT=#:120 PREFIX=(ov)@+ MAXLIST=bqeI:100 MODES=4 NETWORK=freenode STATUSMSG=@+ CALLERID=g CASEMAPPING=rfc1459 :are supported by this server");
+    server->handle_message(msg = ":wolfe.freenode.net 005 nick CHARSET=ascii NICKLEN=16 CHANNELLEN=50 TOPICLEN=390 DEAF=D FNC TARGMAX=NAMES:1,LIST:1,KICK:1,WHOIS:1,PRIVMSG:4,NOTICE:4,ACCEPT:,MONITOR: EXTBAN=$,ajrxz CLIENTVER=3.0 KNOCK SAFELIST ELIST=CTU :are supported by this server");
+    server->handle_message(msg = ":wolfe.freenode.net 005 nick WHOX CPRIVMSG CNOTICE ETRACE :are supported by this server");
+    server->handle_message(msg = ":wolfe.freenode.net 251 nick :There are 98 users and 84180 invisible on 32 servers");
+    server->handle_message(msg = ":wolfe.freenode.net 252 nick 34 :IRC Operators online");
+    server->handle_message(msg = ":wolfe.freenode.net 253 nick 3 :unknown connection(s)");
+    server->handle_message(msg = ":wolfe.freenode.net 254 nick 53022 :channels formed");
+    server->handle_message(msg = ":wolfe.freenode.net 255 nick :I have 5502 clients and 1 servers");
+    server->handle_message(msg = ":wolfe.freenode.net 265 nick 5502 6184 :Current local users 5502, max 6184");
+    server->handle_message(msg = ":wolfe.freenode.net 266 nick 84278 94264 :Current global users 84278, max 94264");
+    server->handle_message(msg = ":wolfe.freenode.net 250 nick :Highest connection count: 6185 (6184 clients) (735512 connections received)");
+
+    EXPECT_EQ(15, sh.messages.size());
+    if (sh.messages.size() == 15) {
+      EXPECT_EQ("Welcome to the freenode Internet Relay Chat Network nick", sh.messages[0]);
+      EXPECT_EQ("Your host is wolfe.freenode.net[2001:948:7:7::140/8001], running version ircd-seven-1.1.7", sh.messages[1]);
+      EXPECT_EQ("This server was created Sat Sep 1 2018 at 18:07:18 UTC", sh.messages[2]);
+      EXPECT_EQ("wolfe.freenode.net ircd-seven-1.1.7 DOQRSZaghilopswz CFILMPQSbcefgijklmnopqrstvz bkloveqjfI", sh.messages[3]);
+      EXPECT_EQ("CHANTYPES=# EXCEPTS INVEX CHANMODES=eIbq,k,flj,CFLMPQScgimnprstz CHANLIMIT=#:120 PREFIX=(ov)@+ MAXLIST=bqeI:100 MODES=4 NETWORK=freenode STATUSMSG=@+ CALLERID=g CASEMAPPING=rfc1459 are supported by this server", sh.messages[4]);
+      EXPECT_EQ("CHARSET=ascii NICKLEN=16 CHANNELLEN=50 TOPICLEN=390 DEAF=D FNC TARGMAX=NAMES:1,LIST:1,KICK:1,WHOIS:1,PRIVMSG:4,NOTICE:4,ACCEPT:,MONITOR: EXTBAN=$,ajrxz CLIENTVER=3.0 KNOCK SAFELIST ELIST=CTU are supported by this server", sh.messages[5]);
+      EXPECT_EQ("WHOX CPRIVMSG CNOTICE ETRACE are supported by this server", sh.messages[6]);
+      EXPECT_EQ("There are 98 users and 84180 invisible on 32 servers", sh.messages[7]);
+      EXPECT_EQ("34 IRC Operators online", sh.messages[8]);
+      EXPECT_EQ("3 unknown connection(s)", sh.messages[9]);
+      EXPECT_EQ("53022 channels formed", sh.messages[10]);
+      EXPECT_EQ("I have 5502 clients and 1 servers", sh.messages[11]);
+      EXPECT_EQ("5502 6184 Current local users 5502, max 6184", sh.messages[12]);
+      EXPECT_EQ("84278 94264 Current global users 84278, max 94264", sh.messages[13]);
+      EXPECT_EQ("Highest connection count: 6185 (6184 clients) (735512 connections received)", sh.messages[14]);
+    }
+  }
+  
 }
