@@ -4,7 +4,8 @@
 namespace text {
 
   TextServerEventHandler::TextServerEventHandler(const std::string &network) :
-    m_network(network) {
+    m_network(network),
+    m_messages_unread(0) {
   }
 
   void TextServerEventHandler::recieved_message(std::string &msg) {
