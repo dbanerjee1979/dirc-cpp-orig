@@ -11,6 +11,7 @@ namespace text {
   public:
     TextServerEventHandler(const std::string &network);
     void recieved_message(std::string &msg);
+    void error(std::string &msg);
     void connected();
   private:
     std::string m_network;

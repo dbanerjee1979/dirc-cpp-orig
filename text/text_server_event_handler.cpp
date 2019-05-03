@@ -12,6 +12,10 @@ namespace text {
     m_messages_unread++;
   }
 
+  void TextServerEventHandler::error(std::string &msg) {
+    std::cout << "ERROR (" << m_network << ") " << msg << std::endl;
+  }
+
   void TextServerEventHandler::connected() {
     std::cout << "Successfully connected to " << m_network << std::endl;
   }
