@@ -6,17 +6,17 @@
 
 int main(int argc, char **argv) {
   text::App app({
-	config::Network(
-		"freenode",
-		{
-		 config::Server("irc.freenode.net", 8001)
-		},
-		config::UserInfo(
-			{ "shorugoru", "_shorugoru_", "__shorugoru__" },
-			"duke",
-			"Duke"
-		)
-	)
+      config::Network(
+        "freenode",
+        {
+         config::Server("irc.freenode.net", 8001)
+        },
+        config::UserInfo(
+          { "shorugoru", "_shorugoru_", "__shorugoru__" },
+          "duke",
+          "Duke"
+        )
+      )
     });
   app.run();
   return 0;
