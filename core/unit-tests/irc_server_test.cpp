@@ -22,9 +22,9 @@ namespace core {
   class IrcServerTest : public testing::Test {
   protected:
     IrcServerTest() :
-      user_info({ "nick" }),
-      network("jdoe", "John Doe"),
-      server(user_info, network, ss, sh) {
+      user_info({ "nick" }, "jdoe", "John Doe"),
+      network("Freenode", user_info),
+      server(network, ss, sh) {
     }
 
     ~IrcServerTest() {

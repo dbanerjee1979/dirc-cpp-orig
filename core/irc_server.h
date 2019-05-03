@@ -13,7 +13,7 @@ namespace core {
 
   class IrcServer {
   public:
-    IrcServer(config::UserInfo &, config::Network &, std::ostream &, ServerEventHandler &);
+    IrcServer(config::Network &, std::ostream &, ServerEventHandler &);
     void handle_message(std::string &);
   private:
     void handle_connection_registration(IrcMessage &);

@@ -2,8 +2,7 @@
 #include "irc_server_commands.h"
 
 namespace core {
-  IrcServer::IrcServer(config::UserInfo &user_info,
-		       config::Network &network,
+  IrcServer::IrcServer(config::Network &network,
 		       std::ostream &out,
 		       ServerEventHandler &server_event_handler) :
     m_out(out),
@@ -12,8 +11,8 @@ namespace core {
     using std::placeholders::_1;
     m_msg_handlers[RPL_WELCOME] = std::bind(&IrcServer::handle_connection_registration, *this, _1);
     
-    m_out << "NICK " << user_info.nicks[0] << "\r" << std::endl;
-    m_out << "USER " << network.username << " 8 * :" << network.realname << "\r" << std::endl;
+    m_out << "NICK " << network.user_info.nicks[0] << "\r" << std::endl;
+    m_out << "USER " << network.user_info.username << " 8 * :" << network.user_info.realname << "\r" << std::endl;
   }
 
   void IrcServer::handle_message(std::string &msg_str) {

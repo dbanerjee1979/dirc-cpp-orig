@@ -7,15 +7,17 @@
 namespace config {
   struct UserInfo {
     const std::vector<std::string> nicks;
+    const std::string username;
+    const std::string realname;
     
-    UserInfo(std::vector<std::string>);
+    UserInfo(std::vector<std::string>, std::string, std::string);
   };
 
   struct Network {
-    const std::string username;
-    const std::string realname;
+    const std::string name;
+    const UserInfo user_info;
 
-    Network(std::string, std::string);
+    Network(std::string, UserInfo);
   };
 }
 
