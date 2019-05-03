@@ -15,15 +15,20 @@ namespace core {
     void connected() {
       is_connected = true;
     }
+
+    void error(std::string &msg) {
+      errors.push_back(msg);
+    }
     
     bool is_connected;
     std::vector<std::string> msgs;
+    std::vector<std::string> errors;
   };
   
   class IrcServerTest : public testing::Test {
   protected:
     IrcServerTest() :
-      user_info({ "nick" }, "jdoe", "John Doe", ""),
+      user_info({ "nick", "_nick_" }, "jdoe", "John Doe", ""),
       network("Freenode", { config::Server("irc.freenode.net", 8001) }, user_info),
       user_info_pass({ "nick" }, "jdoe", "John Doe", "secret"),
       network_pass("Freenode", { config::Server("irc.freenode.net", 8001) }, user_info_pass) {
@@ -106,6 +111,30 @@ namespace core {
     EXPECT_EQ("NICK nick\r", line);
     getline(ss, line);
     EXPECT_EQ("USER jdoe 8 * :John Doe\r", line);
+    EXPECT_EQ(true, sh.is_connected);
+  }
+
+  TEST_F(IrcServerTest, send_second_nick_if_first_nick_is_already_taken) {
+    create_server();
+
+    std::string msg;
+    server->handle_message(msg = ":rajaniemi.freenode.net 433 * duke :Nickname is already in use.");
+    server->handle_message(msg = ":rajaniemi.freenode.net 001 shorugoru :Welcome to the freenode Internet Relay Chat Network nick");
+
+    std::string line;
+    getline(ss, line);
+    EXPECT_EQ("NICK nick\r", line);
+    getline(ss, line);
+    EXPECT_EQ("USER jdoe 8 * :John Doe\r", line);
+    getline(ss, line);
+    EXPECT_EQ("NICK _nick_\r", line);
+
+
+    EXPECT_EQ(1, sh.errors.size());
+    if (sh.errors.size() == 1) {
+      EXPECT_EQ("Nickname is already in use.", sh.errors[0]);
+    }
+
     EXPECT_EQ(true, sh.is_connected);
   }
 

@@ -5,4 +5,6 @@
 
 std::string RPL_WELCOME = "001";
 
+std::string ERR_NICKNAMEINUSE = "433";
+
 #endif

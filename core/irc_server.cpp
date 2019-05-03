@@ -7,15 +7,18 @@ namespace core {
 		       std::ostream &out,
 		       ServerEventHandler &server_event_handler) :
     m_out(out),
-    m_server_event_handler(server_event_handler) {
+    m_server_event_handler(server_event_handler),
+    m_nicks(network.user_info.nicks),
+    m_nick_id(0) {
 
     using std::placeholders::_1;
     m_msg_handlers[RPL_WELCOME] = std::bind(&IrcServer::handle_connection_registration, *this, _1);
+    m_msg_handlers[ERR_NICKNAMEINUSE] = std::bind(&IrcServer::handle_nick_error, *this, _1);
 
     if (!network.user_info.password.empty()) {
       m_out << IrcMessage("PASSWORD", { network.user_info.password }).str() << std::flush;
     }
-    m_out << IrcMessage("NICK", { network.user_info.nicks[0] }).str() << std::flush;
+    m_out << IrcMessage("NICK", { m_nicks[m_nick_id] }).str() << std::flush;
     m_out << IrcMessage("USER", { network.user_info.username, "8", "*" }, network.user_info.realname).str() << std::flush;
   }
 
@@ -31,7 +34,9 @@ namespace core {
   void IrcServer::handle_connection_registration(IrcMessage &msg) {
     m_server_event_handler.connected();
   }
+
+  void IrcServer::handle_nick_error(IrcMessage &msg) {
+    m_out << IrcMessage("NICK", { m_nicks[++m_nick_id] }).str() << std::flush;
+    m_server_event_handler.error(msg.trailing);    
+  }
 }
-
-
-  

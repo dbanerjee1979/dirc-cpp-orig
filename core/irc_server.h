@@ -17,10 +17,13 @@ namespace core {
     void handle_message(std::string &);
   private:
     void handle_connection_registration(IrcMessage &);
+    void handle_nick_error(IrcMessage &);
 
     std::ostream &m_out;
     ServerEventHandler &m_server_event_handler;
     std::unordered_map<std::string, std::function<void(IrcMessage&)>> m_msg_handlers;
+    const std::vector<std::string> &m_nicks;
+    int m_nick_id;
   };
   
 }

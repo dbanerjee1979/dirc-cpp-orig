@@ -14,6 +14,9 @@ namespace core {
     virtual void recieved_message(std::string &msg) {
     }
 
+    virtual void error(std::string &msg) {
+    }
+
     virtual void connected() {
     }
   };
