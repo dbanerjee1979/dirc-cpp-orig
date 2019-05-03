@@ -9,8 +9,9 @@ namespace config {
     const std::vector<std::string> nicks;
     const std::string username;
     const std::string realname;
+    const std::string password;
     
-    UserInfo(std::vector<std::string>, std::string, std::string);
+    UserInfo(std::vector<std::string>, std::string, std::string, std::string);
   };
 
   struct Server {

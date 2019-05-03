@@ -10,7 +10,10 @@ namespace core {
 
     using std::placeholders::_1;
     m_msg_handlers[RPL_WELCOME] = std::bind(&IrcServer::handle_connection_registration, *this, _1);
-    
+
+    if (!network.user_info.password.empty()) {
+      m_out << "PASSWORD " << network.user_info.password << "\r" << std::endl;
+    }
     m_out << "NICK " << network.user_info.nicks[0] << "\r" << std::endl;
     m_out << "USER " << network.user_info.username << " 8 * :" << network.user_info.realname << "\r" << std::endl;
   }

@@ -4,10 +4,12 @@ namespace config {
 
   UserInfo::UserInfo(std::vector<std::string> _nicks,
 		     std::string _username,
-		     std::string _realname) :
+		     std::string _realname,
+                     std::string _password) :
     nicks(_nicks),
     username(_username),
-    realname(_realname) {
+    realname(_realname),
+    password(_password) {
   }
 
   Server::Server(std::string _hostname, int _port) :

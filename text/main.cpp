@@ -14,7 +14,8 @@ int main(int argc, char **argv) {
         config::UserInfo(
           { "shorugoru", "_shorugoru_", "__shorugoru__" },
           "duke",
-          "Duke"
+          "Duke",
+          ""
         )
       )
     });
