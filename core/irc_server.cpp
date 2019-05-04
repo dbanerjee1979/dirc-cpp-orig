@@ -20,6 +20,7 @@ namespace core {
     m_msg_handlers[ERR_NICKNAMEINUSE] = std::bind(&IrcServer::handle_nick_error, this, _1);
     m_msg_handlers[ERR_NICKCOLLISION] = std::bind(&IrcServer::handle_nick_error, this, _1);
     m_msg_handlers["NOTICE"] = std::bind(&IrcServer::handle_notice, this, _1);
+    m_msg_handlers["PING"] = std::bind(&IrcServer::handle_ping, this, _1);
 
     if (!network.user_info.password.empty()) {
       m_out << IrcMessage("PASSWORD", { network.user_info.password }).str() << std::flush;
@@ -85,5 +86,9 @@ namespace core {
     std::string motd = m_motd.str();
     m_server_event_handler.message_of_the_day(motd);
     m_motd.str("");
+  }
+
+  void IrcServer::handle_ping(IrcMessage &msg) {
+    m_out << IrcMessage("PONG", { msg.trailing }).str() << std::flush;
   }
 }

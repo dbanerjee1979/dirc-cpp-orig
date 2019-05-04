@@ -24,6 +24,7 @@ namespace core {
     void handle_motd_start(IrcMessage &);
     void handle_motd(IrcMessage &);
     void handle_motd_end(IrcMessage &);
+    void handle_ping(IrcMessage &);
 
     std::ostream &m_out;
     ServerEventHandler &m_server_event_handler;

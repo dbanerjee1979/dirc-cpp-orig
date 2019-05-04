@@ -400,5 +400,16 @@ namespace core {
 
     EXPECT_EQ(motd.str(), sh.motd);
   }
-  
+
+  TEST_F(IrcServerTest, respond_to_ping_with_pong) {
+    create_server();
+    ss.str("");
+    
+    std::string msg;
+    server->handle_message(msg = "PING :wolfe.freenode.net");
+
+    std::string line;
+    getline(ss, line);
+    EXPECT_EQ("PONG wolfe.freenode.net\r", line);
+  }
 }
