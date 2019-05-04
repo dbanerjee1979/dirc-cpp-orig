@@ -15,7 +15,7 @@ namespace core {
   class IrcServer {
   public:
     IrcServer(config::Network &, std::ostream &, ServerEventHandler &);
-    void quit();
+    void quit(std::string msg = "");
     void handle_message(std::string &);
   private:
     void handle_message_default(IrcMessage &);

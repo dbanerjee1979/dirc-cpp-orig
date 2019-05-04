@@ -432,4 +432,17 @@ namespace core {
     EXPECT_EQ(true, sh.is_shutdown);
   }
 
+  TEST_F(IrcServerTest, quit_with_message) {
+    create_server();
+    ss.str("");
+
+    server->quit("Goodbye, world!");
+
+    std::string line;
+    getline(ss, line);
+    EXPECT_EQ("QUIT :Goodbye, world!\r", line);
+
+    EXPECT_EQ(true, sh.is_shutdown);
+  }
+
 }
