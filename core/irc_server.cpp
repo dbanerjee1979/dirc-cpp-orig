@@ -111,7 +111,7 @@ namespace core {
     if (nick() == msg.nick) {
       ChannelEventHandler *ch = m_server_event_handler.create_channel_event_handler(channel);
       if (ch) {
-        m_channels[channel] = std::unique_ptr<ChannelEventHandler>(ch);
+        m_entity_repo.create_channel(channel, ch);
       }
     }
   }

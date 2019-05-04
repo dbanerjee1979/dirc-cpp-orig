@@ -9,6 +9,7 @@
 #include "server_event_handler.h"
 #include "channel_event_handler.h"
 #include "irc_message.h"
+#include "irc_entity_repository.h"
 #include "config.h"
 
 namespace core {
@@ -38,6 +39,7 @@ namespace core {
     int m_nick_id;
     std::stringstream m_motd;
     std::unordered_map<std::string, std::unique_ptr<ChannelEventHandler>> m_channels;
+    IrcEntityRepository m_entity_repo;
   };
   
 }

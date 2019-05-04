@@ -14,6 +14,7 @@ namespace core {
     }
     
     std::string name;
+    std::string topic;
   };
   
   class StubServerEventHandler : public core::ServerEventHandler {
@@ -470,6 +471,7 @@ namespace core {
 
     std::string msg;
     server->handle_message(msg = ":nick!jdoe@foo.org JOIN ##c++");
+    server->handle_message(msg = ":wolfe.freenode.net 332 nick ##c++ :is a topical channel for discussing standard C++ specifications and code.");
 
     std::string line;
     getline(ss, line);
@@ -478,6 +480,7 @@ namespace core {
     EXPECT_EQ(1, sh.channels.size());
     if (sh.channels.size() == 1) {
       EXPECT_EQ("##c++", sh.channels[0]->name);
+      EXPECT_EQ("is a topical channel for discussing standard C++ specifications and code.", sh.channels[0]->topic);
     }
   }
 
