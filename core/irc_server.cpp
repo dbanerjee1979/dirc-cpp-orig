@@ -34,6 +34,10 @@ namespace core {
     m_server_event_handler.handle_shutdown();
   }
 
+  void IrcServer::join(std::string channel) {
+     m_out << IrcMessage("JOIN", { channel }).str() << std::flush;
+  }
+
   void IrcServer::handle_message(std::string &msg_str) {
     m_server_event_handler.recieved_message(msg_str);
     IrcMessage msg(msg_str);

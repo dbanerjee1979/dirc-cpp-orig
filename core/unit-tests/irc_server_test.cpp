@@ -293,60 +293,60 @@ namespace core {
     create_server();
 
     std::string msg;
-    server->handle_message(msg = ":wolfe.freenode.net 375 shorugoru :- wolfe.freenode.net Message of the Day -");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- Welcome to wolfe.freenode.net in Stockholm, SE.");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- Thanks to http://nordu.net/ for sponsoring");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- this server!");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :-");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- WOLFE, GENE [1931-2019].  Prolific writer of short stories");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- and novels. His best-known work is the multi-volume novel The");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- Book of the New Sun. He has won multiple awards including");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- the Nebula Award, the World Fantasy Award, The Campell");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- Memorial Award and the Locus Award. He was awarded the World");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- Fantasy Award for lifetime achievement in 1996.");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :-");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- Welcome to freenode - supporting the free and open source");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- software communities since 1998.");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :-");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- By connecting to freenode you indicate that you have read and");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- accept our policies and guidelines as set out on https://freenode.net");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :-");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- In the event that you observe behaviour that contravenes our policies,");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- please notify a volunteer staff member via private message, or send us an");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- e-mail to complaints@freenode.net -- we will do our best to address the");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- situation within a reasonable period of time, and we may request further");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- information or, as appropriate, involve other parties such as channel operators");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- Group Contacts representing an on-topic group.");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :-");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- freenode runs an open proxy scanner.");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :-");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- If you are looking for assistance, you may be able to find a list of");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- volunteer staff on '/stats p' (shows only on-call staff) or by joining");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- #freenode and using the '/who freenode/staff/*' command. You may message");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- any of us at any time. Please note that freenode predominantly provides");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- assistance via private message, and while we have a network channel the");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- primary venue for support requests is via private message to a member");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- of the volunteer staff team.");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :-");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- From time to time, volunteer staff may send server-wide notices relating to");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- the project, or the communities that we host. The majority of such notices");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- will be sent as wallops, and you can '/mode <yournick> +w' to ensure that you");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- do not miss them. Important messages relating to the freenode project, including");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- notices of upcoming maintenance and other scheduled downtime will be issued as");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- global notices.");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :-");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- Representing an on-topic project? Don't forget to register, more information");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- can be found on the https://freenode.net website under \"Group Registration\".");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :-");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- Thank you also to our server sponsors for the sustained support in keeping the");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- network going for close to two decades.");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :-");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- Thank you to all of our attendees, sponsors, speakers, exhibitors, helpers,");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- and everyone else who made this year's freenode #live conference amazing.");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- https://freenode.net/news/live-2018");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :-");
-    server->handle_message(msg = ":wolfe.freenode.net 372 shorugoru :- Thank you for using freenode!");
-    server->handle_message(msg = ":wolfe.freenode.net 376 shorugoru :End of /MOTD command.");
+    server->handle_message(msg = ":wolfe.freenode.net 375 nick :- wolfe.freenode.net Message of the Day -");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- Welcome to wolfe.freenode.net in Stockholm, SE.");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- Thanks to http://nordu.net/ for sponsoring");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- this server!");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :-");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- WOLFE, GENE [1931-2019].  Prolific writer of short stories");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- and novels. His best-known work is the multi-volume novel The");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- Book of the New Sun. He has won multiple awards including");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- the Nebula Award, the World Fantasy Award, The Campell");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- Memorial Award and the Locus Award. He was awarded the World");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- Fantasy Award for lifetime achievement in 1996.");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :-");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- Welcome to freenode - supporting the free and open source");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- software communities since 1998.");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :-");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- By connecting to freenode you indicate that you have read and");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- accept our policies and guidelines as set out on https://freenode.net");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :-");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- In the event that you observe behaviour that contravenes our policies,");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- please notify a volunteer staff member via private message, or send us an");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- e-mail to complaints@freenode.net -- we will do our best to address the");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- situation within a reasonable period of time, and we may request further");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- information or, as appropriate, involve other parties such as channel operators");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- Group Contacts representing an on-topic group.");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :-");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- freenode runs an open proxy scanner.");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :-");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- If you are looking for assistance, you may be able to find a list of");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- volunteer staff on '/stats p' (shows only on-call staff) or by joining");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- #freenode and using the '/who freenode/staff/*' command. You may message");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- any of us at any time. Please note that freenode predominantly provides");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- assistance via private message, and while we have a network channel the");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- primary venue for support requests is via private message to a member");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- of the volunteer staff team.");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :-");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- From time to time, volunteer staff may send server-wide notices relating to");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- the project, or the communities that we host. The majority of such notices");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- will be sent as wallops, and you can '/mode <yournick> +w' to ensure that you");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- do not miss them. Important messages relating to the freenode project, including");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- notices of upcoming maintenance and other scheduled downtime will be issued as");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- global notices.");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :-");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- Representing an on-topic project? Don't forget to register, more information");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- can be found on the https://freenode.net website under \"Group Registration\".");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :-");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- Thank you also to our server sponsors for the sustained support in keeping the");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- network going for close to two decades.");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :-");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- Thank you to all of our attendees, sponsors, speakers, exhibitors, helpers,");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- and everyone else who made this year's freenode #live conference amazing.");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- https://freenode.net/news/live-2018");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :-");
+    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- Thank you for using freenode!");
+    server->handle_message(msg = ":wolfe.freenode.net 376 nick :End of /MOTD command.");
 
     std::stringstream motd;
     motd
@@ -443,6 +443,20 @@ namespace core {
     EXPECT_EQ("QUIT :Goodbye, world!\r", line);
 
     EXPECT_EQ(true, sh.is_shutdown);
+  }
+
+  TEST_F(IrcServerTest, join_channel) {
+    create_server();
+    ss.str("");
+
+    server->join("##c++");
+
+    std::string msg;
+    server->handle_message(msg = ":nick!jdoe@foo.org JOIN ##c++");
+
+    std::string line;
+    getline(ss, line);
+    EXPECT_EQ("JOIN ##c++\r", line);
   }
 
 }
