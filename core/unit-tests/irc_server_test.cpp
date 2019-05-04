@@ -3,9 +3,19 @@
 #include <gtest/gtest.h>
 #include <core/irc_server.h>
 #include <core/server_event_handler.h>
+#include <core/channel_event_handler.h>
 #include <core/config.h>
 
 namespace core {
+  class StubChannelEventHandler : public core::ChannelEventHandler {
+  public:
+    StubChannelEventHandler(std::string& _name) :
+      name(_name) {
+    }
+    
+    std::string name;
+  };
+  
   class StubServerEventHandler : public core::ServerEventHandler {
   public:
     StubServerEventHandler() :
@@ -23,6 +33,12 @@ namespace core {
 
     void handle_shutdown() {
       is_shutdown = true;
+    }
+
+    ChannelEventHandler *create_channel_event_handler(std::string &channel) {
+      auto ch = new StubChannelEventHandler(channel);
+      channels.push_back(ch);
+      return ch;
     }
 
     void error(std::string &msg) {
@@ -48,6 +64,7 @@ namespace core {
     std::vector<std::string> messages;
     std::string motd;
     bool is_shutdown;
+    std::vector<StubChannelEventHandler *> channels;
   };
   
   class IrcServerTest : public testing::Test {
@@ -457,6 +474,11 @@ namespace core {
     std::string line;
     getline(ss, line);
     EXPECT_EQ("JOIN ##c++\r", line);
+
+    EXPECT_EQ(1, sh.channels.size());
+    if (sh.channels.size() == 1) {
+      EXPECT_EQ("##c++", sh.channels[0]->name);
+    }
   }
 
 }

@@ -7,6 +7,7 @@
 #include <functional>
 #include <sstream>
 #include "server_event_handler.h"
+#include "channel_event_handler.h"
 #include "irc_message.h"
 #include "config.h"
 
@@ -27,6 +28,7 @@ namespace core {
     void handle_motd(IrcMessage &);
     void handle_motd_end(IrcMessage &);
     void handle_ping(IrcMessage &);
+    void handle_join(IrcMessage &);
 
     std::ostream &m_out;
     ServerEventHandler &m_server_event_handler;
@@ -34,6 +36,7 @@ namespace core {
     const std::vector<std::string> &m_nicks;
     int m_nick_id;
     std::stringstream m_motd;
+    std::unordered_map<std::string, std::unique_ptr<ChannelEventHandler>> m_channels;
   };
   
 }

@@ -21,6 +21,7 @@ namespace core {
     m_msg_handlers[ERR_NICKCOLLISION] = std::bind(&IrcServer::handle_nick_error, this, _1);
     m_msg_handlers["NOTICE"] = std::bind(&IrcServer::handle_notice, this, _1);
     m_msg_handlers["PING"] = std::bind(&IrcServer::handle_ping, this, _1);
+    m_msg_handlers["JOIN"] = std::bind(&IrcServer::handle_join, this, _1);
 
     if (!network.user_info.password.empty()) {
       m_out << IrcMessage("PASSWORD", { network.user_info.password }).str() << std::flush;
@@ -99,5 +100,13 @@ namespace core {
 
   void IrcServer::handle_ping(IrcMessage &msg) {
     m_out << IrcMessage("PONG", { msg.trailing }).str() << std::flush;
+  }
+
+  void IrcServer::handle_join(IrcMessage &msg) {
+    std::string &channel = msg.params[0];
+    auto ch = m_server_event_handler.create_channel_event_handler(channel);
+    if (ch) {
+      m_channels[channel] = std::unique_ptr<ChannelEventHandler>(ch);
+    }
   }
 }
