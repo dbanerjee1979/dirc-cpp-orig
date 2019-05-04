@@ -29,6 +29,11 @@ namespace core {
     m_out << IrcMessage("USER", { network.user_info.username, "8", "*" }, network.user_info.realname).str() << std::flush;
   }
 
+  void IrcServer::quit() {
+    m_out << IrcMessage("QUIT", {}).str() << std::flush;
+    m_server_event_handler.handle_shutdown();
+  }
+
   void IrcServer::handle_message(std::string &msg_str) {
     m_server_event_handler.recieved_message(msg_str);
     IrcMessage msg(msg_str);

@@ -20,6 +20,9 @@ namespace core {
     virtual void connected() {
     }
 
+    virtual void handle_shutdown() {
+    }
+
     virtual void notice(std::string &recipient, std::string &msg) {
     }
 

@@ -9,7 +9,8 @@ namespace core {
   class StubServerEventHandler : public core::ServerEventHandler {
   public:
     StubServerEventHandler() :
-      is_connected(false) {
+      is_connected(false),
+      is_shutdown(false) {
     }
     
     void recieved_message(std::string &msg) {
@@ -18,6 +19,10 @@ namespace core {
     
     void connected() {
       is_connected = true;
+    }
+
+    void handle_shutdown() {
+      is_shutdown = true;
     }
 
     void error(std::string &msg) {
@@ -42,6 +47,7 @@ namespace core {
     std::vector<std::pair<std::string, std::string>> notices;
     std::vector<std::string> messages;
     std::string motd;
+    bool is_shutdown;
   };
   
   class IrcServerTest : public testing::Test {
@@ -412,4 +418,18 @@ namespace core {
     getline(ss, line);
     EXPECT_EQ("PONG wolfe.freenode.net\r", line);
   }
+
+  TEST_F(IrcServerTest, quit_without_message) {
+    create_server();
+    ss.str("");
+
+    server->quit();
+
+    std::string line;
+    getline(ss, line);
+    EXPECT_EQ("QUIT\r", line);
+
+    EXPECT_EQ(true, sh.is_shutdown);
+  }
+
 }
