@@ -109,7 +109,7 @@ namespace core {
   void IrcServer::handle_join(IrcMessage &msg) {
     std::string &channel = msg.params[0];
     if (nick() == msg.nick) {
-      auto ch = m_server_event_handler.create_channel_event_handler(channel);
+      ChannelEventHandler *ch = m_server_event_handler.create_channel_event_handler(channel);
       if (ch) {
         m_channels[channel] = std::unique_ptr<ChannelEventHandler>(ch);
       }
