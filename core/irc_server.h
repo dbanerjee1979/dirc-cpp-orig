@@ -20,6 +20,7 @@ namespace core {
     void join(std::string channel);
     void handle_message(std::string &);
   private:
+    const std::string &nick();
     void handle_message_default(IrcMessage &);
     void handle_connection_registration(IrcMessage &);
     void handle_nick_error(IrcMessage &);

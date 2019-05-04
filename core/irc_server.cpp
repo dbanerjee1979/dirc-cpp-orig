@@ -26,7 +26,7 @@ namespace core {
     if (!network.user_info.password.empty()) {
       m_out << IrcMessage("PASSWORD", { network.user_info.password }).str() << std::flush;
     }
-    m_out << IrcMessage("NICK", { m_nicks[m_nick_id] }).str() << std::flush;
+    m_out << IrcMessage("NICK", { nick() }).str() << std::flush;
     m_out << IrcMessage("USER", { network.user_info.username, "8", "*" }, network.user_info.realname).str() << std::flush;
   }
 
@@ -37,6 +37,10 @@ namespace core {
 
   void IrcServer::join(std::string channel) {
      m_out << IrcMessage("JOIN", { channel }).str() << std::flush;
+  }
+
+  const std::string &IrcServer::nick() {
+    return m_nicks[m_nick_id];
   }
 
   void IrcServer::handle_message(std::string &msg_str) {
@@ -74,7 +78,7 @@ namespace core {
   void IrcServer::handle_nick_error(IrcMessage &msg) {
     m_nick_id++;
     if (m_nick_id < m_nicks.size()) {
-      m_out << IrcMessage("NICK", { m_nicks[m_nick_id] }).str() << std::flush;
+      m_out << IrcMessage("NICK", { nick() }).str() << std::flush;
       m_server_event_handler.error(msg.trailing);
     }
   }
@@ -104,9 +108,11 @@ namespace core {
 
   void IrcServer::handle_join(IrcMessage &msg) {
     std::string &channel = msg.params[0];
-    auto ch = m_server_event_handler.create_channel_event_handler(channel);
-    if (ch) {
-      m_channels[channel] = std::unique_ptr<ChannelEventHandler>(ch);
+    if (nick() == msg.nick) {
+      auto ch = m_server_event_handler.create_channel_event_handler(channel);
+      if (ch) {
+        m_channels[channel] = std::unique_ptr<ChannelEventHandler>(ch);
+      }
     }
   }
 }
