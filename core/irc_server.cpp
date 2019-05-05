@@ -6,9 +6,9 @@
 namespace core {
   IrcServer::IrcServer(config::Network &network,
 		       std::ostream &out,
-		       ServerEventHandler &server_event_handler) :
+		       ServerEventHandler &event_handler) :
     m_out(out),
-    m_server_event_handler(server_event_handler),
+    m_event_handler(event_handler),
     m_nicks(network.user_info.nicks),
     m_nick_id(0) {
 
@@ -32,7 +32,7 @@ namespace core {
 
   void IrcServer::quit(std::string msg) {
     m_out << IrcMessage("QUIT", {}, msg).str() << std::flush;
-    m_server_event_handler.handle_shutdown();
+    m_event_handler.handle_shutdown();
   }
 
   void IrcServer::join(std::string channel) {
@@ -44,14 +44,20 @@ namespace core {
   }
 
   void IrcServer::handle_message(std::string &msg_str) {
-    m_server_event_handler.recieved_message(msg_str);
+    m_event_handler.recieved_message(msg_str);
     IrcMessage msg(msg_str);
-    auto it = m_msg_handlers.find(msg.command);
-    if (it != m_msg_handlers.end()) {
-      it->second(msg);
+    auto channel = m_entity_repo.find_channel(msg);
+    if (channel) {
+      channel->handle_message(msg);
     }
     else {
-      handle_message_default(msg);
+      auto it = m_msg_handlers.find(msg.command);
+      if (it != m_msg_handlers.end()) {
+        it->second(msg);
+      }
+      else {
+        handle_message_default(msg);
+      }
     }
   }
 
@@ -66,25 +72,25 @@ namespace core {
         }
         msg_str += msg.trailing;
       }
-      m_server_event_handler.message(msg_str);
+      m_event_handler.message(msg_str);
     }
   }
 
   void IrcServer::handle_connection_registration(IrcMessage &msg) {
     handle_message_default(msg);
-    m_server_event_handler.connected();
+    m_event_handler.connected();
   }
 
   void IrcServer::handle_nick_error(IrcMessage &msg) {
     m_nick_id++;
     if (m_nick_id < m_nicks.size()) {
       m_out << IrcMessage("NICK", { nick() }).str() << std::flush;
-      m_server_event_handler.error(msg.trailing);
+      m_event_handler.error(msg.trailing);
     }
   }
 
   void IrcServer::handle_notice(IrcMessage &msg) {
-    m_server_event_handler.notice(msg.params[0], msg.trailing);
+    m_event_handler.notice(msg.params[0], msg.trailing);
   }
 
   void IrcServer::handle_motd_start(IrcMessage &msg) {
@@ -98,7 +104,7 @@ namespace core {
 
   void IrcServer::handle_motd_end(IrcMessage &msg) {
     std::string motd = m_motd.str();
-    m_server_event_handler.message_of_the_day(motd);
+    m_event_handler.message_of_the_day(motd);
     m_motd.str("");
   }
 
@@ -109,7 +115,7 @@ namespace core {
   void IrcServer::handle_join(IrcMessage &msg) {
     std::string &channel = msg.params[0];
     if (nick() == msg.nick) {
-      ChannelEventHandler *ch = m_server_event_handler.create_channel_event_handler(channel);
+      ChannelEventHandler *ch = m_event_handler.create_channel_event_handler(channel);
       if (ch) {
         m_entity_repo.create_channel(channel, ch);
       }

@@ -10,6 +10,9 @@ namespace core {
 
     virtual ~ChannelEventHandler() {
     }
+
+    virtual void topic_changed(std::string& msg) {
+    }
   };
 }
 

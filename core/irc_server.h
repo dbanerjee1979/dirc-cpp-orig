@@ -33,12 +33,11 @@ namespace core {
     void handle_join(IrcMessage &);
 
     std::ostream &m_out;
-    ServerEventHandler &m_server_event_handler;
+    ServerEventHandler &m_event_handler;
     std::unordered_map<std::string, std::function<void(IrcMessage&)>> m_msg_handlers;
     const std::vector<std::string> &m_nicks;
     int m_nick_id;
     std::stringstream m_motd;
-    std::unordered_map<std::string, std::unique_ptr<ChannelEventHandler>> m_channels;
     IrcEntityRepository m_entity_repo;
   };
   

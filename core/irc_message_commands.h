@@ -3,12 +3,13 @@
 
 #include <string>
 
-std::string RPL_WELCOME       = "001";
-std::string RPL_MOTDSTART     = "375";
-std::string RPL_MOTD          = "372";
-std::string RPL_ENDOFMOTD     = "376";
+extern std::string RPL_WELCOME;
+extern std::string RPL_MOTDSTART;
+extern std::string RPL_MOTD;
+extern std::string RPL_ENDOFMOTD;
+extern std::string RPL_TOPIC;
 
-std::string ERR_NICKNAMEINUSE = "433";
-std::string ERR_NICKCOLLISION = "436";
+extern std::string ERR_NICKNAMEINUSE;
+extern std::string ERR_NICKCOLLISION;
 
 #endif

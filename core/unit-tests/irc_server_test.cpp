@@ -12,6 +12,10 @@ namespace core {
     StubChannelEventHandler(std::string& _name) :
       name(_name) {
     }
+
+    void topic_changed(std::string& msg) {
+      topic = msg;
+    }
     
     std::string name;
     std::string topic;
