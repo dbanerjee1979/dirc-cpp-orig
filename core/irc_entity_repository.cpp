@@ -5,6 +5,7 @@ namespace core {
 
   IrcEntityRepository::IrcEntityRepository() {
     m_entity_idx[RPL_TOPIC]      = 1;
+    m_entity_idx[RPL_NOTOPIC]    = 1;
     m_entity_idx[RPL_NAMREPLY]   = 2;
     m_entity_idx[RPL_ENDOFNAMES] = 1;
   }

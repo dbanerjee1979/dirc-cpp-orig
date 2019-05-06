@@ -8,6 +8,7 @@ extern std::string RPL_MOTDSTART;
 extern std::string RPL_MOTD;
 extern std::string RPL_ENDOFMOTD;
 extern std::string RPL_TOPIC;
+extern std::string RPL_NOTOPIC;
 extern std::string RPL_NAMREPLY;
 extern std::string RPL_ENDOFNAMES;
 

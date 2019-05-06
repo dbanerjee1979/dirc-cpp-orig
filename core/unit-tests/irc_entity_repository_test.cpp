@@ -69,4 +69,16 @@ namespace core {
       ASSERT_EQ("##c++", ch->name());
     }
   }
+
+  TEST_F(IrcEntityRepositoryTest, test_channel_lookup_by_no_topic_message) {
+    IrcMessage msg = IrcMessage(RPL_NOTOPIC, { "nick", "##c++" }, "No topic set");
+    auto ch = entity_repo.find_channel(msg);
+
+    bool found = (bool) ch;
+    ASSERT_EQ(true, found);
+    
+    if (found) {
+      ASSERT_EQ("##c++", ch->name());
+    }
+  }
 }
