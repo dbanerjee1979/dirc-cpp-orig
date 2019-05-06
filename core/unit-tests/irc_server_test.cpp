@@ -7,9 +7,9 @@
 #include <core/config.h>
 
 namespace core {
-  class StubChannelEventHandler : public core::ChannelEventHandler {
+  class StubChannelEventHandlerST : public core::ChannelEventHandler {
   public:
-    StubChannelEventHandler(std::string& _name) :
+    StubChannelEventHandlerST(std::string& _name) :
       name(_name) {
     }
 
@@ -41,7 +41,7 @@ namespace core {
     }
 
     ChannelEventHandler *create_channel_event_handler(std::string &channel) {
-      auto ch = new StubChannelEventHandler(channel);
+      auto ch = new StubChannelEventHandlerST(channel);
       channels.push_back(ch);
       return ch;
     }
@@ -69,7 +69,7 @@ namespace core {
     std::vector<std::string> messages;
     std::string motd;
     bool is_shutdown;
-    std::vector<StubChannelEventHandler *> channels;
+    std::vector<StubChannelEventHandlerST *> channels;
   };
   
   class IrcServerTest : public testing::Test {

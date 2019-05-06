@@ -13,7 +13,7 @@ namespace core {
   }
 
   boost::optional<IrcChannel&> IrcEntityRepository::find_channel(IrcMessage &msg) {
-    if (msg.command == RPL_TOPIC) {
+    if (msg.command == RPL_TOPIC && msg.params.size() > 1) {
       std::string &channel = msg.params[1];
       auto it = m_channels.find(channel);
       if (it != m_channels.end()) {
