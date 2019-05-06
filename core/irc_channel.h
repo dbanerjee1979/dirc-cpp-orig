@@ -17,6 +17,7 @@ namespace core {
     void handle_message(IrcMessage &);
   private:
     void handle_topic(IrcMessage &);
+    void handle_no_topic(IrcMessage &);
 
     std::string m_name;
     std::unique_ptr<ChannelEventHandler> m_event_handler;

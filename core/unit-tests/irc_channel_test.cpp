@@ -40,5 +40,14 @@ namespace core {
 
     ASSERT_EQ("New topic", event_handler->topic);
   }
+
+  TEST_F(IrcChannelTest, test_handle_no_topic_change_message) {
+    event_handler->topic = "Dummy";
+    IrcMessage msg = IrcMessage(RPL_NOTOPIC, { "nick", "##c++" }, "No topic");
+
+    channel.handle_message(msg);
+
+    ASSERT_EQ("", event_handler->topic);
+  }
   
 }
