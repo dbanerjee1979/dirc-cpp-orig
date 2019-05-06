@@ -5,25 +5,16 @@
 
 namespace core {
 
-  class StubChannelEventHandler : public ChannelEventHandler {
-  public:
-    StubChannelEventHandler() {
-    }
-
-    virtual ~StubChannelEventHandler() {
-    }
-  };
-
   class IrcEntityRepositoryTest : public testing::Test {
   protected:
     IrcEntityRepositoryTest() :
-      event_handler (new StubChannelEventHandler()) {
+      event_handler (new ChannelEventHandler()) {
       std::string channel = "##c++";
       entity_repo.create_channel(channel, event_handler);
     }
     
     IrcEntityRepository entity_repo;
-    StubChannelEventHandler *event_handler;
+    ChannelEventHandler *event_handler;
   };
 
   TEST_F(IrcEntityRepositoryTest, test_channel_lookup_by_topic_message) {
