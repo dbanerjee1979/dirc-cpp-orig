@@ -90,7 +90,9 @@ namespace core {
   }
 
   void IrcServer::handle_notice(IrcMessage &msg) {
-    m_event_handler.notice(msg.params[0], msg.trailing);
+    if (msg.params.size() > 0) {
+      m_event_handler.notice(msg.params[0], msg.trailing);
+    }
   }
 
   void IrcServer::handle_motd_start(IrcMessage &msg) {

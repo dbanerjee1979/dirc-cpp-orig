@@ -7,7 +7,8 @@ include_directories (
 add_executable (core-test
   irc_message_test.cpp
   irc_server_test.cpp
-  irc_entity_repository_test.cpp)
+  irc_entity_repository_test.cpp
+  irc_channel_test.cpp)
 
 target_link_libraries (core-test
   core
