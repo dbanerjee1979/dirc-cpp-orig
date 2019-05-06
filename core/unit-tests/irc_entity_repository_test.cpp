@@ -12,12 +12,6 @@ namespace core {
 
     virtual ~StubChannelEventHandler() {
     }
-
-    void topic_changed(std::string &msg) {
-      m_topic = msg;
-    }
-
-    std::string m_topic;
   };
 
   class IrcEntityRepositoryTest : public testing::Test {
@@ -40,8 +34,7 @@ namespace core {
     ASSERT_EQ(true, found);
     
     if (found) {
-      ch->handle_message(msg);
-      ASSERT_EQ("Test", event_handler->m_topic);
+      ASSERT_EQ("##c++", ch->name());
     }
   }
 

@@ -12,11 +12,13 @@ namespace core {
 
   class IrcChannel {
   public:
-    IrcChannel(ChannelEventHandler *event_handler);
+    IrcChannel(std::string &name, ChannelEventHandler *event_handler);
+    std::string &name();
     void handle_message(IrcMessage &);
   private:
     void handle_topic(IrcMessage &);
-    
+
+    std::string m_name;
     std::unique_ptr<ChannelEventHandler> m_event_handler;
     std::unordered_map<std::string, std::function<void(IrcMessage&)>> m_msg_handlers;
   };

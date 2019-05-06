@@ -4,11 +4,16 @@
 
 namespace core {
 
-  IrcChannel::IrcChannel(ChannelEventHandler *event_handler) :
+  IrcChannel::IrcChannel(std::string &name, ChannelEventHandler *event_handler) :
+    m_name(name), 
     m_event_handler(event_handler) {
 
     using std::placeholders::_1;
     m_msg_handlers[RPL_TOPIC] = std::bind(&IrcChannel::handle_topic, this, _1);
+  }
+
+  std::string &IrcChannel::name() {
+    return m_name;
   }
 
   void IrcChannel::handle_message(IrcMessage &msg) {
