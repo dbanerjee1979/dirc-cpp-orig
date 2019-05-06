@@ -33,12 +33,12 @@ namespace core {
     IrcChannel channel;
   };
 
-  TEST_F(IrcChannelTest, test_return_none_for_channel_not_found) {
-    IrcMessage msg = IrcMessage(RPL_TOPIC, { "nick", "#haskell" }, "Test");
+  TEST_F(IrcChannelTest, test_handle_topic_change_message) {
+    IrcMessage msg = IrcMessage(RPL_TOPIC, { "nick", "##c++" }, "New topic");
 
     channel.handle_message(msg);
 
-    ASSERT_EQ("Test", event_handler->topic);
+    ASSERT_EQ("New topic", event_handler->topic);
   }
   
 }
