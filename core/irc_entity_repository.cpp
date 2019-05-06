@@ -4,6 +4,9 @@
 namespace core {
 
   IrcEntityRepository::IrcEntityRepository() {
+    m_entity_idx[RPL_TOPIC]      = 1;
+    m_entity_idx[RPL_NAMREPLY]   = 2;
+    m_entity_idx[RPL_ENDOFNAMES] = 1;
   }
 
   void IrcEntityRepository::create_channel(std::string &channel,
@@ -13,8 +16,10 @@ namespace core {
   }
 
   boost::optional<IrcChannel&> IrcEntityRepository::find_channel(IrcMessage &msg) {
-    if (msg.command == RPL_TOPIC && msg.params.size() > 1) {
-      std::string &channel = msg.params[1];
+    auto it = m_entity_idx.find(msg.command);
+    int idx;
+    if (it != m_entity_idx.end() && (msg.params.size() > (idx = it->second))) {
+      std::string &channel = msg.params[idx];
       auto it = m_channels.find(channel);
       if (it != m_channels.end()) {
         return *(it->second);

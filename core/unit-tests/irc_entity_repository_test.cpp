@@ -45,5 +45,28 @@ namespace core {
     bool found = (bool) ch;
     ASSERT_EQ(false, found);
   }
+
+  TEST_F(IrcEntityRepositoryTest, test_channel_lookup_by_name_reply_message) {
+    IrcMessage msg = IrcMessage(RPL_NAMREPLY, { "nick", "*", "##c++" }, "nick1 nick2 nick3");
+    auto ch = entity_repo.find_channel(msg);
+
+    bool found = (bool) ch;
+    ASSERT_EQ(true, found);
+    
+    if (found) {
+      ASSERT_EQ("##c++", ch->name());
+    }
+  }
   
+  TEST_F(IrcEntityRepositoryTest, test_channel_lookup_by_name_reply_end_message) {
+    IrcMessage msg = IrcMessage(RPL_ENDOFNAMES, { "nick", "##c++" }, "End of /NAMES list.");
+    auto ch = entity_repo.find_channel(msg);
+
+    bool found = (bool) ch;
+    ASSERT_EQ(true, found);
+    
+    if (found) {
+      ASSERT_EQ("##c++", ch->name());
+    }
+  }
 }

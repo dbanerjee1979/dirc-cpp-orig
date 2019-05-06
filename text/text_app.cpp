@@ -14,6 +14,7 @@ namespace text {
     m_commands["connect"] = std::bind(&App::connect_handler, this, _1);
     m_commands["info"] = std::bind(&App::info_handler, this, _1);
     m_commands["list"] = std::bind(&App::list_handler, this, _1);
+    m_commands["join"] = std::bind(&App::join_handler, this, _1);
   }
   
   void App::run() {
@@ -160,6 +161,7 @@ namespace text {
       return;
     }
 
+    
     with_network(network, [nick, log, messages, chat, this](ServerHandle& h) {
       TextServerEventHandler &sh = h.server_event_handler;
 
@@ -169,6 +171,23 @@ namespace text {
           std::cout << *lit << std::endl;
         }
       }
+    });
+  }
+
+  void App::join_handler(std::stringstream &ss) {
+    std::string network;
+    std::string channel;
+
+    std::getline(ss, network, ' ');
+    std::getline(ss, channel);
+
+    if (network.empty() || channel.empty()) {
+      std::cout << "Usage: join <network> <channel>" << std::endl;
+      return;
+    }
+
+    with_network(network, [channel, this](ServerHandle& h) {
+      h.server.join(channel);      
     });
   }
 }

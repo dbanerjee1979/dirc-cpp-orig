@@ -19,6 +19,7 @@ namespace core {
     boost::optional<IrcChannel&> find_channel(IrcMessage &msg);
   private:
     std::unordered_map<std::string, std::unique_ptr<IrcChannel>> m_channels;
+    std::unordered_map<std::string, int> m_entity_idx;
   };
   
 }
