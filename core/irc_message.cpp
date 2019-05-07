@@ -243,7 +243,12 @@ namespace core {
     }
   }
 
-  IrcMessage::IrcMessage(std::string _command, std::vector<std::string> _params, std::string _trailing) :
+  IrcMessage::IrcMessage(const std::string &_command, const std::vector<std::string> &_params) :
+    command(_command),
+    params(_params) {
+  }
+
+  IrcMessage::IrcMessage(const std::string &_command, const std::vector<std::string> &_params, const std::string &_trailing) :
     command(_command),
     params(_params),
     trailing(_trailing) {
