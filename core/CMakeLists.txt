@@ -6,4 +6,5 @@ add_library (core
   irc_message_commands.cpp
   irc_server.cpp
   irc_channel.cpp
-  irc_entity_repository.cpp)
+  irc_entity_repository.cpp
+  irc_user.cpp)

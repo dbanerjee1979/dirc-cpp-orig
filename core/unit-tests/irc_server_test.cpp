@@ -471,8 +471,7 @@ namespace core {
     create_server();
     ss.str("");
 
-    std::string channel;
-    server->join(channel = "##c++");
+    server->join("##c++");
 
     std::string msg;
     server->handle_message(msg = ":nick!jdoe@foo.org JOIN ##c++");

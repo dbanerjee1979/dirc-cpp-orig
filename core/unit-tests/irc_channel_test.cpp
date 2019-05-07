@@ -2,6 +2,7 @@
 #include <core/channel_event_handler.h>
 #include <core/irc_entity_repository.h>
 #include <core/irc_message_commands.h>
+#include <core/irc_user.h>
 
 namespace core {
 
@@ -13,11 +14,16 @@ namespace core {
     virtual ~StubChannelEventHandlerCT() {
     }
 
-    void topic_changed(std::string& msg) {
-      topic = msg;
+    void topic_changed(std::string& _topic) {
+      topic = _topic;
+    }
+
+    void channel_users(std::vector<IrcUser *> &_users) {
+      users = _users;
     }
 
     std::string topic;
+    std::vector<IrcUser *> users;
   };
 
   class IrcChannelTest : public testing::Test {
@@ -51,19 +57,24 @@ namespace core {
   }
 
   TEST_F(IrcChannelTest, test_handle_names_list) {
-    event_handler->topic = "Dummy";
-
-    /*
-    :barjavel.freenode.net 353 shorugoru * ##c++ :sssilver obiwahn hagabaka m712 yinflying coincoin169 riotz richardwhiuk drozdziak1 nilspin jgowdy hirish tomaw mgrech_ choco anderson pocketprotector nukedclx dbarrett M-ou-se iamthad_ heinrich5991 dau glenfe Jim_D` Peixinho JWatkins H1N1theI S007 Hansformer ploks Kronuz paperManu Nothing4You_ graphitemaster Deaod ponbiki Nebraskka ColdKeyboard stowelly sta|ker abra0 yan kloeri cbdev bodie_ ericP karstensrage sov9 fury__ Kitlith georgemp tabakhase Buzzer
-:barjavel.freenode.net 366 shorugoru ##c++ :End of /NAMES list.
-    */
-
+    IrcMessage msg1 = IrcMessage(RPL_NAMREPLY, { "nick", "*", "##c++" }, "nick nick2 nick3");
+    IrcMessage msg2 = IrcMessage(RPL_NAMREPLY, { "nick", "*", "##c++" }, "nick4 nick5 nick6");
+    IrcMessage msg3 = IrcMessage(RPL_ENDOFNAMES, { "nick", "##c++" }, "End of /NAMES list.");
     
-    IrcMessage msg = IrcMessage(RPL_NOTOPIC, { "nick", "##c++" }, "No topic");
+    channel.handle_message(msg1);
+    channel.handle_message(msg2);
+    channel.handle_message(msg3);
 
-    channel.handle_message(msg);
-
-    ASSERT_EQ("", event_handler->topic);
+    auto users = event_handler->users;
+    ASSERT_EQ(6, users.size());
+    if (users.size() == 6) {
+      ASSERT_EQ("nick", users[0]->nickname());
+      ASSERT_EQ("nick2", users[1]->nickname());
+      ASSERT_EQ("nick3", users[2]->nickname());
+      ASSERT_EQ("nick4", users[3]->nickname());
+      ASSERT_EQ("nick5", users[4]->nickname());
+      ASSERT_EQ("nick6", users[5]->nickname());
+    }
   }
   
 }

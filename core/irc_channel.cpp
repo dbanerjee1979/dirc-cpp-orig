@@ -11,6 +11,8 @@ namespace core {
     using std::placeholders::_1;
     m_msg_handlers[RPL_TOPIC] = std::bind(&IrcChannel::handle_topic, this, _1);
     m_msg_handlers[RPL_NOTOPIC] = std::bind(&IrcChannel::handle_no_topic, this, _1);
+    m_msg_handlers[RPL_NAMREPLY] = std::bind(&IrcChannel::handle_name_reply, this, _1);
+    m_msg_handlers[RPL_ENDOFNAMES] = std::bind(&IrcChannel::handle_name_reply_end, this, _1);
   }
 
   std::string &IrcChannel::name() {
@@ -31,5 +33,23 @@ namespace core {
   void IrcChannel::handle_no_topic(IrcMessage &msg) {
     std::string empty_msg = "";
     m_event_handler->topic_changed(empty_msg);
-  }  
+  }
+
+  void IrcChannel::handle_name_reply(IrcMessage &msg) {
+    std::vector<std::string> nicks;
+    boost::split(nicks, msg.trailing, boost::is_any_of(" "));
+    for (auto it = nicks.begin(); it != nicks.end(); it++) {
+      m_users.push_back(IrcUser(*it));
+    }
+  }
+  
+  void IrcChannel::handle_name_reply_end(IrcMessage &msg) {
+    std::vector<IrcUser *> users;
+    for (auto it = m_users.begin(); it != m_users.end(); it++) {
+      users.push_back(&(*it));
+    }
+    m_event_handler->channel_users(users);
+    m_users.clear();
+  }
+  
 }
