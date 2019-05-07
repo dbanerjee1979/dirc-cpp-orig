@@ -69,7 +69,7 @@ namespace text {
   ServerHandle::ServerHandle(config::Network &network) :
     stream(ServerHandle::connect(network)),
     server_event_handler(text::TextServerEventHandler(network.name)),
-    server(network, stream, server_event_handler) {
+    server(network, stream, server_event_handler, entity_repo) {
     server_thread = std::thread(&ServerHandle::server_run_loop, this);
     server_thread.detach();
   }

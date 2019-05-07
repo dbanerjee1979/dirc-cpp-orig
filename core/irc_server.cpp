@@ -6,11 +6,13 @@
 namespace core {
   IrcServer::IrcServer(config::Network &network,
 		       std::ostream &out,
-		       ServerEventHandler &event_handler) :
+		       ServerEventHandler &event_handler,
+                       IrcEntityRepository &entity_repo) :
     m_out(out),
     m_event_handler(event_handler),
-    m_nicks(network.user_info.nicks),
-    m_nick_id(0) {
+    m_user_info(network.user_info),
+    m_nick_id(0),
+    m_entity_repo(entity_repo) {
 
     using std::placeholders::_1;
     m_msg_handlers[RPL_WELCOME] = std::bind(&IrcServer::handle_connection_registration, this, _1);
@@ -40,7 +42,7 @@ namespace core {
   }
 
   const std::string &IrcServer::nick() {
-    return m_nicks[m_nick_id];
+    return m_user_info.nicks[m_nick_id];
   }
 
   void IrcServer::handle_message(const std::string &msg_str) {
@@ -64,7 +66,7 @@ namespace core {
   void IrcServer::handle_message_default(IrcMessage &msg) {
     auto it = msg.params.begin();
     auto end = msg.params.end();
-    if (it != end && *it == m_nicks[m_nick_id]) {
+    if (it != end && *it == m_user_info.nicks[m_nick_id]) {
       auto msg_str = boost::join(std::vector<std::string>(++it, end), " ");
       if (!msg.trailing.empty()) {
         if (!msg_str.empty()) {
@@ -78,12 +80,13 @@ namespace core {
 
   void IrcServer::handle_connection_registration(IrcMessage &msg) {
     handle_message_default(msg);
+    m_entity_repo.create_user(nick(), m_user_info.username, m_user_info.realname);
     m_event_handler.connected();
   }
 
   void IrcServer::handle_nick_error(IrcMessage &msg) {
     m_nick_id++;
-    if (m_nick_id < m_nicks.size()) {
+    if (m_nick_id < m_user_info.nicks.size()) {
       m_out << IrcMessage("NICK", { nick() }).str() << std::flush;
       m_event_handler.error(msg.trailing);
     }

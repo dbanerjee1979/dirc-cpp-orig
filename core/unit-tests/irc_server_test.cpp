@@ -95,7 +95,7 @@ namespace core {
     }
 
     void create_server(config::Network &_network) {
-      server = std::unique_ptr<IrcServer>(new IrcServer(_network, ss, sh));
+      server = std::unique_ptr<IrcServer>(new IrcServer(_network, ss, sh, entity_repo));
     }
 
     config::UserInfo user_info;
@@ -105,6 +105,7 @@ namespace core {
     std::stringstream ss;
     StubServerEventHandler sh;
     std::unique_ptr<IrcServer> server;
+    IrcEntityRepository entity_repo;
   };
 
   TEST_F(IrcServerTest, test_logging_messages) {
@@ -140,6 +141,14 @@ namespace core {
     getline(ss, line);
     EXPECT_EQ("USER jdoe 8 * :John Doe\r", line);
     EXPECT_EQ(true, sh.is_connected);
+
+    auto user = entity_repo.find_user("nick");
+    EXPECT_EQ(true, (bool) user);
+    if (user) {
+      EXPECT_EQ("nick", user->nickname());
+      EXPECT_EQ("jdoe", user->username());
+      EXPECT_EQ("John Doe", user->realname());
+    }
   }
 
   TEST_F(IrcServerTest, send_pass_and_nick_and_user_info_for_connection_registration) {
@@ -183,6 +192,9 @@ namespace core {
     }
 
     EXPECT_EQ(true, sh.is_connected);
+
+    EXPECT_EQ(false, (bool) entity_repo.find_user("nick"));
+    EXPECT_EQ(true, (bool) entity_repo.find_user("_nick_"));
   }
 
   TEST_F(IrcServerTest, send_second_nick_if_first_nick_collides) {

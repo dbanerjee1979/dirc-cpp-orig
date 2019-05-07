@@ -15,7 +15,8 @@ namespace text {
 
   struct ServerHandle {
     boost::asio::ip::tcp::iostream stream;
-    text::TextServerEventHandler server_event_handler;
+    TextServerEventHandler server_event_handler;
+    core::IrcEntityRepository entity_repo;
     core::IrcServer server;
     std::thread server_thread;
 

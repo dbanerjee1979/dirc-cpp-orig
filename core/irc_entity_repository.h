@@ -19,7 +19,7 @@ namespace core {
     IrcEntityRepository();
     void create_channel(std::string &channel, ChannelEventHandler *channel_handler);
     boost::optional<IrcChannel&> find_channel(IrcMessage &msg);
-    void create_user(const std::string &nickname);
+    void create_user(const std::string &nickname, const std::string &username = "", const std::string &realname = "");
     boost::optional<IrcUser&> find_user(const std::string &nickname);
   private:
     std::unordered_map<std::string, std::unique_ptr<IrcChannel>> m_channels;
