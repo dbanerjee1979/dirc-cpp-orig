@@ -43,7 +43,7 @@ namespace core {
     return m_nicks[m_nick_id];
   }
 
-  void IrcServer::handle_message(std::string &msg_str) {
+  void IrcServer::handle_message(const std::string &msg_str) {
     m_event_handler.recieved_message(msg_str);
     IrcMessage msg(msg_str);
     auto channel = m_entity_repo.find_channel(msg);

@@ -9,12 +9,13 @@
 #include "irc_user.h"
 #include "irc_message.h"
 #include "channel_event_handler.h"
+#include "irc_user_repository.h"
 
 namespace core {
 
   class IrcChannel {
   public:
-    IrcChannel(std::string &name, ChannelEventHandler *event_handler);
+    IrcChannel(std::string &, ChannelEventHandler *, IrcUserRepository &);
     std::string &name();
     void handle_message(IrcMessage &);
   private:
@@ -26,7 +27,8 @@ namespace core {
     std::string m_name;
     std::unique_ptr<ChannelEventHandler> m_event_handler;
     std::unordered_map<std::string, std::function<void(IrcMessage&)>> m_msg_handlers;
-    std::vector<IrcUser> m_users;
+    std::vector<IrcUser *> m_users;
+    IrcUserRepository &m_user_repo;
   };
   
 }

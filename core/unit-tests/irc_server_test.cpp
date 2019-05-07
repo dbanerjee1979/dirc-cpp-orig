@@ -473,9 +473,8 @@ namespace core {
 
     server->join("##c++");
 
-    std::string msg;
-    server->handle_message(msg = ":nick!jdoe@foo.org JOIN ##c++");
-    server->handle_message(msg = ":wolfe.freenode.net 332 nick ##c++ :is a topical channel for discussing standard C++ specifications and code.");
+    server->handle_message(":nick!jdoe@foo.org JOIN ##c++");
+    server->handle_message(":wolfe.freenode.net 332 nick ##c++ :is a topical channel for discussing standard C++ specifications and code.");
 
     std::string line;
     getline(ss, line);

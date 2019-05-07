@@ -31,9 +31,10 @@ namespace core {
     IrcChannelTest() :
       event_handler (new StubChannelEventHandlerCT()),
       name ("##c++"),
-      channel (name, event_handler) {
+      channel (name, event_handler, entity_repo) {
     }
 
+    IrcEntityRepository entity_repo;
     StubChannelEventHandlerCT *event_handler;
     std::string name;
     IrcChannel channel;
@@ -74,6 +75,15 @@ namespace core {
       ASSERT_EQ("nick4", users[3]->nickname());
       ASSERT_EQ("nick5", users[4]->nickname());
       ASSERT_EQ("nick6", users[5]->nickname());
+    }
+
+    std::vector<std::string> nicks = { "nick", "nick2", "nick3", "nick4", "nick5", "nick6" };
+    for (auto it = nicks.begin(); it != nicks.end(); it++) {
+      auto nick = entity_repo.find_user(*it);
+      ASSERT_EQ(true, (bool) nick);
+      if (nick) {
+        ASSERT_EQ(*it, nick->nickname());
+      }
     }
   }
   

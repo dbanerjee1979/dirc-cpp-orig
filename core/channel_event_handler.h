@@ -14,10 +14,10 @@ namespace core {
     virtual ~ChannelEventHandler() {
     }
 
-    virtual void topic_changed(std::string& msg) {
+    virtual void topic_changed(const std::string& msg) {
     }
 
-    virtual void channel_users(std::vector<IrcUser *> &_users) {
+    virtual void channel_users(const std::vector<IrcUser *> &_users) {
     }
   };
 }

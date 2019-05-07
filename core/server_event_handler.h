@@ -13,10 +13,10 @@ namespace core {
     virtual ~ServerEventHandler() {
     }
 
-    virtual void recieved_message(std::string &msg) {
+    virtual void recieved_message(const std::string &msg) {
     }
 
-    virtual void error(std::string &msg) {
+    virtual void error(const std::string &msg) {
     }
 
     virtual void connected() {
@@ -25,17 +25,17 @@ namespace core {
     virtual void handle_shutdown() {
     }
 
-    virtual ChannelEventHandler *create_channel_event_handler(std::string &channel) {
+    virtual ChannelEventHandler *create_channel_event_handler(const std::string &channel) {
       return NULL;
     }
 
-    virtual void notice(std::string &recipient, std::string &msg) {
+    virtual void notice(const std::string &recipient, const std::string &msg) {
     }
 
-    virtual void message(std::string &msg) {
+    virtual void message(const std::string &msg) {
     }
 
-    virtual void message_of_the_day(std::string &msg) {
+    virtual void message_of_the_day(const std::string &msg) {
     }
   };
     

@@ -19,7 +19,7 @@ namespace core {
     IrcServer(config::Network &, std::ostream &, ServerEventHandler &);
     void quit(const std::string &);
     void join(const std::string &);
-    void handle_message(std::string &);
+    void handle_message(const std::string &);
   private:
     const std::string &nick();
     void handle_message_default(IrcMessage &);

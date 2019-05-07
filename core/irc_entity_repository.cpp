@@ -12,7 +12,7 @@ namespace core {
 
   void IrcEntityRepository::create_channel(std::string &channel,
                                            ChannelEventHandler *channel_handler) {
-    auto ch = new IrcChannel(channel, channel_handler);
+    auto ch = new IrcChannel(channel, channel_handler, *this);
     m_channels[channel] = std::unique_ptr<IrcChannel>(ch);
   }
 
@@ -26,6 +26,10 @@ namespace core {
         return *(it->second);
       }
     }
+    return boost::none;
+  }
+
+  boost::optional<IrcUser&> IrcEntityRepository::find_user(const std::string &nickname) {
     return boost::none;
   }
 
