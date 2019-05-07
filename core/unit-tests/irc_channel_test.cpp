@@ -58,6 +58,8 @@ namespace core {
   }
 
   TEST_F(IrcChannelTest, test_handle_names_list) {
+    entity_repo.create_user("nick", "jdoe", "John Doe");
+    
     IrcMessage msg1 = IrcMessage(RPL_NAMREPLY, { "nick", "*", "##c++" }, "nick nick2 nick3");
     IrcMessage msg2 = IrcMessage(RPL_NAMREPLY, { "nick", "*", "##c++" }, "nick4 nick5 nick6");
     IrcMessage msg3 = IrcMessage(RPL_ENDOFNAMES, { "nick", "##c++" }, "End of /NAMES list.");
@@ -70,6 +72,8 @@ namespace core {
     ASSERT_EQ(6, users.size());
     if (users.size() == 6) {
       ASSERT_EQ("nick", users[0]->nickname());
+      ASSERT_EQ("jdoe", users[0]->username());
+      ASSERT_EQ("John Doe", users[0]->realname());
       ASSERT_EQ("nick2", users[1]->nickname());
       ASSERT_EQ("nick3", users[2]->nickname());
       ASSERT_EQ("nick4", users[3]->nickname());
