@@ -445,7 +445,7 @@ namespace core {
     create_server();
     ss.str("");
 
-    server->quit();
+    server->quit("");
 
     std::string line;
     getline(ss, line);
@@ -471,7 +471,8 @@ namespace core {
     create_server();
     ss.str("");
 
-    server->join("##c++");
+    std::string channel;
+    server->join(channel = "##c++");
 
     std::string msg;
     server->handle_message(msg = ":nick!jdoe@foo.org JOIN ##c++");

@@ -30,12 +30,12 @@ namespace core {
     m_out << IrcMessage("USER", { network.user_info.username, "8", "*" }, network.user_info.realname).str() << std::flush;
   }
 
-  void IrcServer::quit(std::string msg) {
+  void IrcServer::quit(const std::string &msg) {
     m_out << IrcMessage("QUIT", {}, msg).str() << std::flush;
     m_event_handler.handle_shutdown();
   }
 
-  void IrcServer::join(std::string channel) {
+  void IrcServer::join(const std::string &channel) {
      m_out << IrcMessage("JOIN", { channel }).str() << std::flush;
   }
 
