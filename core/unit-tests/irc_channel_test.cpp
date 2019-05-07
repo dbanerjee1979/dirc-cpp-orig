@@ -14,11 +14,11 @@ namespace core {
     virtual ~StubChannelEventHandlerCT() {
     }
 
-    void topic_changed(std::string& _topic) {
+    void topic_changed(const std::string& _topic) {
       topic = _topic;
     }
 
-    void channel_users(std::vector<IrcUser *> &_users) {
+    void channel_users(const std::vector<IrcUser *> &_users) {
       users = _users;
     }
 

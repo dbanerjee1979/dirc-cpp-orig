@@ -40,10 +40,8 @@ namespace core {
     std::vector<std::string> nicks;
     boost::split(nicks, msg.trailing, boost::is_any_of(" "));
     for (auto it = nicks.begin(); it != nicks.end(); it++) {
-      auto user = m_user_repo.find_user(*it);
-      if (user) {
-        m_users.push_back(&(*user));
-      }
+      m_user_repo.create_user(*it);
+      m_users.push_back(&(*m_user_repo.find_user(*it)));
     }
   }
   

@@ -9,11 +9,11 @@
 namespace core {
   class StubChannelEventHandlerST : public core::ChannelEventHandler {
   public:
-    StubChannelEventHandlerST(std::string& _name) :
+    StubChannelEventHandlerST(const std::string& _name) :
       name(_name) {
     }
 
-    void topic_changed(std::string& msg) {
+    void topic_changed(const std::string& msg) {
       topic = msg;
     }
     
@@ -28,7 +28,7 @@ namespace core {
       is_shutdown(false) {
     }
     
-    void recieved_message(std::string &msg) {
+    void recieved_message(const std::string &msg) {
       msgs.push_back(msg);
     }
     
@@ -40,25 +40,25 @@ namespace core {
       is_shutdown = true;
     }
 
-    ChannelEventHandler *create_channel_event_handler(std::string &channel) {
+    ChannelEventHandler *create_channel_event_handler(const std::string &channel) {
       auto ch = new StubChannelEventHandlerST(channel);
       channels.push_back(ch);
       return ch;
     }
 
-    void error(std::string &msg) {
+    void error(const std::string &msg) {
       errors.push_back(msg);
     }
 
-    void notice(std::string &recipient, std::string &msg) {
+    void notice(const std::string &recipient, const std::string &msg) {
       notices.push_back(std::pair<std::string, std::string>(recipient, msg));
     }
 
-    void message(std::string &msg) {
+    void message(const std::string &msg) {
       messages.push_back(msg);
     }
 
-    void message_of_the_day(std::string &msg) {
+    void message_of_the_day(const std::string &msg) {
       motd = msg;
     }
     

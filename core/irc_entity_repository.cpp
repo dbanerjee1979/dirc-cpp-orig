@@ -29,7 +29,16 @@ namespace core {
     return boost::none;
   }
 
+  void IrcEntityRepository::create_user(const std::string &nickname) {
+    auto user = new IrcUser(nickname);
+    m_users[nickname] = std::unique_ptr<IrcUser>(user);
+  }
+
   boost::optional<IrcUser&> IrcEntityRepository::find_user(const std::string &nickname) {
+    auto it = m_users.find(nickname);
+    if (it != m_users.end()) {
+      return *(it->second);
+    }
     return boost::none;
   }
 
