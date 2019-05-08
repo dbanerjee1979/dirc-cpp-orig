@@ -73,7 +73,8 @@ namespace text {
     server_run_loop(stream),
     server_event_handler(text::TextServerEventHandler(network.name, server_run_loop)),
     server(network, stream, server_event_handler, entity_repo) {
-    server_thread = std::thread(&ServerHandle::server_run_loop, this);
+    server_run_loop.set_server(&server);
+    server_thread = std::thread(&ServerRunLoop::run, &server_run_loop);
     server_thread.detach();
   }
 
@@ -151,8 +152,8 @@ namespace text {
     std::getline(ss, network, ' ');
     std::getline(ss, message);
     
-    if (network.empty() || message.empty()) {
-      std::cout << "Usage: disconnect <network> <message>" << std::endl;
+    if (network.empty()) {
+      std::cout << "Usage: disconnect <network> [<message>]" << std::endl;
       return;
     }
 
