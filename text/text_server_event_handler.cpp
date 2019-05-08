@@ -27,5 +27,9 @@ namespace text {
   void TextServerEventHandler::handle_shutdown() {
     m_server_run_loop.shutdown();
   }
-  
+
+  core::ChannelEventHandler *TextServerEventHandler::create_channel_event_handler(const std::string &channel) {
+    m_channels.push_back(channel);
+    return NULL;
+  }
 }

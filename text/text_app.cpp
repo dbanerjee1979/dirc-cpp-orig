@@ -175,6 +175,11 @@ namespace text {
         std::cout << " (" << sh.m_messages_unread << ")";
       }
       std::cout << std::endl;
+
+      std::cout << "    channels:" << std::endl;
+      for (auto it = sh.m_channels.begin(); it != sh.m_channels.end(); it++) {
+        std::cout << "      " << *it << std::endl;
+      }
     }
   }
 
@@ -197,7 +202,6 @@ namespace text {
       std::cout << "Usage: list <network> log|messages|chat <nick>" << std::endl;
       return;
     }
-
     
     with_network(network, [nick, log, messages, chat, this](ServerHandle& h) {
       TextServerEventHandler &sh = h.server_event_handler;
