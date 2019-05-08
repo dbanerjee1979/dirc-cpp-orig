@@ -9,12 +9,14 @@
 #include <boost/asio.hpp>
 #include <core/config.h>
 #include <core/irc_server.h>
+#include "server_run_loop.h"
 #include "text_server_event_handler.h"
 
 namespace text {
 
   struct ServerHandle {
     boost::asio::ip::tcp::iostream stream;
+    ServerRunLoop server_run_loop;
     TextServerEventHandler server_event_handler;
     core::IrcEntityRepository entity_repo;
     core::IrcServer server;
@@ -22,7 +24,6 @@ namespace text {
 
     ServerHandle(config::Network &);
     static boost::asio::ip::tcp::iostream connect(config::Network &);
-    void server_run_loop();
   };
 
   class App {
@@ -33,6 +34,7 @@ namespace text {
   private:
     void with_network(std::string &, std::function<void(ServerHandle &)>);
     void connect_handler(std::stringstream &);
+    void disconnect_handler(std::stringstream &);
     void info_handler(std::stringstream &);
     void list_handler(std::stringstream &);
     void join_handler(std::stringstream &);

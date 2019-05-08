@@ -5,6 +5,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <boost/algorithm/string.hpp>
+#include "server_run_loop.h"
 
 namespace text {
 
@@ -12,6 +13,7 @@ namespace text {
     m_networks(networks) {
     using namespace std::placeholders;
     m_commands["connect"] = std::bind(&App::connect_handler, this, _1);
+    m_commands["disconnect"] = std::bind(&App::disconnect_handler, this, _1);
     m_commands["info"] = std::bind(&App::info_handler, this, _1);
     m_commands["list"] = std::bind(&App::list_handler, this, _1);
     m_commands["join"] = std::bind(&App::join_handler, this, _1);
@@ -68,7 +70,8 @@ namespace text {
 
   ServerHandle::ServerHandle(config::Network &network) :
     stream(ServerHandle::connect(network)),
-    server_event_handler(text::TextServerEventHandler(network.name)),
+    server_run_loop(stream),
+    server_event_handler(text::TextServerEventHandler(network.name, server_run_loop)),
     server(network, stream, server_event_handler, entity_repo) {
     server_thread = std::thread(&ServerHandle::server_run_loop, this);
     server_thread.detach();
@@ -83,12 +86,27 @@ namespace text {
     return ss;
   }
 
-  void ServerHandle::server_run_loop() {
+  ServerRunLoop::ServerRunLoop(std::istream &stream) :
+    m_stream(stream),
+    m_running(true) {
+  }
+
+  void ServerRunLoop::set_server(core::IrcServer *server) {
+    m_server = server;
+  }
+
+  void ServerRunLoop::run() {
     std::string line;
-    while (!stream.eof()) {
-      getline(stream, line);
-      server.handle_message(line);
+    while (m_running && !m_stream.eof()) {
+      std::lock_guard<std::mutex> lock(m_mutex);
+      getline(m_stream, line);
+      m_server->handle_message(line);
     }
+  }
+
+  void ServerRunLoop::shutdown() {
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_running = false;
   }
   
   void App::connect_handler(std::stringstream &ss) {
@@ -124,6 +142,24 @@ namespace text {
         std::cout << ex.what() << std::endl;
       }
     }
+  }
+
+  void App::disconnect_handler(std::stringstream &ss) {
+    std::string network;
+    std::string message;
+
+    std::getline(ss, network, ' ');
+    std::getline(ss, message);
+    
+    if (network.empty() || message.empty()) {
+      std::cout << "Usage: disconnect <network> <message>" << std::endl;
+      return;
+    }
+
+    with_network(network, [network, message, this](ServerHandle& h) {
+      h.server.quit(message);
+      m_servers.erase(network);
+    });
   }
 
   void App::info_handler(std::stringstream &ss) {
