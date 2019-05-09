@@ -30,7 +30,7 @@ namespace text {
 
   TextChannelEventHandler *TextServerEventHandler::create_channel_event_handler(const std::string &channel) {
     auto handler = new TextChannelEventHandler();
-    m_channels[channel] = std::unique_ptr<TextChannelEventHandler>(handler);
+    m_channels[channel] = handler;
     return handler;
   }
 }

@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <map>
-#include <memory>
 #include <string>
 #include <core/server_event_handler.h>
 #include "server_run_loop.h"
@@ -24,7 +23,7 @@ namespace text {
     ServerRunLoop &m_server_run_loop;
     std::vector<std::string> m_messages;
     int m_messages_unread;
-    std::map<std::string, std::unique_ptr<TextChannelEventHandler>> m_channels;
+    std::map<std::string, TextChannelEventHandler *> m_channels;
 
     friend class App;
   };

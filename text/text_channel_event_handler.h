@@ -6,6 +6,14 @@
 namespace text {
 
   class TextChannelEventHandler : public core::ChannelEventHandler {
+  public:
+    void topic_changed(const std::string& msg) {
+      m_topic = msg;
+    }
+  private:
+    std::string m_topic;
+
+    friend class App;
   };
   
 }
