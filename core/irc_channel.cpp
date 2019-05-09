@@ -1,5 +1,6 @@
 #include "irc_channel.h"
 #include "irc_message_commands.h"
+#include "irc_message_parser.h"
 
 namespace core {
 
@@ -40,10 +41,24 @@ namespace core {
     std::vector<std::string> nicks;
     boost::split(nicks, msg.trailing, boost::is_any_of(" "));
     for (auto it = nicks.begin(); it != nicks.end(); it++) {
-      if (!m_user_repo.find_user(*it)) {
-        m_user_repo.create_user(*it);
+      std::string nick;
+      IrcMessageParser p(*it);
+      if (p.is_nickname()) {
+        p.token(nick);
       }
-      m_users.push_back(&(*m_user_repo.find_user(*it)));
+      else {
+        p.skip();
+        if (p.is_nickname()) {
+          p.token(nick);
+        }
+      }
+
+      if (!nick.empty()) {
+        if (!m_user_repo.find_user(nick)) {
+          m_user_repo.create_user(nick);
+        }
+        m_users.push_back(&(*m_user_repo.find_user(nick)));        
+      }
     }
   }
   

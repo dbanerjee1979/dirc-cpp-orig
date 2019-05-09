@@ -91,4 +91,31 @@ namespace core {
     }
   }
   
+  TEST_F(IrcChannelTest, test_handle_channel_prefixes_in_names_list) {
+    entity_repo.create_user("nick", "jdoe", "John Doe");
+    
+    IrcMessage msg1 = IrcMessage(RPL_NAMREPLY, { "nick", "*", "##c++" }, "nick ~nick2 &nick3 nick4");
+    IrcMessage msg2 = IrcMessage(RPL_NAMREPLY, { "nick", "*", "##c++" }, "@nick5 %nick6 +nick7 nick8");
+    IrcMessage msg3 = IrcMessage(RPL_ENDOFNAMES, { "nick", "##c++" }, "End of /NAMES list.");
+    
+    channel.handle_message(msg1);
+    channel.handle_message(msg2);
+    channel.handle_message(msg3);
+
+    auto users = event_handler->users;
+    ASSERT_EQ(8, users.size());
+    if (users.size() == 8) {
+      ASSERT_EQ("nick", users[0]->nickname());
+      ASSERT_EQ("jdoe", users[0]->username());
+      ASSERT_EQ("John Doe", users[0]->realname());
+      ASSERT_EQ("nick2", users[1]->nickname());
+      ASSERT_EQ("nick3", users[2]->nickname());
+      ASSERT_EQ("nick4", users[3]->nickname());
+      ASSERT_EQ("nick5", users[4]->nickname());
+      ASSERT_EQ("nick6", users[5]->nickname());
+      ASSERT_EQ("nick7", users[6]->nickname());
+      ASSERT_EQ("nick8", users[7]->nickname());
+    }
+  }
+  
 }
