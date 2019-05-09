@@ -178,7 +178,7 @@ namespace text {
 
       std::cout << "    channels:" << std::endl;
       for (auto it = sh.m_channels.begin(); it != sh.m_channels.end(); it++) {
-        std::cout << "      " << *it << std::endl;
+        std::cout << "      " << it->first << std::endl;
       }
     }
   }

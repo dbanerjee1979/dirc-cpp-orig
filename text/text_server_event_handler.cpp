@@ -28,8 +28,9 @@ namespace text {
     m_server_run_loop.shutdown();
   }
 
-  core::ChannelEventHandler *TextServerEventHandler::create_channel_event_handler(const std::string &channel) {
-    m_channels.push_back(channel);
-    return NULL;
+  TextChannelEventHandler *TextServerEventHandler::create_channel_event_handler(const std::string &channel) {
+    auto handler = new TextChannelEventHandler();
+    m_channels[channel] = std::unique_ptr<TextChannelEventHandler>(handler);
+    return handler;
   }
 }
