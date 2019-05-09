@@ -178,9 +178,10 @@ namespace text {
 
       std::cout << "    channels:" << std::endl;
       for (auto it = sh.m_channels.begin(); it != sh.m_channels.end(); it++) {
-        std::cout << "      " << it->first << std::endl;
+        std::cout << "      " << it->first << ":" << std::endl;
         auto ch = *(it->second);
-        std::cout << "        Topic: " << (ch.m_topic.empty() ? "No topic" : ch.m_topic) << std::endl;
+        std::cout << "        topic: " << (ch.m_topic.empty() ? "No topic" : ch.m_topic) << std::endl;
+        std::cout << "        users (" << ch.m_user_count << ")" << std::endl;
       }
     }
   }

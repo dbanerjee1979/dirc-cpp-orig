@@ -7,11 +7,11 @@ namespace text {
 
   class TextChannelEventHandler : public core::ChannelEventHandler {
   public:
-    void topic_changed(const std::string& msg) {
-      m_topic = msg;
-    }
+    void topic_changed(const std::string& msg);
+    void channel_users(const std::vector<core::IrcChannelUser> &_users);
   private:
     std::string m_topic;
+    int m_user_count;
 
     friend class App;
   };
