@@ -27,7 +27,7 @@ namespace core {
     std::string m_name;
     std::unique_ptr<ChannelEventHandler> m_event_handler;
     std::unordered_map<std::string, std::function<void(IrcMessage&)>> m_msg_handlers;
-    std::vector<IrcUser *> m_users;
+    std::vector<IrcChannelUser> m_users;
     IrcUserRepository &m_user_repo;
   };
   

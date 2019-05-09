@@ -2,7 +2,7 @@
 #include <core/channel_event_handler.h>
 #include <core/irc_entity_repository.h>
 #include <core/irc_message_commands.h>
-#include <core/irc_user.h>
+#include <core/irc_channel_user.h>
 
 namespace core {
 
@@ -18,12 +18,12 @@ namespace core {
       topic = _topic;
     }
 
-    void channel_users(const std::vector<IrcUser *> &_users) {
+    void channel_users(const std::vector<IrcChannelUser> &_users) {
       users = _users;
     }
 
     std::string topic;
-    std::vector<IrcUser *> users;
+    std::vector<IrcChannelUser> users;
   };
 
   class IrcChannelTest : public testing::Test {
@@ -71,14 +71,14 @@ namespace core {
     auto users = event_handler->users;
     ASSERT_EQ(6, users.size());
     if (users.size() == 6) {
-      ASSERT_EQ("nick", users[0]->nickname());
-      ASSERT_EQ("jdoe", users[0]->username());
-      ASSERT_EQ("John Doe", users[0]->realname());
-      ASSERT_EQ("nick2", users[1]->nickname());
-      ASSERT_EQ("nick3", users[2]->nickname());
-      ASSERT_EQ("nick4", users[3]->nickname());
-      ASSERT_EQ("nick5", users[4]->nickname());
-      ASSERT_EQ("nick6", users[5]->nickname());
+      ASSERT_EQ("nick", users[0].user().nickname());
+      ASSERT_EQ("jdoe", users[0].user().username());
+      ASSERT_EQ("John Doe", users[0].user().realname());
+      ASSERT_EQ("nick2", users[1].user().nickname());
+      ASSERT_EQ("nick3", users[2].user().nickname());
+      ASSERT_EQ("nick4", users[3].user().nickname());
+      ASSERT_EQ("nick5", users[4].user().nickname());
+      ASSERT_EQ("nick6", users[5].user().nickname());
     }
 
     std::vector<std::string> nicks = { "nick", "nick2", "nick3", "nick4", "nick5", "nick6" };
@@ -105,16 +105,16 @@ namespace core {
     auto users = event_handler->users;
     ASSERT_EQ(8, users.size());
     if (users.size() == 8) {
-      ASSERT_EQ("nick", users[0]->nickname());
-      ASSERT_EQ("jdoe", users[0]->username());
-      ASSERT_EQ("John Doe", users[0]->realname());
-      ASSERT_EQ("nick2", users[1]->nickname());
-      ASSERT_EQ("nick3", users[2]->nickname());
-      ASSERT_EQ("nick4", users[3]->nickname());
-      ASSERT_EQ("nick5", users[4]->nickname());
-      ASSERT_EQ("nick6", users[5]->nickname());
-      ASSERT_EQ("nick7", users[6]->nickname());
-      ASSERT_EQ("nick8", users[7]->nickname());
+      ASSERT_EQ("nick", users[0].user().nickname());
+      ASSERT_EQ("jdoe", users[0].user().username());
+      ASSERT_EQ("John Doe", users[0].user().realname());
+      ASSERT_EQ("nick2", users[1].user().nickname());
+      ASSERT_EQ("nick3", users[2].user().nickname());
+      ASSERT_EQ("nick4", users[3].user().nickname());
+      ASSERT_EQ("nick5", users[4].user().nickname());
+      ASSERT_EQ("nick6", users[5].user().nickname());
+      ASSERT_EQ("nick7", users[6].user().nickname());
+      ASSERT_EQ("nick8", users[7].user().nickname());
     }
   }
   

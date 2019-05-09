@@ -2,7 +2,7 @@
 #define _CORE_CHAT_HANDLER_H
 
 #include <vector>
-#include "irc_user.h"
+#include "irc_channel_user.h"
 
 namespace core {
 
@@ -17,7 +17,7 @@ namespace core {
     virtual void topic_changed(const std::string& msg) {
     }
 
-    virtual void channel_users(const std::vector<IrcUser *> &_users) {
+    virtual void channel_users(const std::vector<IrcChannelUser> &_users) {
     }
   };
 }

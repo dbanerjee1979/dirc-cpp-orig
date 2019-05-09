@@ -57,7 +57,7 @@ namespace core {
         if (!m_user_repo.find_user(nick)) {
           m_user_repo.create_user(nick);
         }
-        m_users.push_back(&(*m_user_repo.find_user(nick)));        
+        m_users.push_back(IrcChannelUser(*m_user_repo.find_user(nick), ""));
       }
     }
   }
