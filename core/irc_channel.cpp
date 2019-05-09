@@ -41,6 +41,7 @@ namespace core {
     std::vector<std::string> nicks;
     boost::split(nicks, msg.trailing, boost::is_any_of(" "));
     for (auto it = nicks.begin(); it != nicks.end(); it++) {
+      std::string chan_mode;
       std::string nick;
       IrcMessageParser p(*it);
       if (p.is_nickname()) {
@@ -48,6 +49,7 @@ namespace core {
       }
       else {
         p.skip();
+        p.token(chan_mode);
         if (p.is_nickname()) {
           p.token(nick);
         }
@@ -57,7 +59,7 @@ namespace core {
         if (!m_user_repo.find_user(nick)) {
           m_user_repo.create_user(nick);
         }
-        m_users.push_back(IrcChannelUser(*m_user_repo.find_user(nick), ""));
+        m_users.push_back(IrcChannelUser(*m_user_repo.find_user(nick), chan_mode));
       }
     }
   }

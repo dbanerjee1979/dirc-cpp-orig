@@ -108,13 +108,21 @@ namespace core {
       ASSERT_EQ("nick", users[0].user().nickname());
       ASSERT_EQ("jdoe", users[0].user().username());
       ASSERT_EQ("John Doe", users[0].user().realname());
+      ASSERT_EQ(ChanModeNone, users[0].channel_mode());
       ASSERT_EQ("nick2", users[1].user().nickname());
+      ASSERT_EQ(ChanModeFounder, users[1].channel_mode());
       ASSERT_EQ("nick3", users[2].user().nickname());
+      ASSERT_EQ(ChanModeProtected, users[2].channel_mode());
       ASSERT_EQ("nick4", users[3].user().nickname());
+      ASSERT_EQ(ChanModeNone, users[3].channel_mode());
       ASSERT_EQ("nick5", users[4].user().nickname());
+      ASSERT_EQ(ChanModeOp, users[4].channel_mode());
       ASSERT_EQ("nick6", users[5].user().nickname());
+      ASSERT_EQ(ChanModeHalfOp, users[5].channel_mode());
       ASSERT_EQ("nick7", users[6].user().nickname());
+      ASSERT_EQ(ChanModeVoice, users[6].channel_mode());
       ASSERT_EQ("nick8", users[7].user().nickname());
+      ASSERT_EQ(ChanModeNone, users[7].channel_mode());
     }
   }
   

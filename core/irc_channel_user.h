@@ -6,14 +6,18 @@
 
 namespace core {
 
+  enum ChannelUserMode { ChanModeNone, ChanModeFounder, ChanModeProtected, ChanModeOp, ChanModeHalfOp, ChanModeVoice };
+
   class IrcChannelUser {
   public:
     IrcChannelUser(IrcUser &user, const std::string &channel_mode);
     IrcChannelUser(const IrcChannelUser &user);
     void operator=(const IrcChannelUser &user);
     IrcUser &user();
+    ChannelUserMode channel_mode();
   private:
     IrcUser &m_user;
+    ChannelUserMode m_channel_mode;
   };
 
 }
