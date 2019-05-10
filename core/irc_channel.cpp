@@ -17,6 +17,7 @@ namespace core {
     m_msg_handlers[RPL_NAMREPLY] = std::bind(&IrcChannel::handle_name_reply, this, _1);
     m_msg_handlers[RPL_ENDOFNAMES] = std::bind(&IrcChannel::handle_name_reply_end, this, _1);
     m_msg_handlers["QUIT"] = std::bind(&IrcChannel::handle_quit, this, _1);
+    m_msg_handlers["JOIN"] = std::bind(&IrcChannel::handle_join, this, _1);
   }
 
   std::string &IrcChannel::name() {
@@ -57,13 +58,18 @@ namespace core {
       }
 
       if (!nick.empty()) {
-        if (!m_user_repo.find_user(nick)) {
-          m_user_repo.create_user(nick);
-        }
-        auto user = new IrcChannelUser(*m_user_repo.find_user(nick), chan_mode);
-        m_users.push_back(std::unique_ptr<IrcChannelUser>(user));
+        add_user(nick, "", chan_mode);
       }
     }
+  }
+
+  IrcChannelUser &IrcChannel::add_user(const std::string &nick, const std::string &username, const std::string &chan_mode) {
+    if (!m_user_repo.find_user(nick)) {
+      m_user_repo.create_user(nick, username);
+    }
+    auto user = new IrcChannelUser(*m_user_repo.find_user(nick), chan_mode);
+    m_users.push_back(std::unique_ptr<IrcChannelUser>(user));
+    return *user;
   }
   
   void IrcChannel::handle_name_reply_end(const IrcMessage &msg) {
@@ -81,6 +87,11 @@ namespace core {
         break;
       }
     }
+  }
+
+  void IrcChannel::handle_join(const IrcMessage &msg) {
+    auto user = add_user(msg.nick, msg.user, "");
+    m_event_handler->user_joined(user);
   }
   
 }

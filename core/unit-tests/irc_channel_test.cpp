@@ -22,8 +22,13 @@ namespace core {
       users = _users;
     }
 
+    void user_joined(IrcChannelUser &_user) {
+      joined_user = _user;
+    }
+
     std::string topic;
     std::vector<IrcChannelUser *> users;
+    boost::optional<IrcChannelUser> joined_user;
   };
 
   class IrcChannelTest : public testing::Test {
@@ -40,7 +45,7 @@ namespace core {
     IrcChannel channel;
   };
 
-  TEST_F(IrcChannelTest, test_handle_topic_change_message) {
+  TEST_F(IrcChannelTest, should_handle_channel_topic_change) {
     IrcMessage msg = IrcMessage(RPL_TOPIC, { "nick", "##c++" }, "New topic");
 
     channel.handle_message(msg);
@@ -48,7 +53,7 @@ namespace core {
     ASSERT_EQ("New topic", event_handler->topic);
   }
 
-  TEST_F(IrcChannelTest, test_handle_no_topic_change_message) {
+  TEST_F(IrcChannelTest, should_handle_channel_topic_change_to_no_topic) {
     event_handler->topic = "Dummy";
     IrcMessage msg = IrcMessage(RPL_NOTOPIC, { "nick", "##c++" }, "No topic");
 
@@ -57,7 +62,7 @@ namespace core {
     ASSERT_EQ("", event_handler->topic);
   }
 
-  TEST_F(IrcChannelTest, test_handle_names_list) {
+  TEST_F(IrcChannelTest, should_handle_names_list) {
     entity_repo.create_user("nick", "jdoe", "John Doe");
     
     IrcMessage msg1 = IrcMessage(RPL_NAMREPLY, { "nick", "*", "##c++" }, "nick nick2 nick3");
@@ -91,7 +96,7 @@ namespace core {
     }
   }
   
-  TEST_F(IrcChannelTest, test_handle_channel_prefixes_in_names_list) {
+  TEST_F(IrcChannelTest, should_handle_channel_prefixes_in_names_list) {
     entity_repo.create_user("nick", "jdoe", "John Doe");
     
     IrcMessage msg1 = IrcMessage(RPL_NAMREPLY, { "nick", "*", "##c++" }, "nick ~nick2 &nick3 nick4");
@@ -124,6 +129,26 @@ namespace core {
       ASSERT_EQ("nick8", users[7]->user().nickname());
       ASSERT_EQ(ChanModeNone, users[7]->channel_mode());
     }
+  }
+
+  TEST_F(IrcChannelTest, should_handle_new_user_joining_channel) {
+    channel.handle_message(IrcMessage(":nick!jdoe@foo.org JOIN ##c++"));
+
+    auto user = event_handler->joined_user;
+    ASSERT_EQ(true, (bool) user);
+    if (user) {
+      ASSERT_EQ("nick", user->user().nickname());
+      ASSERT_EQ("jdoe", user->user().username());
+    }
+
+    std::vector<std::string> nicks = { "nick" };
+    for (auto it = nicks.begin(); it != nicks.end(); it++) {
+      auto nick = entity_repo.find_user(*it);
+      ASSERT_EQ(true, (bool) nick);
+      if (nick) {
+        ASSERT_EQ(*it, nick->nickname());
+      }
+    }    
   }
   
 }

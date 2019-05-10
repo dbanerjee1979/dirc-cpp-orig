@@ -19,11 +19,13 @@ namespace core {
     std::string &name();
     void handle_message(const IrcMessage &);
   private:
+    IrcChannelUser &add_user(const std::string &nick, const std::string &username, const std::string &chan_mode);
     void handle_topic(const IrcMessage &);
     void handle_no_topic(const IrcMessage &);
     void handle_name_reply(const IrcMessage &);
     void handle_name_reply_end(const IrcMessage &);
     void handle_quit(const IrcMessage &);
+    void handle_join(const IrcMessage &);
 
     std::string m_name;
     std::unique_ptr<ChannelEventHandler> m_event_handler;

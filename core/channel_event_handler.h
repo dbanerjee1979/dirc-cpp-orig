@@ -22,6 +22,9 @@ namespace core {
 
     virtual void user_quit(IrcChannelUser &_user, const std::string &msg) {
     }
+
+    virtual void user_joined(IrcChannelUser &_user) {
+    }
   };
 }
 
