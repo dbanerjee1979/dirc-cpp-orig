@@ -565,11 +565,11 @@ namespace core {
     auto channel = entity_repo.find_channel(IrcMessage("JOIN", { "##c++" }));
     EXPECT_EQ(true, (bool) channel);
     if (channel) {
-      channel->disconnect();
+      channel->disconnect("Goodbye, channel!");
 
       std::string line;
       getline(ss, line);
-      EXPECT_EQ("PART ##c++\r", line);
+      EXPECT_EQ("PART ##c++ :Goodbye, channel!\r", line);
 
       channel = entity_repo.find_channel(IrcMessage("JOIN", { "##c++" }));
       EXPECT_EQ(false, (bool) channel);

@@ -28,8 +28,8 @@ namespace core {
     return m_name;
   }
 
-  void IrcChannel::disconnect() {
-    m_out << IrcMessage("PART", { m_name }).str() << std::endl;
+  void IrcChannel::disconnect(const std::string &msg) {
+    m_out << IrcMessage("PART", { m_name }, msg).str() << std::endl;
     m_event_handler->disconnected();
     m_disconnect_handler();
   }

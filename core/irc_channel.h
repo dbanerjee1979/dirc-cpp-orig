@@ -17,7 +17,7 @@ namespace core {
   public:
     IrcChannel(const std::string &, std::ostream &, ChannelEventHandler *, IrcUserRepository &, std::function<void()>);
     std::string &name();
-    void disconnect();
+    void disconnect(const std::string &msg);
     void handle_message(const IrcMessage &);
   private:
     IrcChannelUser &add_user(const std::string &nick, const std::string &username, const std::string &chan_mode);
