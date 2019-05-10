@@ -10,9 +10,10 @@ namespace core {
     IrcEntityRepositoryTest() :
       event_handler (new ChannelEventHandler()) {
       std::string channel = "##c++";
-      entity_repo.create_channel(channel, event_handler);
+      entity_repo.create_channel(channel, out, event_handler);
     }
-    
+
+    std::stringstream out;
     IrcEntityRepository entity_repo;
     ChannelEventHandler *event_handler;
   };

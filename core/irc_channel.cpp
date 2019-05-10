@@ -5,9 +5,11 @@
 namespace core {
 
   IrcChannel::IrcChannel(const std::string &name,
+                         std::ostream &out,
                          ChannelEventHandler *event_handler,
                          IrcUserRepository &user_repo) :
-    m_name(name), 
+    m_name(name),
+    m_out(out),
     m_event_handler(event_handler),
     m_user_repo(user_repo) {
 
@@ -22,6 +24,11 @@ namespace core {
 
   std::string &IrcChannel::name() {
     return m_name;
+  }
+
+  void IrcChannel::disconnect() {
+    m_out << IrcMessage("PART", { m_name }).str() << std::endl;
+    m_event_handler->disconnected();
   }
 
   void IrcChannel::handle_message(const IrcMessage &msg) {

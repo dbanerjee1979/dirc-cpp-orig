@@ -14,6 +14,9 @@ namespace core {
     virtual ~ChannelEventHandler() {
     }
 
+    virtual void disconnected() {
+    }
+
     virtual void topic_changed(const std::string& msg) {
     }
 

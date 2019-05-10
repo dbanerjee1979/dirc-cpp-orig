@@ -8,10 +8,15 @@ namespace core {
 
   class StubChannelEventHandlerCT : public ChannelEventHandler {
   public:
-    StubChannelEventHandlerCT() {
+    StubChannelEventHandlerCT() :
+      is_disconnected(false) {
     }
 
     virtual ~StubChannelEventHandlerCT() {
+    }
+
+    void disconnected() {
+      is_disconnected = true;
     }
 
     void topic_changed(const std::string& _topic) {
@@ -29,6 +34,7 @@ namespace core {
     std::string topic;
     std::vector<IrcChannelUser *> users;
     boost::optional<IrcChannelUser> joined_user;
+    bool is_disconnected;
   };
 
   class IrcChannelTest : public testing::Test {
@@ -36,9 +42,10 @@ namespace core {
     IrcChannelTest() :
       event_handler (new StubChannelEventHandlerCT()),
       name ("##c++"),
-      channel (name, event_handler, entity_repo) {
+      channel (name, ss, event_handler, entity_repo) {
     }
 
+    std::stringstream ss;
     IrcEntityRepository entity_repo;
     StubChannelEventHandlerCT *event_handler;
     std::string name;
@@ -148,7 +155,17 @@ namespace core {
       if (nick) {
         ASSERT_EQ(*it, nick->nickname());
       }
-    }    
+    }  
+  }
+
+  TEST_F(IrcChannelTest, should_send_part_message_on_disconnecting_from_channel_and_send_disconnect_event) {
+    channel.disconnect();
+
+    std::string line;
+    getline(ss, line);
+    EXPECT_EQ("PART ##c++\r", line);
+
+    EXPECT_EQ(true, event_handler->is_disconnected);
   }
   
 }
