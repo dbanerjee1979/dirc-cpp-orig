@@ -131,7 +131,7 @@ namespace core {
   void IrcServer::handle_quit(const IrcMessage &msg) {
     boost::optional<IrcUser> user;
     if (!msg.nick.empty() && (user = m_entity_repo.find_user(msg.nick))) {
-      m_event_handler.user_quit(*user);
+      m_event_handler.user_quit(*user, msg.trailing);
       m_entity_repo.foreach_channels([msg] (IrcChannel& ch) { ch.handle_message(msg); });
       m_entity_repo.remove_user(msg.nick);
     }

@@ -20,7 +20,7 @@ namespace core {
     virtual void channel_users(const std::vector<IrcChannelUser *> &_users) {
     }
 
-    virtual void user_quit(IrcChannelUser &_user) {
+    virtual void user_quit(IrcChannelUser &_user, const std::string &msg) {
     }
   };
 }

@@ -17,13 +17,15 @@ namespace core {
       topic = msg;
     }
 
-    void user_quit(IrcChannelUser &_user) {
+    void user_quit(IrcChannelUser &_user, const std::string &msg) {
       quit_user = _user.user().nickname();
+      quit_message = msg;
     }
     
     std::string name;
     std::string topic;
     boost::optional<std::string> quit_user;
+    boost::optional<std::string> quit_message;
   };
   
   class StubServerEventHandler : public core::ServerEventHandler {
@@ -67,8 +69,9 @@ namespace core {
       motd = msg;
     }
 
-    void user_quit(IrcUser &_user) {
+    void user_quit(IrcUser &_user, const std::string &msg) {
       quit_user = _user.nickname();
+      quit_message = msg;
     }
     
     bool is_connected;
@@ -80,6 +83,7 @@ namespace core {
     bool is_shutdown;
     std::vector<StubChannelEventHandlerST *> channels;
     boost::optional<std::string> quit_user;
+    boost::optional<std::string> quit_message;
   };
   
   class IrcServerTest : public testing::Test {
@@ -533,11 +537,21 @@ namespace core {
     if (server_quit_user) {
       EXPECT_EQ("nick2", *server_quit_user);
     }
+    auto server_quit_message = sh.quit_message;
+    EXPECT_EQ(true, (bool) server_quit_message);
+    if (server_quit_message) {
+      EXPECT_EQ("Goodbye world", *server_quit_message);
+    }
     
     auto channel_quit_user = sh.channels[0]->quit_user;
     EXPECT_EQ(true, (bool) channel_quit_user);
     if (channel_quit_user) {
       EXPECT_EQ("nick2", *channel_quit_user);
+    }
+    auto channel_quit_message = sh.channels[0]->quit_message;
+    EXPECT_EQ(true, (bool) channel_quit_message);
+    if (channel_quit_message) {
+      EXPECT_EQ("Goodbye world", *channel_quit_message);
     }
   }
 

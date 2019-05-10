@@ -77,7 +77,7 @@ namespace core {
   void IrcChannel::handle_quit(const IrcMessage &msg) {
     for (auto it = m_users.begin(); it != m_users.end(); it++) {
       if ((*it)->user().nickname() == msg.nick) {
-        m_event_handler->user_quit(**it);
+        m_event_handler->user_quit(**it, msg.trailing);
         break;
       }
     }
