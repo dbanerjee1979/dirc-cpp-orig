@@ -9,6 +9,7 @@ namespace core {
     m_entity_idx[RPL_NAMREPLY]   = 2;
     m_entity_idx[RPL_ENDOFNAMES] = 1;
     m_entity_idx["JOIN"]         = 0;
+    m_entity_idx["PART"]         = 0;
   }
 
   void IrcEntityRepository::create_channel(const std::string &channel,

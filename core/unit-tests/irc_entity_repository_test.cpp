@@ -83,8 +83,8 @@ namespace core {
     }
   }
 
-  TEST_F(IrcEntityRepositoryTest, test_channel_lookup_by_join_message) {
-    IrcMessage msg = IrcMessage("JOIN", { "##c++" });
+  TEST_F(IrcEntityRepositoryTest, test_channel_lookup_by_part_message) {
+    IrcMessage msg = IrcMessage("PART", { "##c++" });
     auto ch = entity_repo.find_channel(msg);
 
     bool found = (bool) ch;
