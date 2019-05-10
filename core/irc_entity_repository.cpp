@@ -14,7 +14,8 @@ namespace core {
   void IrcEntityRepository::create_channel(const std::string &channel,
                                            std::ostream &out,
                                            ChannelEventHandler *channel_handler) {
-    auto ch = new IrcChannel(channel, out, channel_handler, *this);
+    auto disconnect_handler = [this, channel] () { m_channels.erase(channel); };
+    auto ch = new IrcChannel(channel, out, channel_handler, *this, disconnect_handler);
     m_channels[channel] = std::unique_ptr<IrcChannel>(ch);
   }
 

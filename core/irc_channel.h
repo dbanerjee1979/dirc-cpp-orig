@@ -15,7 +15,7 @@ namespace core {
 
   class IrcChannel {
   public:
-    IrcChannel(const std::string &, std::ostream &, ChannelEventHandler *, IrcUserRepository &);
+    IrcChannel(const std::string &, std::ostream &, ChannelEventHandler *, IrcUserRepository &, std::function<void()>);
     std::string &name();
     void disconnect();
     void handle_message(const IrcMessage &);
@@ -34,6 +34,7 @@ namespace core {
     std::unordered_map<std::string, std::function<void(const IrcMessage &)>> m_msg_handlers;
     std::vector<std::unique_ptr<IrcChannelUser>> m_users;
     IrcUserRepository &m_user_repo;
+    std::function<void()> m_disconnect_handler;
   };
   
 }

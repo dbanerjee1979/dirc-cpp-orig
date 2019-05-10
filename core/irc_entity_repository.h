@@ -9,7 +9,6 @@
 #include <boost/optional.hpp>
 #include "irc_message.h"
 #include "irc_channel.h"
-#include "irc_user.h"
 #include "channel_event_handler.h"
 #include "irc_user_repository.h"
 

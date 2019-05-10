@@ -7,11 +7,13 @@ namespace core {
   IrcChannel::IrcChannel(const std::string &name,
                          std::ostream &out,
                          ChannelEventHandler *event_handler,
-                         IrcUserRepository &user_repo) :
+                         IrcUserRepository &user_repo,
+                         std::function<void()> disconnect_handler) :
     m_name(name),
     m_out(out),
     m_event_handler(event_handler),
-    m_user_repo(user_repo) {
+    m_user_repo(user_repo),
+    m_disconnect_handler(disconnect_handler) {
 
     using std::placeholders::_1;
     m_msg_handlers[RPL_TOPIC] = std::bind(&IrcChannel::handle_topic, this, _1);
@@ -29,6 +31,7 @@ namespace core {
   void IrcChannel::disconnect() {
     m_out << IrcMessage("PART", { m_name }).str() << std::endl;
     m_event_handler->disconnected();
+    m_disconnect_handler();
   }
 
   void IrcChannel::handle_message(const IrcMessage &msg) {

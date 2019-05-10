@@ -555,4 +555,25 @@ namespace core {
     }
   }
 
+  TEST_F(IrcServerTest, should_send_part_message_on_disconnecting_from_channel_and_send_disconnect_event) {
+    create_server();
+
+    server->join("##c++");
+    server->handle_message(":nick!jdoe@foo.org JOIN ##c++");
+    ss.str("");
+    
+    auto channel = entity_repo.find_channel(IrcMessage("JOIN", { "##c++" }));
+    EXPECT_EQ(true, (bool) channel);
+    if (channel) {
+      channel->disconnect();
+
+      std::string line;
+      getline(ss, line);
+      EXPECT_EQ("PART ##c++\r", line);
+
+      channel = entity_repo.find_channel(IrcMessage("JOIN", { "##c++" }));
+      EXPECT_EQ(false, (bool) channel);
+    }
+  }
+
 }

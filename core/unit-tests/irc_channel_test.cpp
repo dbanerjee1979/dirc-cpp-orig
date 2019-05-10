@@ -42,7 +42,7 @@ namespace core {
     IrcChannelTest() :
       event_handler (new StubChannelEventHandlerCT()),
       name ("##c++"),
-      channel (name, ss, event_handler, entity_repo) {
+      channel (name, ss, event_handler, entity_repo, [] () {}) {
     }
 
     std::stringstream ss;
@@ -156,16 +156,6 @@ namespace core {
         ASSERT_EQ(*it, nick->nickname());
       }
     }  
-  }
-
-  TEST_F(IrcChannelTest, should_send_part_message_on_disconnecting_from_channel_and_send_disconnect_event) {
-    channel.disconnect();
-
-    std::string line;
-    getline(ss, line);
-    EXPECT_EQ("PART ##c++\r", line);
-
-    EXPECT_EQ(true, event_handler->is_disconnected);
   }
   
 }
