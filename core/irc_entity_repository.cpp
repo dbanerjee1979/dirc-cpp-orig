@@ -10,17 +10,17 @@ namespace core {
     m_entity_idx[RPL_ENDOFNAMES] = 1;
   }
 
-  void IrcEntityRepository::create_channel(std::string &channel,
+  void IrcEntityRepository::create_channel(const std::string &channel,
                                            ChannelEventHandler *channel_handler) {
     auto ch = new IrcChannel(channel, channel_handler, *this);
     m_channels[channel] = std::unique_ptr<IrcChannel>(ch);
   }
 
-  boost::optional<IrcChannel&> IrcEntityRepository::find_channel(IrcMessage &msg) {
+  boost::optional<IrcChannel&> IrcEntityRepository::find_channel(const IrcMessage &msg) {
     auto it = m_entity_idx.find(msg.command);
     int idx;
     if (it != m_entity_idx.end() && (msg.params.size() > (idx = it->second))) {
-      std::string &channel = msg.params[idx];
+      const std::string &channel = msg.params[idx];
       auto it = m_channels.find(channel);
       if (it != m_channels.end()) {
         return *(it->second);
@@ -29,11 +29,21 @@ namespace core {
     return boost::none;
   }
 
+  void IrcEntityRepository::foreach_channels(std::function<void(IrcChannel &)> handler) {
+    for (auto it = m_channels.begin(); it != m_channels.end(); it++) {
+      handler(*it->second);
+    }
+  }
+
   void IrcEntityRepository::create_user(const std::string &nickname,
                                         const std::string &username,
                                         const std::string &realname) {
     auto user = new IrcUser(nickname, username, realname);
     m_users[nickname] = std::unique_ptr<IrcUser>(user);
+  }
+
+  void IrcEntityRepository::remove_user(const std::string &nickname) {
+    m_users.erase(nickname);
   }
 
   boost::optional<IrcUser&> IrcEntityRepository::find_user(const std::string &nickname) {

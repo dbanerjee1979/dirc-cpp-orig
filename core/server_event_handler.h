@@ -37,6 +37,9 @@ namespace core {
 
     virtual void message_of_the_day(const std::string &msg) {
     }
+
+    virtual void user_quit(IrcUser &_user) {
+    }
   };
     
 }

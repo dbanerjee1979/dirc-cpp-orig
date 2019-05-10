@@ -17,7 +17,10 @@ namespace core {
     virtual void topic_changed(const std::string& msg) {
     }
 
-    virtual void channel_users(const std::vector<IrcChannelUser> &_users) {
+    virtual void channel_users(const std::vector<IrcChannelUser *> &_users) {
+    }
+
+    virtual void user_quit(IrcChannelUser &_user) {
     }
   };
 }

@@ -17,24 +17,26 @@ namespace core {
   class IrcServer {
   public:
     IrcServer(config::Network &, std::ostream &, ServerEventHandler &, IrcEntityRepository &);
+    void shutdown();
     void quit(const std::string &);
     void join(const std::string &);
     void handle_message(const std::string &);
   private:
     const std::string &nick();
-    void handle_message_default(IrcMessage &);
-    void handle_connection_registration(IrcMessage &);
-    void handle_nick_error(IrcMessage &);
-    void handle_notice(IrcMessage &);
-    void handle_motd_start(IrcMessage &);
-    void handle_motd(IrcMessage &);
-    void handle_motd_end(IrcMessage &);
-    void handle_ping(IrcMessage &);
-    void handle_join(IrcMessage &);
+    void handle_message_default(const IrcMessage &);
+    void handle_connection_registration(const IrcMessage &);
+    void handle_nick_error(const IrcMessage &);
+    void handle_notice(const IrcMessage &);
+    void handle_motd_start(const IrcMessage &);
+    void handle_motd(const IrcMessage &);
+    void handle_motd_end(const IrcMessage &);
+    void handle_ping(const IrcMessage &);
+    void handle_join(const IrcMessage &);
+    void handle_quit(const IrcMessage &);
 
     std::ostream &m_out;
     ServerEventHandler &m_event_handler;
-    std::unordered_map<std::string, std::function<void(IrcMessage&)>> m_msg_handlers;
+    std::unordered_map<std::string, std::function<void(const IrcMessage &)>> m_msg_handlers;
     const config::UserInfo &m_user_info;
     int m_nick_id;
     std::stringstream m_motd;

@@ -24,6 +24,7 @@ namespace core {
     m_msg_handlers["NOTICE"] = std::bind(&IrcServer::handle_notice, this, _1);
     m_msg_handlers["PING"] = std::bind(&IrcServer::handle_ping, this, _1);
     m_msg_handlers["JOIN"] = std::bind(&IrcServer::handle_join, this, _1);
+    m_msg_handlers["QUIT"] = std::bind(&IrcServer::handle_quit, this, _1);
 
     if (!network.user_info.password.empty()) {
       m_out << IrcMessage("PASSWORD", { network.user_info.password }).str() << std::flush;
@@ -63,7 +64,7 @@ namespace core {
     }
   }
 
-  void IrcServer::handle_message_default(IrcMessage &msg) {
+  void IrcServer::handle_message_default(const IrcMessage &msg) {
     auto it = msg.params.begin();
     auto end = msg.params.end();
     if (it != end && *it == m_user_info.nicks[m_nick_id]) {
@@ -78,13 +79,13 @@ namespace core {
     }
   }
 
-  void IrcServer::handle_connection_registration(IrcMessage &msg) {
+  void IrcServer::handle_connection_registration(const IrcMessage &msg) {
     handle_message_default(msg);
     m_entity_repo.create_user(nick(), m_user_info.username, m_user_info.realname);
     m_event_handler.connected();
   }
 
-  void IrcServer::handle_nick_error(IrcMessage &msg) {
+  void IrcServer::handle_nick_error(const IrcMessage &msg) {
     m_nick_id++;
     if (m_nick_id < m_user_info.nicks.size()) {
       m_out << IrcMessage("NICK", { nick() }).str() << std::flush;
@@ -92,38 +93,47 @@ namespace core {
     }
   }
 
-  void IrcServer::handle_notice(IrcMessage &msg) {
+  void IrcServer::handle_notice(const IrcMessage &msg) {
     if (msg.params.size() > 0) {
       m_event_handler.notice(msg.params[0], msg.trailing);
     }
   }
 
-  void IrcServer::handle_motd_start(IrcMessage &msg) {
+  void IrcServer::handle_motd_start(const IrcMessage &msg) {
     m_motd.str("");
     m_motd << msg.trailing << std::endl;
   }
 
-  void IrcServer::handle_motd(IrcMessage &msg) {
+  void IrcServer::handle_motd(const IrcMessage &msg) {
     m_motd << msg.trailing << std::endl;
   }
 
-  void IrcServer::handle_motd_end(IrcMessage &msg) {
+  void IrcServer::handle_motd_end(const IrcMessage &msg) {
     std::string motd = m_motd.str();
     m_event_handler.message_of_the_day(motd);
     m_motd.str("");
   }
 
-  void IrcServer::handle_ping(IrcMessage &msg) {
+  void IrcServer::handle_ping(const IrcMessage &msg) {
     m_out << IrcMessage("PONG", { msg.trailing }).str() << std::flush;
   }
 
-  void IrcServer::handle_join(IrcMessage &msg) {
-    std::string &channel = msg.params[0];
+  void IrcServer::handle_join(const IrcMessage &msg) {
+    const std::string &channel = msg.params[0];
     if (nick() == msg.nick) {
       ChannelEventHandler *ch = m_event_handler.create_channel_event_handler(channel);
       if (ch) {
         m_entity_repo.create_channel(channel, ch);
       }
+    }
+  }
+
+  void IrcServer::handle_quit(const IrcMessage &msg) {
+    boost::optional<IrcUser> user;
+    if (!msg.nick.empty() && (user = m_entity_repo.find_user(msg.nick))) {
+      m_event_handler.user_quit(*user);
+      m_entity_repo.foreach_channels([msg] (IrcChannel& ch) { ch.handle_message(msg); });
+      m_entity_repo.remove_user(msg.nick);
     }
   }
 }

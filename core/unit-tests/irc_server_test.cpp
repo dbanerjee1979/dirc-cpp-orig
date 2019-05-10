@@ -16,9 +16,14 @@ namespace core {
     void topic_changed(const std::string& msg) {
       topic = msg;
     }
+
+    void user_quit(IrcChannelUser &_user) {
+      quit_user = _user.user().nickname();
+    }
     
     std::string name;
     std::string topic;
+    boost::optional<std::string> quit_user;
   };
   
   class StubServerEventHandler : public core::ServerEventHandler {
@@ -61,6 +66,10 @@ namespace core {
     void message_of_the_day(const std::string &msg) {
       motd = msg;
     }
+
+    void user_quit(IrcUser &_user) {
+      quit_user = _user.nickname();
+    }
     
     bool is_connected;
     std::vector<std::string> msgs;
@@ -70,6 +79,7 @@ namespace core {
     std::string motd;
     bool is_shutdown;
     std::vector<StubChannelEventHandlerST *> channels;
+    boost::optional<std::string> quit_user;
   };
   
   class IrcServerTest : public testing::Test {
@@ -108,7 +118,7 @@ namespace core {
     IrcEntityRepository entity_repo;
   };
 
-  TEST_F(IrcServerTest, test_logging_messages) {
+  TEST_F(IrcServerTest, should_log_messages_received_from_server) {
     create_server();
     
     std::string msg;
@@ -126,7 +136,7 @@ namespace core {
     }
   }
   
-  TEST_F(IrcServerTest, test_send_nick_and_user_info_for_connection_registration) {
+  TEST_F(IrcServerTest, should_send_nick_and_user_info_for_connection_registration) {
     create_server();
 
     std::string msg;
@@ -151,7 +161,7 @@ namespace core {
     }
   }
 
-  TEST_F(IrcServerTest, send_pass_and_nick_and_user_info_for_connection_registration) {
+  TEST_F(IrcServerTest, should_send_pass_and_nick_and_user_info_for_connection_registration) {
     create_server(network_pass);
 
     std::string msg;
@@ -170,7 +180,7 @@ namespace core {
     EXPECT_EQ(true, sh.is_connected);
   }
 
-  TEST_F(IrcServerTest, send_second_nick_if_first_nick_is_already_taken) {
+  TEST_F(IrcServerTest, should_send_second_nick_if_first_nick_is_already_taken) {
     create_server();
 
     std::string msg;
@@ -197,7 +207,7 @@ namespace core {
     EXPECT_EQ(true, (bool) entity_repo.find_user("_nick_"));
   }
 
-  TEST_F(IrcServerTest, send_second_nick_if_first_nick_collides) {
+  TEST_F(IrcServerTest, should_send_second_nick_if_first_nick_collides) {
     create_server();
 
     std::string msg;
@@ -214,7 +224,7 @@ namespace core {
     EXPECT_EQ(true, sh.is_connected);
   }
 
-  TEST_F(IrcServerTest, fail_to_connect_if_all_nicks_taken) {
+  TEST_F(IrcServerTest, should_fail_to_connect_if_all_nicks_taken) {
     create_server();
 
     std::string msg;
@@ -234,7 +244,7 @@ namespace core {
     EXPECT_EQ(false, sh.is_connected);
   }
 
-  TEST_F(IrcServerTest, skip_unparseable_messages) {
+  TEST_F(IrcServerTest, should_ignore_unparseable_messages) {
     create_server();
 
     std::string msg;
@@ -255,7 +265,7 @@ namespace core {
     EXPECT_EQ(true, sh.is_connected);
   }
 
-  TEST_F(IrcServerTest, send_notification_messages_to_handler) {
+  TEST_F(IrcServerTest, should_handle_notification_messages_from_server) {
     create_server();
 
     std::string prefix = ":wolfe.freenode.net NOTICE * :";
@@ -283,7 +293,7 @@ namespace core {
     }
   }
 
-  TEST_F(IrcServerTest, send_messages_to_handler_for_startup_messages) {
+  TEST_F(IrcServerTest, should_handle_startup_messages_from_server) {
     create_server();
 
     std::string msg;
@@ -323,7 +333,7 @@ namespace core {
     }
   }
 
-  TEST_F(IrcServerTest, send_message_of_the_day) {
+  TEST_F(IrcServerTest, should_handle_message_of_the_day) {
     create_server();
 
     std::string msg;
@@ -441,7 +451,7 @@ namespace core {
     EXPECT_EQ(motd.str(), sh.motd);
   }
 
-  TEST_F(IrcServerTest, respond_to_ping_with_pong) {
+  TEST_F(IrcServerTest, should_respond_to_ping_with_pong) {
     create_server();
     ss.str("");
     
@@ -466,7 +476,7 @@ namespace core {
     EXPECT_EQ(true, sh.is_shutdown);
   }
 
-  TEST_F(IrcServerTest, quit_with_message) {
+  TEST_F(IrcServerTest, should_quit_with_message_by_sending_message_to_server) {
     create_server();
     ss.str("");
 
@@ -479,7 +489,7 @@ namespace core {
     EXPECT_EQ(true, sh.is_shutdown);
   }
 
-  TEST_F(IrcServerTest, join_channel) {
+  TEST_F(IrcServerTest, should_join_channel_by_sending_message_to_channel_and_handling_responses) {
     create_server();
     ss.str("");
 
@@ -496,6 +506,38 @@ namespace core {
     if (sh.channels.size() == 1) {
       EXPECT_EQ("##c++", sh.channels[0]->name);
       EXPECT_EQ("is a topical channel for discussing standard C++ specifications and code.", sh.channels[0]->topic);
+    }
+  }
+
+  TEST_F(IrcServerTest, should_handle_quit_received_by_server_by_removing_from_repo_and_broadcasting_to_all_channels) {
+    create_server();
+    ss.str("");
+
+    server->join("##c++");
+
+    server->handle_message(":nick!jdoe@foo.org JOIN ##c++");
+    server->handle_message(":wolfe.freenode.net 332 nick ##c++ :is a topical channel for discussing standard C++ specifications and code.");
+    server->handle_message(":wolfe.freenode.net 353 nick * ##c++ :nick nick2");
+    server->handle_message(":wolfe.freenode.net 366 nick ##c++ :End of /NAMES list.");
+
+    auto user = entity_repo.find_user("nick2");
+    EXPECT_EQ(true, (bool) user);
+    
+    server->handle_message(":nick2!foo@irc.org.bar QUIT :Goodbye world");
+
+    user = entity_repo.find_user("nick2");
+    EXPECT_EQ(false, (bool) user);
+
+    auto server_quit_user = sh.quit_user;
+    EXPECT_EQ(true, (bool) server_quit_user);
+    if (server_quit_user) {
+      EXPECT_EQ("nick2", *server_quit_user);
+    }
+    
+    auto channel_quit_user = sh.channels[0]->quit_user;
+    EXPECT_EQ(true, (bool) channel_quit_user);
+    if (channel_quit_user) {
+      EXPECT_EQ("nick2", *channel_quit_user);
     }
   }
 
