@@ -31,10 +31,19 @@ namespace core {
       joined_user = _user;
     }
 
+    void user_departed(IrcChannelUser &_user, const std::string &msg) {
+      part_nick = _user.user().nickname();
+      part_user = _user.user().username();
+      part_message = msg;
+    }
+
     std::string topic;
     std::vector<IrcChannelUser *> users;
     boost::optional<IrcChannelUser> joined_user;
     bool is_disconnected;
+    std::string part_nick;
+    std::string part_user;
+    std::string part_message;
   };
 
   class IrcChannelTest : public testing::Test {
@@ -156,6 +165,18 @@ namespace core {
         ASSERT_EQ(*it, nick->nickname());
       }
     }  
+  }
+
+  TEST_F(IrcChannelTest, should_handle_user_leaving_channel) {
+    channel.handle_message(IrcMessage(":nick!jdoe@foo.org JOIN ##c++"));
+    ASSERT_EQ(true, (bool) entity_repo.find_user("nick"));
+
+    channel.handle_message(IrcMessage(":nick!jdoe@foo.org PART ##c++ :Goodbye, channel!"));
+    ASSERT_EQ(false, (bool) entity_repo.find_user("nick"));
+
+    ASSERT_EQ("nick", event_handler->part_nick);
+    ASSERT_EQ("jdoe", event_handler->part_user);
+    ASSERT_EQ("Goodbye, channel!", event_handler->part_message);
   }
 
 }
