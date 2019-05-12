@@ -23,8 +23,8 @@ namespace core {
       topic = _topic;
     }
 
-    void channel_users(const std::vector<IrcChannelUser *> &_users) {
-      users = _users;
+    void channel_users(ChannelUserIterator begin, ChannelUserIterator end) {
+      users = std::vector<IrcChannelUser>(begin, end);
     }
 
     void user_joined(IrcChannelUser &_user) {
@@ -38,7 +38,7 @@ namespace core {
     }
 
     std::string topic;
-    std::vector<IrcChannelUser *> users;
+    std::vector<IrcChannelUser> users;
     boost::optional<IrcChannelUser> joined_user;
     bool is_disconnected;
     std::string part_nick;
@@ -91,14 +91,14 @@ namespace core {
     auto users = event_handler.users;
     ASSERT_EQ(6, users.size());
     if (users.size() == 6) {
-      ASSERT_EQ("nick", users[0]->user().nickname());
-      ASSERT_EQ("jdoe", users[0]->user().username());
-      ASSERT_EQ("John Doe", users[0]->user().realname());
-      ASSERT_EQ("nick2", users[1]->user().nickname());
-      ASSERT_EQ("nick3", users[2]->user().nickname());
-      ASSERT_EQ("nick4", users[3]->user().nickname());
-      ASSERT_EQ("nick5", users[4]->user().nickname());
-      ASSERT_EQ("nick6", users[5]->user().nickname());
+      ASSERT_EQ("nick", users[0].user().nickname());
+      ASSERT_EQ("jdoe", users[0].user().username());
+      ASSERT_EQ("John Doe", users[0].user().realname());
+      ASSERT_EQ("nick2", users[1].user().nickname());
+      ASSERT_EQ("nick3", users[2].user().nickname());
+      ASSERT_EQ("nick4", users[3].user().nickname());
+      ASSERT_EQ("nick5", users[4].user().nickname());
+      ASSERT_EQ("nick6", users[5].user().nickname());
     }
 
     std::vector<std::string> nicks = { "nick", "nick2", "nick3", "nick4", "nick5", "nick6" };
@@ -125,24 +125,24 @@ namespace core {
     auto users = event_handler.users;
     ASSERT_EQ(8, users.size());
     if (users.size() == 8) {
-      ASSERT_EQ("nick", users[0]->user().nickname());
-      ASSERT_EQ("jdoe", users[0]->user().username());
-      ASSERT_EQ("John Doe", users[0]->user().realname());
-      ASSERT_EQ(ChanModeNone, users[0]->channel_mode());
-      ASSERT_EQ("nick2", users[1]->user().nickname());
-      ASSERT_EQ(ChanModeFounder, users[1]->channel_mode());
-      ASSERT_EQ("nick3", users[2]->user().nickname());
-      ASSERT_EQ(ChanModeProtected, users[2]->channel_mode());
-      ASSERT_EQ("nick4", users[3]->user().nickname());
-      ASSERT_EQ(ChanModeNone, users[3]->channel_mode());
-      ASSERT_EQ("nick5", users[4]->user().nickname());
-      ASSERT_EQ(ChanModeOp, users[4]->channel_mode());
-      ASSERT_EQ("nick6", users[5]->user().nickname());
-      ASSERT_EQ(ChanModeHalfOp, users[5]->channel_mode());
-      ASSERT_EQ("nick7", users[6]->user().nickname());
-      ASSERT_EQ(ChanModeVoice, users[6]->channel_mode());
-      ASSERT_EQ("nick8", users[7]->user().nickname());
-      ASSERT_EQ(ChanModeNone, users[7]->channel_mode());
+      ASSERT_EQ("nick", users[0].user().nickname());
+      ASSERT_EQ("jdoe", users[0].user().username());
+      ASSERT_EQ("John Doe", users[0].user().realname());
+      ASSERT_EQ(ChanModeNone, users[0].channel_mode());
+      ASSERT_EQ("nick2", users[1].user().nickname());
+      ASSERT_EQ(ChanModeFounder, users[1].channel_mode());
+      ASSERT_EQ("nick3", users[2].user().nickname());
+      ASSERT_EQ(ChanModeProtected, users[2].channel_mode());
+      ASSERT_EQ("nick4", users[3].user().nickname());
+      ASSERT_EQ(ChanModeNone, users[3].channel_mode());
+      ASSERT_EQ("nick5", users[4].user().nickname());
+      ASSERT_EQ(ChanModeOp, users[4].channel_mode());
+      ASSERT_EQ("nick6", users[5].user().nickname());
+      ASSERT_EQ(ChanModeHalfOp, users[5].channel_mode());
+      ASSERT_EQ("nick7", users[6].user().nickname());
+      ASSERT_EQ(ChanModeVoice, users[6].channel_mode());
+      ASSERT_EQ("nick8", users[7].user().nickname());
+      ASSERT_EQ(ChanModeNone, users[7].channel_mode());
     }
   }
 

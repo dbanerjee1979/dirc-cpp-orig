@@ -34,7 +34,7 @@ namespace core {
     std::ostream &m_out;
     ChannelEventHandler &m_event_handler;
     std::unordered_map<std::string, std::function<void(const IrcMessage &)>> m_msg_handlers;
-    std::vector<std::unique_ptr<IrcChannelUser>> m_users;
+    std::vector<IrcChannelUser> m_users;
     IrcUserRepository &m_user_repo;
     std::function<void()> m_disconnect_handler;
   };

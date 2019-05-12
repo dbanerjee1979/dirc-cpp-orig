@@ -6,6 +6,18 @@
 
 namespace core {
 
+  class ChannelUserIterator : public std::iterator<std::input_iterator_tag, IrcChannelUser> {
+    std::vector<IrcChannelUser>::iterator m_it;
+  public:
+    ChannelUserIterator(const std::vector<IrcChannelUser>::iterator &it) : m_it(it) {}
+    ChannelUserIterator(const ChannelUserIterator &it) : m_it(it.m_it) {}
+    ChannelUserIterator &operator++() { ++m_it; return *this; }
+    ChannelUserIterator operator++(int) { ChannelUserIterator tmp(*this); operator++(); return tmp; }
+    bool operator==(const ChannelUserIterator &rhs) const { return m_it == rhs.m_it; }
+    bool operator!=(const ChannelUserIterator &rhs) const { return m_it != rhs.m_it; }
+    IrcChannelUser &operator*() { return *m_it; }
+  };
+
   class ChannelEventHandler {
   public:
     ChannelEventHandler() {
@@ -20,7 +32,7 @@ namespace core {
     virtual void topic_changed(const std::string& msg) {
     }
 
-    virtual void channel_users(const std::vector<IrcChannelUser *> &_users) {
+    virtual void channel_users(ChannelUserIterator begin, ChannelUserIterator end) {
     }
 
     virtual void user_quit(IrcChannelUser &_user, const std::string &msg) {

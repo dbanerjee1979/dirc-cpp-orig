@@ -79,23 +79,18 @@ namespace core {
     if (!m_user_repo.find_user(nick)) {
       m_user_repo.create_user(nick, username);
     }
-    auto user = new IrcChannelUser(*m_user_repo.find_user(nick), chan_mode);
-    m_users.push_back(std::unique_ptr<IrcChannelUser>(user));
-    return *user;
+    m_users.push_back(IrcChannelUser(*m_user_repo.find_user(nick), chan_mode));
+    return m_users.back();
   }
   
   void IrcChannel::handle_name_reply_end(const IrcMessage &msg) {
-    std::vector<IrcChannelUser *> users;
-    for (auto it = m_users.begin(); it != m_users.end(); it++) {
-      users.push_back(it->get());
-    }
-    m_event_handler.channel_users(users);
+    m_event_handler.channel_users(m_users.begin(), m_users.end());
   }
 
   void IrcChannel::handle_quit(const IrcMessage &msg) {
     for (auto it = m_users.begin(); it != m_users.end(); it++) {
-      if ((*it)->user().nickname() == msg.nick) {
-        m_event_handler.user_quit(**it, msg.trailing);
+      if (it->user().nickname() == msg.nick) {
+        m_event_handler.user_quit(*it, msg.trailing);
         break;
       }
     }
@@ -108,8 +103,8 @@ namespace core {
 
   void IrcChannel::handle_part(const IrcMessage &msg) {
     for (auto it = m_users.begin(); it != m_users.end(); it++) {
-      if ((*it)->user().nickname() == msg.nick) {
-        m_event_handler.user_departed(**it, msg.trailing);
+      if (it->user().nickname() == msg.nick) {
+        m_event_handler.user_departed(*it, msg.trailing);
         m_users.erase(it);
         m_user_repo.remove_user(msg.nick);
         break;
@@ -123,7 +118,7 @@ namespace core {
     if (msg.params.size() > 0) {
       auto nickname_to = msg.params[0];
       for (auto it = m_users.begin(); it != m_users.end(); it++) {
-        if ((*it)->user().nickname() == nickname_to) {
+        if (it->user().nickname() == nickname_to) {
           m_event_handler.nick_changed(nickname_from, nickname_to);
           break;
         }
