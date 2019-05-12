@@ -14,6 +14,10 @@ namespace core {
     return m_nickname;
   }
 
+  void IrcUser::nickname(const std::string &nickname) {
+    m_nickname = nickname;
+  }
+
   std::string &IrcUser::username() {
     return m_username;
   }

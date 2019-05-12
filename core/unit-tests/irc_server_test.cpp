@@ -21,11 +21,18 @@ namespace core {
       quit_user = _user.user().nickname();
       quit_message = msg;
     }
+
+    void nick_changed(const std::string &_nick_from, const std::string &_nick_to) {
+      nick_from = _nick_from;
+      nick_to = _nick_to;
+    }
     
     std::string name;
     std::string topic;
     boost::optional<std::string> quit_user;
     boost::optional<std::string> quit_message;
+    boost::optional<std::string> nick_from;
+    boost::optional<std::string> nick_to;
   };
   
   class StubServerEventHandler : public core::ServerEventHandler {
@@ -73,6 +80,11 @@ namespace core {
       quit_user = _user.nickname();
       quit_message = msg;
     }
+
+    void nick_changed(const std::string &_nick_from, const std::string &_nick_to) {
+      nick_from = _nick_from;
+      nick_to = _nick_to;
+    }
     
     bool is_connected;
     std::vector<std::string> msgs;
@@ -84,6 +96,8 @@ namespace core {
     std::vector<StubChannelEventHandlerST *> channels;
     boost::optional<std::string> quit_user;
     boost::optional<std::string> quit_message;
+    boost::optional<std::string> nick_from;
+    boost::optional<std::string> nick_to;
   };
   
   class IrcServerTest : public testing::Test {
@@ -125,11 +139,10 @@ namespace core {
   TEST_F(IrcServerTest, should_log_messages_received_from_server) {
     create_server();
     
-    std::string msg;
-    server->handle_message(msg = ":rajaniemi.freenode.net 001 shorugoru :Welcome to the freenode Internet Relay Chat Network nick");
-    server->handle_message(msg = ":rajaniemi.freenode.net 002 shorugoru :Your host is rajaniemi.freenode.net[2001:708:40:2001::f5ee:d0de/8001], running version ircd-seven-1.1.7");
-    server->handle_message(msg = ":rajaniemi.freenode.net 003 shorugoru :This server was created Tue Sep 25 2018 at 13:21:15 UTC");
-    server->handle_message(msg = ":rajaniemi.freenode.net 004 shorugoru rajaniemi.freenode.net ircd-seven-1.1.7 DOQRSZaghilopswz CFILMPQSbcefgijklmnopqrstvz bkloveqjfI");
+    server->handle_message(":rajaniemi.freenode.net 001 shorugoru :Welcome to the freenode Internet Relay Chat Network nick");
+    server->handle_message(":rajaniemi.freenode.net 002 shorugoru :Your host is rajaniemi.freenode.net[2001:708:40:2001::f5ee:d0de/8001], running version ircd-seven-1.1.7");
+    server->handle_message(":rajaniemi.freenode.net 003 shorugoru :This server was created Tue Sep 25 2018 at 13:21:15 UTC");
+    server->handle_message(":rajaniemi.freenode.net 004 shorugoru rajaniemi.freenode.net ircd-seven-1.1.7 DOQRSZaghilopswz CFILMPQSbcefgijklmnopqrstvz bkloveqjfI");
 
     EXPECT_EQ(4, sh.msgs.size());
     if (sh.msgs.size() == 4) {
@@ -143,11 +156,10 @@ namespace core {
   TEST_F(IrcServerTest, should_send_nick_and_user_info_for_connection_registration) {
     create_server();
 
-    std::string msg;
-    server->handle_message(msg = ":rajaniemi.freenode.net 001 shorugoru :Welcome to the freenode Internet Relay Chat Network nick");
-    server->handle_message(msg = ":rajaniemi.freenode.net 002 shorugoru :Your host is rajaniemi.freenode.net[2001:708:40:2001::f5ee:d0de/8001], running version ircd-seven-1.1.7");
-    server->handle_message(msg = ":rajaniemi.freenode.net 003 shorugoru :This server was created Tue Sep 25 2018 at 13:21:15 UTC");
-    server->handle_message(msg = ":rajaniemi.freenode.net 004 shorugoru rajaniemi.freenode.net ircd-seven-1.1.7 DOQRSZaghilopswz CFILMPQSbcefgijklmnopqrstvz bkloveqjfI");
+    server->handle_message(":rajaniemi.freenode.net 001 shorugoru :Welcome to the freenode Internet Relay Chat Network nick");
+    server->handle_message(":rajaniemi.freenode.net 002 shorugoru :Your host is rajaniemi.freenode.net[2001:708:40:2001::f5ee:d0de/8001], running version ircd-seven-1.1.7");
+    server->handle_message(":rajaniemi.freenode.net 003 shorugoru :This server was created Tue Sep 25 2018 at 13:21:15 UTC");
+    server->handle_message(":rajaniemi.freenode.net 004 shorugoru rajaniemi.freenode.net ircd-seven-1.1.7 DOQRSZaghilopswz CFILMPQSbcefgijklmnopqrstvz bkloveqjfI");
 
     std::string line;
     getline(ss, line);
@@ -168,11 +180,10 @@ namespace core {
   TEST_F(IrcServerTest, should_send_pass_and_nick_and_user_info_for_connection_registration) {
     create_server(network_pass);
 
-    std::string msg;
-    server->handle_message(msg = ":rajaniemi.freenode.net 001 shorugoru :Welcome to the freenode Internet Relay Chat Network nick");
-    server->handle_message(msg = ":rajaniemi.freenode.net 002 shorugoru :Your host is rajaniemi.freenode.net[2001:708:40:2001::f5ee:d0de/8001], running version ircd-seven-1.1.7");
-    server->handle_message(msg = ":rajaniemi.freenode.net 003 shorugoru :This server was created Tue Sep 25 2018 at 13:21:15 UTC");
-    server->handle_message(msg = ":rajaniemi.freenode.net 004 shorugoru rajaniemi.freenode.net ircd-seven-1.1.7 DOQRSZaghilopswz CFILMPQSbcefgijklmnopqrstvz bkloveqjfI");
+    server->handle_message(":rajaniemi.freenode.net 001 shorugoru :Welcome to the freenode Internet Relay Chat Network nick");
+    server->handle_message(":rajaniemi.freenode.net 002 shorugoru :Your host is rajaniemi.freenode.net[2001:708:40:2001::f5ee:d0de/8001], running version ircd-seven-1.1.7");
+    server->handle_message(":rajaniemi.freenode.net 003 shorugoru :This server was created Tue Sep 25 2018 at 13:21:15 UTC");
+    server->handle_message(":rajaniemi.freenode.net 004 shorugoru rajaniemi.freenode.net ircd-seven-1.1.7 DOQRSZaghilopswz CFILMPQSbcefgijklmnopqrstvz bkloveqjfI");
 
     std::string line;
     getline(ss, line);
@@ -187,9 +198,8 @@ namespace core {
   TEST_F(IrcServerTest, should_send_second_nick_if_first_nick_is_already_taken) {
     create_server();
 
-    std::string msg;
-    server->handle_message(msg = ":rajaniemi.freenode.net 433 * duke :Nickname is already in use.");
-    server->handle_message(msg = ":rajaniemi.freenode.net 001 shorugoru :Welcome to the freenode Internet Relay Chat Network nick");
+    server->handle_message(":rajaniemi.freenode.net 433 * duke :Nickname is already in use.");
+    server->handle_message(":rajaniemi.freenode.net 001 shorugoru :Welcome to the freenode Internet Relay Chat Network nick");
 
     std::string line;
     getline(ss, line);
@@ -214,9 +224,8 @@ namespace core {
   TEST_F(IrcServerTest, should_send_second_nick_if_first_nick_collides) {
     create_server();
 
-    std::string msg;
-    server->handle_message(msg = ":rajaniemi.freenode.net 436 * duke :Nickname collision KILL from");
-    server->handle_message(msg = ":rajaniemi.freenode.net 001 shorugoru :Welcome to the freenode Internet Relay Chat Network nick");
+    server->handle_message(":rajaniemi.freenode.net 436 * duke :Nickname collision KILL from");
+    server->handle_message(":rajaniemi.freenode.net 001 shorugoru :Welcome to the freenode Internet Relay Chat Network nick");
 
     std::string line;
     getline(ss, line);
@@ -231,10 +240,9 @@ namespace core {
   TEST_F(IrcServerTest, should_fail_to_connect_if_all_nicks_taken) {
     create_server();
 
-    std::string msg;
-    server->handle_message(msg = ":rajaniemi.freenode.net 433 * duke :Nickname is already in use.");
-    server->handle_message(msg = ":rajaniemi.freenode.net 433 * duke :Nickname is already in use.");
-    server->handle_message(msg = ":rajaniemi.freenode.net 433 * duke :Nickname is already in use.");
+    server->handle_message(":rajaniemi.freenode.net 433 * duke :Nickname is already in use.");
+    server->handle_message(":rajaniemi.freenode.net 433 * duke :Nickname is already in use.");
+    server->handle_message(":rajaniemi.freenode.net 433 * duke :Nickname is already in use.");
 
     std::string line;
     getline(ss, line);
@@ -251,11 +259,10 @@ namespace core {
   TEST_F(IrcServerTest, should_ignore_unparseable_messages) {
     create_server();
 
-    std::string msg;
-    server->handle_message(msg = ":rajaniemi.freenode.net 433 * duke :Nickname is already in use.");
-    server->handle_message(msg = "~~~~~");
-    server->handle_message(msg = ":rajaniemi.freenode.net 433 * duke :Nickname is already in use.");
-    server->handle_message(msg = ":rajaniemi.freenode.net 001 shorugoru :Welcome to the freenode Internet Relay Chat Network nick");
+    server->handle_message(":rajaniemi.freenode.net 433 * duke :Nickname is already in use.");
+    server->handle_message("~~~~~");
+    server->handle_message(":rajaniemi.freenode.net 433 * duke :Nickname is already in use.");
+    server->handle_message(":rajaniemi.freenode.net 001 shorugoru :Welcome to the freenode Internet Relay Chat Network nick");
 
     std::string line;
     getline(ss, line);
@@ -278,11 +285,10 @@ namespace core {
     std::string msg3 = "*** Couldn't look up your hostname";
     std::string msg4 = "*** No Ident response";
 
-    std::string msg;
-    server->handle_message(msg = prefix + msg1);
-    server->handle_message(msg = prefix + msg2);
-    server->handle_message(msg = prefix + msg3);
-    server->handle_message(msg = prefix + msg4);
+    server->handle_message(prefix + msg1);
+    server->handle_message(prefix + msg2);
+    server->handle_message(prefix + msg3);
+    server->handle_message(prefix + msg4);
 
     EXPECT_EQ(4, sh.notices.size());
     if (sh.notices.size() == 4) {
@@ -300,22 +306,21 @@ namespace core {
   TEST_F(IrcServerTest, should_handle_startup_messages_from_server) {
     create_server();
 
-    std::string msg;
-    server->handle_message(msg = ":wolfe.freenode.net 001 nick :Welcome to the freenode Internet Relay Chat Network nick");
-    server->handle_message(msg = ":wolfe.freenode.net 002 nick :Your host is wolfe.freenode.net[2001:948:7:7::140/8001], running version ircd-seven-1.1.7");
-    server->handle_message(msg = ":wolfe.freenode.net 003 nick :This server was created Sat Sep 1 2018 at 18:07:18 UTC");
-    server->handle_message(msg = ":wolfe.freenode.net 004 nick wolfe.freenode.net ircd-seven-1.1.7 DOQRSZaghilopswz CFILMPQSbcefgijklmnopqrstvz bkloveqjfI");
-    server->handle_message(msg = ":wolfe.freenode.net 005 nick CHANTYPES=# EXCEPTS INVEX CHANMODES=eIbq,k,flj,CFLMPQScgimnprstz CHANLIMIT=#:120 PREFIX=(ov)@+ MAXLIST=bqeI:100 MODES=4 NETWORK=freenode STATUSMSG=@+ CALLERID=g CASEMAPPING=rfc1459 :are supported by this server");
-    server->handle_message(msg = ":wolfe.freenode.net 005 nick CHARSET=ascii NICKLEN=16 CHANNELLEN=50 TOPICLEN=390 DEAF=D FNC TARGMAX=NAMES:1,LIST:1,KICK:1,WHOIS:1,PRIVMSG:4,NOTICE:4,ACCEPT:,MONITOR: EXTBAN=$,ajrxz CLIENTVER=3.0 KNOCK SAFELIST ELIST=CTU :are supported by this server");
-    server->handle_message(msg = ":wolfe.freenode.net 005 nick WHOX CPRIVMSG CNOTICE ETRACE :are supported by this server");
-    server->handle_message(msg = ":wolfe.freenode.net 251 nick :There are 98 users and 84180 invisible on 32 servers");
-    server->handle_message(msg = ":wolfe.freenode.net 252 nick 34 :IRC Operators online");
-    server->handle_message(msg = ":wolfe.freenode.net 253 nick 3 :unknown connection(s)");
-    server->handle_message(msg = ":wolfe.freenode.net 254 nick 53022 :channels formed");
-    server->handle_message(msg = ":wolfe.freenode.net 255 nick :I have 5502 clients and 1 servers");
-    server->handle_message(msg = ":wolfe.freenode.net 265 nick 5502 6184 :Current local users 5502, max 6184");
-    server->handle_message(msg = ":wolfe.freenode.net 266 nick 84278 94264 :Current global users 84278, max 94264");
-    server->handle_message(msg = ":wolfe.freenode.net 250 nick :Highest connection count: 6185 (6184 clients) (735512 connections received)");
+    server->handle_message(":wolfe.freenode.net 001 nick :Welcome to the freenode Internet Relay Chat Network nick");
+    server->handle_message(":wolfe.freenode.net 002 nick :Your host is wolfe.freenode.net[2001:948:7:7::140/8001], running version ircd-seven-1.1.7");
+    server->handle_message(":wolfe.freenode.net 003 nick :This server was created Sat Sep 1 2018 at 18:07:18 UTC");
+    server->handle_message(":wolfe.freenode.net 004 nick wolfe.freenode.net ircd-seven-1.1.7 DOQRSZaghilopswz CFILMPQSbcefgijklmnopqrstvz bkloveqjfI");
+    server->handle_message(":wolfe.freenode.net 005 nick CHANTYPES=# EXCEPTS INVEX CHANMODES=eIbq,k,flj,CFLMPQScgimnprstz CHANLIMIT=#:120 PREFIX=(ov)@+ MAXLIST=bqeI:100 MODES=4 NETWORK=freenode STATUSMSG=@+ CALLERID=g CASEMAPPING=rfc1459 :are supported by this server");
+    server->handle_message(":wolfe.freenode.net 005 nick CHARSET=ascii NICKLEN=16 CHANNELLEN=50 TOPICLEN=390 DEAF=D FNC TARGMAX=NAMES:1,LIST:1,KICK:1,WHOIS:1,PRIVMSG:4,NOTICE:4,ACCEPT:,MONITOR: EXTBAN=$,ajrxz CLIENTVER=3.0 KNOCK SAFELIST ELIST=CTU :are supported by this server");
+    server->handle_message(":wolfe.freenode.net 005 nick WHOX CPRIVMSG CNOTICE ETRACE :are supported by this server");
+    server->handle_message(":wolfe.freenode.net 251 nick :There are 98 users and 84180 invisible on 32 servers");
+    server->handle_message(":wolfe.freenode.net 252 nick 34 :IRC Operators online");
+    server->handle_message(":wolfe.freenode.net 253 nick 3 :unknown connection(s)");
+    server->handle_message(":wolfe.freenode.net 254 nick 53022 :channels formed");
+    server->handle_message(":wolfe.freenode.net 255 nick :I have 5502 clients and 1 servers");
+    server->handle_message(":wolfe.freenode.net 265 nick 5502 6184 :Current local users 5502, max 6184");
+    server->handle_message(":wolfe.freenode.net 266 nick 84278 94264 :Current global users 84278, max 94264");
+    server->handle_message(":wolfe.freenode.net 250 nick :Highest connection count: 6185 (6184 clients) (735512 connections received)");
 
     EXPECT_EQ(15, sh.messages.size());
     if (sh.messages.size() == 15) {
@@ -340,61 +345,60 @@ namespace core {
   TEST_F(IrcServerTest, should_handle_message_of_the_day) {
     create_server();
 
-    std::string msg;
-    server->handle_message(msg = ":wolfe.freenode.net 375 nick :- wolfe.freenode.net Message of the Day -");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- Welcome to wolfe.freenode.net in Stockholm, SE.");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- Thanks to http://nordu.net/ for sponsoring");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- this server!");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :-");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- WOLFE, GENE [1931-2019].  Prolific writer of short stories");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- and novels. His best-known work is the multi-volume novel The");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- Book of the New Sun. He has won multiple awards including");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- the Nebula Award, the World Fantasy Award, The Campell");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- Memorial Award and the Locus Award. He was awarded the World");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- Fantasy Award for lifetime achievement in 1996.");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :-");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- Welcome to freenode - supporting the free and open source");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- software communities since 1998.");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :-");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- By connecting to freenode you indicate that you have read and");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- accept our policies and guidelines as set out on https://freenode.net");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :-");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- In the event that you observe behaviour that contravenes our policies,");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- please notify a volunteer staff member via private message, or send us an");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- e-mail to complaints@freenode.net -- we will do our best to address the");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- situation within a reasonable period of time, and we may request further");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- information or, as appropriate, involve other parties such as channel operators");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- Group Contacts representing an on-topic group.");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :-");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- freenode runs an open proxy scanner.");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :-");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- If you are looking for assistance, you may be able to find a list of");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- volunteer staff on '/stats p' (shows only on-call staff) or by joining");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- #freenode and using the '/who freenode/staff/*' command. You may message");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- any of us at any time. Please note that freenode predominantly provides");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- assistance via private message, and while we have a network channel the");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- primary venue for support requests is via private message to a member");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- of the volunteer staff team.");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :-");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- From time to time, volunteer staff may send server-wide notices relating to");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- the project, or the communities that we host. The majority of such notices");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- will be sent as wallops, and you can '/mode <yournick> +w' to ensure that you");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- do not miss them. Important messages relating to the freenode project, including");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- notices of upcoming maintenance and other scheduled downtime will be issued as");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- global notices.");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :-");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- Representing an on-topic project? Don't forget to register, more information");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- can be found on the https://freenode.net website under \"Group Registration\".");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :-");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- Thank you also to our server sponsors for the sustained support in keeping the");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- network going for close to two decades.");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :-");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- Thank you to all of our attendees, sponsors, speakers, exhibitors, helpers,");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- and everyone else who made this year's freenode #live conference amazing.");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- https://freenode.net/news/live-2018");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :-");
-    server->handle_message(msg = ":wolfe.freenode.net 372 nick :- Thank you for using freenode!");
-    server->handle_message(msg = ":wolfe.freenode.net 376 nick :End of /MOTD command.");
+    server->handle_message(":wolfe.freenode.net 375 nick :- wolfe.freenode.net Message of the Day -");
+    server->handle_message(":wolfe.freenode.net 372 nick :- Welcome to wolfe.freenode.net in Stockholm, SE.");
+    server->handle_message(":wolfe.freenode.net 372 nick :- Thanks to http://nordu.net/ for sponsoring");
+    server->handle_message(":wolfe.freenode.net 372 nick :- this server!");
+    server->handle_message(":wolfe.freenode.net 372 nick :-");
+    server->handle_message(":wolfe.freenode.net 372 nick :- WOLFE, GENE [1931-2019].  Prolific writer of short stories");
+    server->handle_message(":wolfe.freenode.net 372 nick :- and novels. His best-known work is the multi-volume novel The");
+    server->handle_message(":wolfe.freenode.net 372 nick :- Book of the New Sun. He has won multiple awards including");
+    server->handle_message(":wolfe.freenode.net 372 nick :- the Nebula Award, the World Fantasy Award, The Campell");
+    server->handle_message(":wolfe.freenode.net 372 nick :- Memorial Award and the Locus Award. He was awarded the World");
+    server->handle_message(":wolfe.freenode.net 372 nick :- Fantasy Award for lifetime achievement in 1996.");
+    server->handle_message(":wolfe.freenode.net 372 nick :-");
+    server->handle_message(":wolfe.freenode.net 372 nick :- Welcome to freenode - supporting the free and open source");
+    server->handle_message(":wolfe.freenode.net 372 nick :- software communities since 1998.");
+    server->handle_message(":wolfe.freenode.net 372 nick :-");
+    server->handle_message(":wolfe.freenode.net 372 nick :- By connecting to freenode you indicate that you have read and");
+    server->handle_message(":wolfe.freenode.net 372 nick :- accept our policies and guidelines as set out on https://freenode.net");
+    server->handle_message(":wolfe.freenode.net 372 nick :-");
+    server->handle_message(":wolfe.freenode.net 372 nick :- In the event that you observe behaviour that contravenes our policies,");
+    server->handle_message(":wolfe.freenode.net 372 nick :- please notify a volunteer staff member via private message, or send us an");
+    server->handle_message(":wolfe.freenode.net 372 nick :- e-mail to complaints@freenode.net -- we will do our best to address the");
+    server->handle_message(":wolfe.freenode.net 372 nick :- situation within a reasonable period of time, and we may request further");
+    server->handle_message(":wolfe.freenode.net 372 nick :- information or, as appropriate, involve other parties such as channel operators");
+    server->handle_message(":wolfe.freenode.net 372 nick :- Group Contacts representing an on-topic group.");
+    server->handle_message(":wolfe.freenode.net 372 nick :-");
+    server->handle_message(":wolfe.freenode.net 372 nick :- freenode runs an open proxy scanner.");
+    server->handle_message(":wolfe.freenode.net 372 nick :-");
+    server->handle_message(":wolfe.freenode.net 372 nick :- If you are looking for assistance, you may be able to find a list of");
+    server->handle_message(":wolfe.freenode.net 372 nick :- volunteer staff on '/stats p' (shows only on-call staff) or by joining");
+    server->handle_message(":wolfe.freenode.net 372 nick :- #freenode and using the '/who freenode/staff/*' command. You may message");
+    server->handle_message(":wolfe.freenode.net 372 nick :- any of us at any time. Please note that freenode predominantly provides");
+    server->handle_message(":wolfe.freenode.net 372 nick :- assistance via private message, and while we have a network channel the");
+    server->handle_message(":wolfe.freenode.net 372 nick :- primary venue for support requests is via private message to a member");
+    server->handle_message(":wolfe.freenode.net 372 nick :- of the volunteer staff team.");
+    server->handle_message(":wolfe.freenode.net 372 nick :-");
+    server->handle_message(":wolfe.freenode.net 372 nick :- From time to time, volunteer staff may send server-wide notices relating to");
+    server->handle_message(":wolfe.freenode.net 372 nick :- the project, or the communities that we host. The majority of such notices");
+    server->handle_message(":wolfe.freenode.net 372 nick :- will be sent as wallops, and you can '/mode <yournick> +w' to ensure that you");
+    server->handle_message(":wolfe.freenode.net 372 nick :- do not miss them. Important messages relating to the freenode project, including");
+    server->handle_message(":wolfe.freenode.net 372 nick :- notices of upcoming maintenance and other scheduled downtime will be issued as");
+    server->handle_message(":wolfe.freenode.net 372 nick :- global notices.");
+    server->handle_message(":wolfe.freenode.net 372 nick :-");
+    server->handle_message(":wolfe.freenode.net 372 nick :- Representing an on-topic project? Don't forget to register, more information");
+    server->handle_message(":wolfe.freenode.net 372 nick :- can be found on the https://freenode.net website under \"Group Registration\".");
+    server->handle_message(":wolfe.freenode.net 372 nick :-");
+    server->handle_message(":wolfe.freenode.net 372 nick :- Thank you also to our server sponsors for the sustained support in keeping the");
+    server->handle_message(":wolfe.freenode.net 372 nick :- network going for close to two decades.");
+    server->handle_message(":wolfe.freenode.net 372 nick :-");
+    server->handle_message(":wolfe.freenode.net 372 nick :- Thank you to all of our attendees, sponsors, speakers, exhibitors, helpers,");
+    server->handle_message(":wolfe.freenode.net 372 nick :- and everyone else who made this year's freenode #live conference amazing.");
+    server->handle_message(":wolfe.freenode.net 372 nick :- https://freenode.net/news/live-2018");
+    server->handle_message(":wolfe.freenode.net 372 nick :-");
+    server->handle_message(":wolfe.freenode.net 372 nick :- Thank you for using freenode!");
+    server->handle_message(":wolfe.freenode.net 376 nick :End of /MOTD command.");
 
     std::stringstream motd;
     motd
@@ -459,8 +463,7 @@ namespace core {
     create_server();
     ss.str("");
     
-    std::string msg;
-    server->handle_message(msg = "PING :wolfe.freenode.net");
+    server->handle_message("PING :wolfe.freenode.net");
 
     std::string line;
     getline(ss, line);
@@ -574,6 +577,49 @@ namespace core {
       channel = entity_repo.find_channel(IrcMessage("JOIN", { "##c++" }));
       EXPECT_EQ(false, (bool) channel);
     }
+  }
+
+  TEST_F(IrcServerTest, should_handle_nick_change_message) {
+    create_server();
+
+    server->join("##c++");
+    server->join("#haskell");
+    server->handle_message(":nick!jdoe@foo.org JOIN ##c++");
+    server->handle_message(":nick!jdoe@foo.org JOIN #haskell");
+    server->handle_message(":nick2!jdoe@foo.org JOIN ##c++");
+    EXPECT_EQ(true, (bool) entity_repo.find_user("nick2"));
+
+    server->handle_message(":nick2!jdoe@foo.org NICK nick3");
+
+    EXPECT_EQ(false, (bool) entity_repo.find_user("nick2"));
+    auto user = entity_repo.find_user("nick3");
+    EXPECT_EQ(true, (bool) user);
+    if (user) {
+      EXPECT_EQ("nick3", user->nickname());
+    }
+
+    EXPECT_EQ(true, (bool) sh.nick_from);
+    if (sh.nick_from) {
+      EXPECT_EQ("nick2", *sh.nick_from);
+    }
+    EXPECT_EQ(true, (bool) sh.nick_to);
+    if (sh.nick_to) {
+      EXPECT_EQ("nick3", *sh.nick_to);
+    }
+
+    auto ch = sh.channels[0];
+    EXPECT_EQ(true, (bool) ch->nick_from);
+    if (ch->nick_from) {
+      EXPECT_EQ("nick2", *(ch->nick_from));
+    }
+    EXPECT_EQ(true, (bool) ch->nick_to);
+    if (ch->nick_to) {
+      EXPECT_EQ("nick3", *(ch->nick_to));
+    }
+
+    ch = sh.channels[1];
+    EXPECT_EQ(false, (bool) ch->nick_from);
+    EXPECT_EQ(false, (bool) ch->nick_to);
   }
 
 }

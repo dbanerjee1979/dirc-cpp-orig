@@ -58,4 +58,13 @@ namespace core {
     return boost::none;
   }
 
+  void IrcEntityRepository::change_nick(const std::string &nickname_from, const std::string &nickname_to) {
+    auto it = m_users.find(nickname_from);
+    if (it != m_users.end()) {
+      it->second->nickname(nickname_to);
+      m_users[nickname_to] = std::move(it->second);
+      m_users.erase(nickname_from);
+    }
+  }
+
 }

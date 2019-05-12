@@ -23,6 +23,7 @@ namespace core {
     m_msg_handlers["QUIT"] = std::bind(&IrcChannel::handle_quit, this, _1);
     m_msg_handlers["JOIN"] = std::bind(&IrcChannel::handle_join, this, _1);
     m_msg_handlers["PART"] = std::bind(&IrcChannel::handle_part, this, _1);
+    m_msg_handlers["NICK"] = std::bind(&IrcChannel::handle_nick, this, _1);
   }
 
   std::string &IrcChannel::name() {
@@ -112,6 +113,20 @@ namespace core {
         m_users.erase(it);
         m_user_repo.remove_user(msg.nick);
         break;
+      }
+    }
+  }
+
+  void IrcChannel::handle_nick(const IrcMessage &msg) {
+    boost::optional<IrcUser> user;
+    auto nickname_from = msg.nick;
+    if (msg.params.size() > 0) {
+      auto nickname_to = msg.params[0];
+      for (auto it = m_users.begin(); it != m_users.end(); it++) {
+        if ((*it)->user().nickname() == nickname_to) {
+          m_event_handler->nick_changed(nickname_from, nickname_to);
+          break;
+        }
       }
     }
   }

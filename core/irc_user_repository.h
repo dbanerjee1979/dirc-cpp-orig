@@ -11,6 +11,7 @@ namespace core {
     virtual void create_user(const std::string &nickname, const std::string &username = "", const std::string &realname = "") = 0;
     virtual void remove_user(const std::string &nickname) = 0;
     virtual boost::optional<IrcUser&> find_user(const std::string &nickname) = 0;
+    virtual void change_nick(const std::string &nickname_from, const std::string &nickname_to) = 0;
   };
   
 }

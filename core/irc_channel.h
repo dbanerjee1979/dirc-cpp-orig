@@ -28,6 +28,7 @@ namespace core {
     void handle_quit(const IrcMessage &);
     void handle_join(const IrcMessage &);
     void handle_part(const IrcMessage &);
+    void handle_nick(const IrcMessage &);
 
     std::string m_name;
     std::ostream &m_out;

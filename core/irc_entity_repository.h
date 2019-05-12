@@ -22,6 +22,7 @@ namespace core {
     void foreach_channels(std::function<void(IrcChannel &)> handler);
     void create_user(const std::string &nickname, const std::string &username = "", const std::string &realname = "");
     void remove_user(const std::string &nickname);
+    void change_nick(const std::string &nickname_from, const std::string &nickname_to);
     boost::optional<IrcUser&> find_user(const std::string &nickname);
   private:
     std::unordered_map<std::string, std::unique_ptr<IrcChannel>> m_channels;

@@ -9,6 +9,7 @@ namespace core {
   public:
     IrcUser(const std::string &nickname, const std::string &username = "", const std::string &realname = "");
     std::string &nickname();
+    void nickname(const std::string &);
     std::string &username();
     std::string &realname();
   private:

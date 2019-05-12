@@ -31,6 +31,9 @@ namespace core {
 
     virtual void user_departed(IrcChannelUser &_user, const std::string &msg) {
     }
+
+    virtual void nick_changed(const std::string &nick_from, const std::string &nick_to) {
+    }
   };
 }
 
