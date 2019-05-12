@@ -17,13 +17,13 @@ namespace text {
     void error(const std::string &msg);
     void connected();
     void handle_shutdown();
-    TextChannelEventHandler *create_channel_event_handler(const std::string &channel);
+    std::shared_ptr<core::ChannelEventHandler> create_channel_event_handler(const std::string &channel);
   private:
     std::string m_network;
     ServerRunLoop &m_server_run_loop;
     std::vector<std::string> m_messages;
     int m_messages_unread;
-    std::map<std::string, TextChannelEventHandler *> m_channels;
+    std::map<std::string, std::shared_ptr<TextChannelEventHandler>> m_channels;
 
     friend class App;
   };

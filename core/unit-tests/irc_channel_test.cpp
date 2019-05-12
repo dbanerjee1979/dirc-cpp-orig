@@ -49,14 +49,13 @@ namespace core {
   class IrcChannelTest : public testing::Test {
   protected:
     IrcChannelTest() :
-      event_handler (new StubChannelEventHandlerCT()),
       name ("##c++"),
       channel (name, ss, event_handler, entity_repo, [] () {}) {
     }
 
     std::stringstream ss;
     IrcEntityRepository entity_repo;
-    StubChannelEventHandlerCT *event_handler;
+    StubChannelEventHandlerCT event_handler;
     std::string name;
     IrcChannel channel;
   };
@@ -66,16 +65,16 @@ namespace core {
 
     channel.handle_message(msg);
 
-    ASSERT_EQ("New topic", event_handler->topic);
+    ASSERT_EQ("New topic", event_handler.topic);
   }
 
   TEST_F(IrcChannelTest, should_handle_channel_topic_change_to_no_topic) {
-    event_handler->topic = "Dummy";
+    event_handler.topic = "Dummy";
     IrcMessage msg = IrcMessage(RPL_NOTOPIC, { "nick", "##c++" }, "No topic");
 
     channel.handle_message(msg);
 
-    ASSERT_EQ("", event_handler->topic);
+    ASSERT_EQ("", event_handler.topic);
   }
 
   TEST_F(IrcChannelTest, should_handle_names_list) {
@@ -89,7 +88,7 @@ namespace core {
     channel.handle_message(msg2);
     channel.handle_message(msg3);
 
-    auto users = event_handler->users;
+    auto users = event_handler.users;
     ASSERT_EQ(6, users.size());
     if (users.size() == 6) {
       ASSERT_EQ("nick", users[0]->user().nickname());
@@ -123,7 +122,7 @@ namespace core {
     channel.handle_message(msg2);
     channel.handle_message(msg3);
 
-    auto users = event_handler->users;
+    auto users = event_handler.users;
     ASSERT_EQ(8, users.size());
     if (users.size() == 8) {
       ASSERT_EQ("nick", users[0]->user().nickname());
@@ -150,7 +149,7 @@ namespace core {
   TEST_F(IrcChannelTest, should_handle_new_user_joining_channel) {
     channel.handle_message(IrcMessage(":nick!jdoe@foo.org JOIN ##c++"));
 
-    auto user = event_handler->joined_user;
+    auto user = event_handler.joined_user;
     ASSERT_EQ(true, (bool) user);
     if (user) {
       ASSERT_EQ("nick", user->user().nickname());
@@ -174,9 +173,9 @@ namespace core {
     channel.handle_message(IrcMessage(":nick!jdoe@foo.org PART ##c++ :Goodbye, channel!"));
     ASSERT_EQ(false, (bool) entity_repo.find_user("nick"));
 
-    ASSERT_EQ("nick", event_handler->part_nick);
-    ASSERT_EQ("jdoe", event_handler->part_user);
-    ASSERT_EQ("Goodbye, channel!", event_handler->part_message);
+    ASSERT_EQ("nick", event_handler.part_nick);
+    ASSERT_EQ("jdoe", event_handler.part_user);
+    ASSERT_EQ("Goodbye, channel!", event_handler.part_message);
   }
 
 }

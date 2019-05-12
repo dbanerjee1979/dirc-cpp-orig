@@ -6,7 +6,7 @@ namespace core {
 
   IrcChannel::IrcChannel(const std::string &name,
                          std::ostream &out,
-                         ChannelEventHandler *event_handler,
+                         ChannelEventHandler &event_handler,
                          IrcUserRepository &user_repo,
                          std::function<void()> disconnect_handler) :
     m_name(name),
@@ -32,7 +32,7 @@ namespace core {
 
   void IrcChannel::disconnect(const std::string &msg) {
     m_out << IrcMessage("PART", { m_name }, msg).str() << std::endl;
-    m_event_handler->disconnected();
+    m_event_handler.disconnected();
     m_disconnect_handler();
   }
 
@@ -44,11 +44,11 @@ namespace core {
   }
 
   void IrcChannel::handle_topic(const IrcMessage &msg) {
-    m_event_handler->topic_changed(msg.trailing);
+    m_event_handler.topic_changed(msg.trailing);
   }
 
   void IrcChannel::handle_no_topic(const IrcMessage &msg) {
-    m_event_handler->topic_changed("");
+    m_event_handler.topic_changed("");
   }
 
   void IrcChannel::handle_name_reply(const IrcMessage &msg) {
@@ -89,13 +89,13 @@ namespace core {
     for (auto it = m_users.begin(); it != m_users.end(); it++) {
       users.push_back(it->get());
     }
-    m_event_handler->channel_users(users);
+    m_event_handler.channel_users(users);
   }
 
   void IrcChannel::handle_quit(const IrcMessage &msg) {
     for (auto it = m_users.begin(); it != m_users.end(); it++) {
       if ((*it)->user().nickname() == msg.nick) {
-        m_event_handler->user_quit(**it, msg.trailing);
+        m_event_handler.user_quit(**it, msg.trailing);
         break;
       }
     }
@@ -103,13 +103,13 @@ namespace core {
 
   void IrcChannel::handle_join(const IrcMessage &msg) {
     auto user = add_user(msg.nick, msg.user, "");
-    m_event_handler->user_joined(user);
+    m_event_handler.user_joined(user);
   }
 
   void IrcChannel::handle_part(const IrcMessage &msg) {
     for (auto it = m_users.begin(); it != m_users.end(); it++) {
       if ((*it)->user().nickname() == msg.nick) {
-        m_event_handler->user_departed(**it, msg.trailing);
+        m_event_handler.user_departed(**it, msg.trailing);
         m_users.erase(it);
         m_user_repo.remove_user(msg.nick);
         break;
@@ -124,7 +124,7 @@ namespace core {
       auto nickname_to = msg.params[0];
       for (auto it = m_users.begin(); it != m_users.end(); it++) {
         if ((*it)->user().nickname() == nickname_to) {
-          m_event_handler->nick_changed(nickname_from, nickname_to);
+          m_event_handler.nick_changed(nickname_from, nickname_to);
           break;
         }
       }

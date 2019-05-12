@@ -122,9 +122,9 @@ namespace core {
   void IrcServer::handle_join(const IrcMessage &msg) {
     const std::string &channel = msg.params[0];
     if (nick() == msg.nick) {
-      ChannelEventHandler *ch = m_event_handler.create_channel_event_handler(channel);
+      std::shared_ptr<ChannelEventHandler> ch(m_event_handler.create_channel_event_handler(channel));
       if (ch) {
-        m_entity_repo.create_channel(channel, m_out, ch);
+        m_entity_repo.create_channel(channel, m_out, *ch);
       }
     }
   }

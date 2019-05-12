@@ -54,8 +54,8 @@ namespace core {
       is_shutdown = true;
     }
 
-    ChannelEventHandler *create_channel_event_handler(const std::string &channel) {
-      auto ch = new StubChannelEventHandlerST(channel);
+    std::shared_ptr<core::ChannelEventHandler> create_channel_event_handler(const std::string &channel) {
+      std::shared_ptr<StubChannelEventHandlerST> ch(new StubChannelEventHandlerST(channel));
       channels.push_back(ch);
       return ch;
     }
@@ -93,7 +93,7 @@ namespace core {
     std::vector<std::string> messages;
     std::string motd;
     bool is_shutdown;
-    std::vector<StubChannelEventHandlerST *> channels;
+    std::vector<std::shared_ptr<StubChannelEventHandlerST>> channels;
     boost::optional<std::string> quit_user;
     boost::optional<std::string> quit_message;
     boost::optional<std::string> nick_from;

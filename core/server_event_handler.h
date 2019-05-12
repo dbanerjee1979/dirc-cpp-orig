@@ -1,6 +1,7 @@
 #ifndef _CORE_SERVER_HANDLER_H
 #define _CORE_SERVER_HANDLER_H
 
+#include <memory>
 #include "channel_event_handler.h"
 
 namespace core {
@@ -25,8 +26,8 @@ namespace core {
     virtual void handle_shutdown() {
     }
 
-    virtual ChannelEventHandler *create_channel_event_handler(const std::string &channel) {
-      return NULL;
+    virtual std::shared_ptr<ChannelEventHandler> create_channel_event_handler(const std::string &channel) {
+      return std::shared_ptr<ChannelEventHandler>();
     }
 
     virtual void notice(const std::string &recipient, const std::string &msg) {
