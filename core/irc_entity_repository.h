@@ -18,12 +18,13 @@ namespace core {
   public:
     IrcEntityRepository();
     void create_channel(const std::string &channel, std::ostream &out, std::shared_ptr<ChannelEventHandler> channel_handler);
-    boost::optional<IrcChannel&> find_channel(const IrcMessage &msg);
+    boost::optional<IrcChannel &> find_channel(const IrcMessage &msg);
     void foreach_channels(std::function<void(IrcChannel &)> handler);
     void create_user(const std::string &nickname, const std::string &username = "", const std::string &realname = "");
     void remove_user(const std::string &nickname);
     void change_nick(const std::string &nickname_from, const std::string &nickname_to);
-    boost::optional<IrcUser&> find_user(const std::string &nickname);
+    boost::optional<IrcUser &> find_user(const IrcMessage &msg);
+    boost::optional<IrcUser &> find_user(const std::string &nickname);
   private:
     std::unordered_map<std::string, std::unique_ptr<IrcChannel>> m_channels;
     std::unordered_map<std::string, std::unique_ptr<IrcUser>> m_users;

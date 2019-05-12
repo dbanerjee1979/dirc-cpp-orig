@@ -30,7 +30,7 @@ namespace core {
     m_channels[channel] = std::unique_ptr<IrcChannel>(ch);
   }
 
-  boost::optional<IrcChannel&> IrcEntityRepository::find_channel(const IrcMessage &msg) {
+  boost::optional<IrcChannel &> IrcEntityRepository::find_channel(const IrcMessage &msg) {
     auto it = m_entity_idx.find(msg.command);
     int idx;
     if (it != m_entity_idx.end() && (msg.params.size() > (idx = it->second))) {
@@ -60,7 +60,11 @@ namespace core {
     m_users.erase(nickname);
   }
 
-  boost::optional<IrcUser&> IrcEntityRepository::find_user(const std::string &nickname) {
+  boost::optional<IrcUser &> IrcEntityRepository::find_user(const IrcMessage &msg) {
+    return msg.nick.empty() ? boost::none : find_user(msg.nick);
+  }
+
+  boost::optional<IrcUser &> IrcEntityRepository::find_user(const std::string &nickname) {
     auto it = m_users.find(nickname);
     if (it != m_users.end()) {
       return *(it->second);

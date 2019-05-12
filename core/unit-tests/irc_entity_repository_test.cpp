@@ -11,6 +11,7 @@ namespace core {
       event_handler(new ChannelEventHandler()) {
       std::string channel = "##c++";
       entity_repo.create_channel(channel, out, std::shared_ptr<ChannelEventHandler>(event_handler));
+      entity_repo.create_user("nick");
     }
 
     std::stringstream out;
@@ -92,6 +93,18 @@ namespace core {
     
     if (found) {
       ASSERT_EQ("##c++", ch->name());
+    }
+  }
+
+  TEST_F(IrcEntityRepositoryTest, test_user_lookup_by_part_message) {
+    IrcMessage msg = IrcMessage(":nick!jdoe@foo.org NICK nick2");
+    auto user = entity_repo.find_user(msg);
+
+    bool found = (bool) user;
+    ASSERT_EQ(true, found);
+    
+    if (found) {
+      ASSERT_EQ("nick", user->nickname());
     }
   }
 }
