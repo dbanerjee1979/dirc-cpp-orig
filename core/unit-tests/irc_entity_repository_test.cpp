@@ -7,14 +7,15 @@ namespace core {
 
   class IrcEntityRepositoryTest : public testing::Test {
   protected:
-    IrcEntityRepositoryTest() {
+    IrcEntityRepositoryTest() :
+      event_handler(new ChannelEventHandler()) {
       std::string channel = "##c++";
-      entity_repo.create_channel(channel, out, event_handler);
+      entity_repo.create_channel(channel, out, std::shared_ptr<ChannelEventHandler>(event_handler));
     }
 
     std::stringstream out;
     IrcEntityRepository entity_repo;
-    ChannelEventHandler event_handler;
+    ChannelEventHandler *event_handler;
   };
 
   TEST_F(IrcEntityRepositoryTest, test_channel_lookup_by_topic_message) {

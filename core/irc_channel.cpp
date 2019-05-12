@@ -6,14 +6,13 @@ namespace core {
 
   IrcChannel::IrcChannel(const std::string &name,
                          std::ostream &out,
-                         ChannelEventHandler &event_handler,
-                         IrcUserRepository &user_repo,
-                         std::function<void()> disconnect_handler) :
+                         std::shared_ptr<ChannelEventHandler> event_handler,
+                         IrcUserRepository &user_repo) :
     m_name(name),
     m_out(out),
-    m_event_handler(event_handler),
-    m_user_repo(user_repo),
-    m_disconnect_handler(disconnect_handler) {
+    m_user_repo(user_repo) {
+
+    add_event_handler(event_handler);
 
     using std::placeholders::_1;
     m_msg_handlers[RPL_TOPIC] = std::bind(&IrcChannel::handle_topic, this, _1);
@@ -26,14 +25,23 @@ namespace core {
     m_msg_handlers["NICK"] = std::bind(&IrcChannel::handle_nick, this, _1);
   }
 
+  void IrcChannel::add_event_handler(std::shared_ptr<ChannelEventHandler> event_handler) {
+    m_event_handlers.push_back(event_handler);
+  }
+
+  void IrcChannel::send_event(std::function<void(ChannelEventHandler &)> handler) {
+    for (auto it = m_event_handlers.begin(); it != m_event_handlers.end(); it++) {
+      handler(**it);
+    }
+  }
+
   std::string &IrcChannel::name() {
     return m_name;
   }
 
   void IrcChannel::disconnect(const std::string &msg) {
     m_out << IrcMessage("PART", { m_name }, msg).str() << std::endl;
-    m_event_handler.disconnected();
-    m_disconnect_handler();
+    send_event([&] (ChannelEventHandler &h) { h.disconnected(); });
   }
 
   void IrcChannel::handle_message(const IrcMessage &msg) {
@@ -44,11 +52,11 @@ namespace core {
   }
 
   void IrcChannel::handle_topic(const IrcMessage &msg) {
-    m_event_handler.topic_changed(msg.trailing);
+    send_event([&] (ChannelEventHandler &h) { h.topic_changed(msg.trailing); });
   }
 
   void IrcChannel::handle_no_topic(const IrcMessage &msg) {
-    m_event_handler.topic_changed("");
+    send_event([&] (ChannelEventHandler &h) { h.topic_changed(""); });
   }
 
   void IrcChannel::handle_name_reply(const IrcMessage &msg) {
@@ -74,7 +82,7 @@ namespace core {
       }
     }
   }
-
+  
   IrcChannelUser &IrcChannel::add_user(const std::string &nick, const std::string &username, const std::string &chan_mode) {
     if (!m_user_repo.find_user(nick)) {
       m_user_repo.create_user(nick, username);
@@ -84,13 +92,13 @@ namespace core {
   }
   
   void IrcChannel::handle_name_reply_end(const IrcMessage &msg) {
-    m_event_handler.channel_users(m_users.begin(), m_users.end());
+    send_event([&] (ChannelEventHandler &h) { h.channel_users(m_users.begin(), m_users.end()); });
   }
 
   void IrcChannel::handle_quit(const IrcMessage &msg) {
     for (auto it = m_users.begin(); it != m_users.end(); it++) {
       if (it->user().nickname() == msg.nick) {
-        m_event_handler.user_quit(*it, msg.trailing);
+        send_event([&] (ChannelEventHandler &h) { h.user_quit(*it, msg.trailing); });
         break;
       }
     }
@@ -98,13 +106,13 @@ namespace core {
 
   void IrcChannel::handle_join(const IrcMessage &msg) {
     auto user = add_user(msg.nick, msg.user, "");
-    m_event_handler.user_joined(user);
+    send_event([&] (ChannelEventHandler &h) { h.user_joined(user); });
   }
 
   void IrcChannel::handle_part(const IrcMessage &msg) {
     for (auto it = m_users.begin(); it != m_users.end(); it++) {
       if (it->user().nickname() == msg.nick) {
-        m_event_handler.user_departed(*it, msg.trailing);
+        send_event([&] (ChannelEventHandler &h) { h.user_departed(*it, msg.trailing); });
         m_users.erase(it);
         m_user_repo.remove_user(msg.nick);
         break;
@@ -119,7 +127,7 @@ namespace core {
       auto nickname_to = msg.params[0];
       for (auto it = m_users.begin(); it != m_users.end(); it++) {
         if (it->user().nickname() == nickname_to) {
-          m_event_handler.nick_changed(nickname_from, nickname_to);
+          send_event([&] (ChannelEventHandler &h) { h.nick_changed(nickname_from, nickname_to); });
           break;
         }
       }

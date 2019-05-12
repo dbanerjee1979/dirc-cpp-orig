@@ -124,7 +124,7 @@ namespace core {
     if (nick() == msg.nick) {
       std::shared_ptr<ChannelEventHandler> ch(m_event_handler.create_channel_event_handler(channel));
       if (ch) {
-        m_entity_repo.create_channel(channel, m_out, *ch);
+        m_entity_repo.create_channel(channel, m_out, ch);
       }
     }
   }
