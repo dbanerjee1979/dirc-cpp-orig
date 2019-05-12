@@ -10,7 +10,7 @@ namespace core {
     m_realname(realname){
   }
   
-  std::string &IrcUser::nickname() {
+  const std::string &IrcUser::nickname() {
     return m_nickname;
   }
 
@@ -18,11 +18,11 @@ namespace core {
     m_nickname = nickname;
   }
 
-  std::string &IrcUser::username() {
+  const std::string &IrcUser::username() {
     return m_username;
   }
   
-  std::string &IrcUser::realname() {
+  const std::string &IrcUser::realname() {
     return m_realname;
   }
 
