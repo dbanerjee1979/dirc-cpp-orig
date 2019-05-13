@@ -1,5 +1,6 @@
 #include "irc_message_commands.h"
 #include "irc_entity_repository.h"
+#include "user_event_handler.h"
 
 namespace core {
 
@@ -14,7 +15,7 @@ namespace core {
 
   void IrcEntityRepository::create_channel(const std::string &channel,
                                            std::ostream &out,
-                                           std::shared_ptr<ChannelEventHandler> channel_handler) {
+                                           std::shared_ptr<ChannelEventHandler> event_handler) {
     struct DisconnectHandler : public ChannelEventHandler {
       IrcEntityRepository &m_entity_repo;
       std::string m_channel;
@@ -25,7 +26,7 @@ namespace core {
         m_entity_repo.m_channels.erase(m_channel);
       }
     };
-    auto ch = new IrcChannel(channel, out, channel_handler, *this);
+    auto ch = new IrcChannel(channel, out, event_handler, *this);
     ch->add_event_handler(std::shared_ptr<DisconnectHandler>(new DisconnectHandler(*this, channel)));
     m_channels[channel] = std::unique_ptr<IrcChannel>(ch);
   }
@@ -51,8 +52,27 @@ namespace core {
 
   void IrcEntityRepository::create_user(const std::string &nickname,
                                         const std::string &username,
-                                        const std::string &realname) {
+                                        const std::string &realname,
+                                        std::shared_ptr<UserEventHandler> event_handler) {
+    struct NickChangeHandler : public UserEventHandler {
+      IrcEntityRepository &m_er;
+      std::string m_nick;
+      NickChangeHandler(IrcEntityRepository &er, const std::string &nick) : m_er(er), m_nick(nick) {
+      }
+      void nick_changed(const std::string &nick_from, const std::string &nick_to) {
+        auto it = m_er.m_users.find(nick_from);
+        if (it != m_er.m_users.end()) {
+          m_er.m_users[nick_to] = std::move(it->second);
+          m_er.m_users.erase(it);
+        }
+      }
+      void quit(const std::string &) {
+        m_er.m_users.erase(m_nick);
+      }
+    };
     auto user = new IrcUser(nickname, username, realname);
+    user->add_event_handler(event_handler);
+    user->add_event_handler(std::shared_ptr<NickChangeHandler>(new NickChangeHandler(*this, nickname)));
     m_users[nickname] = std::unique_ptr<IrcUser>(user);
   }
 
@@ -70,15 +90,6 @@ namespace core {
       return *(it->second);
     }
     return boost::none;
-  }
-
-  void IrcEntityRepository::change_nick(const std::string &nickname_from, const std::string &nickname_to) {
-    auto it = m_users.find(nickname_from);
-    if (it != m_users.end()) {
-      it->second->nickname(nickname_to);
-      m_users[nickname_to] = std::move(it->second);
-      m_users.erase(nickname_from);
-    }
   }
 
 }

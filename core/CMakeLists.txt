@@ -9,4 +9,5 @@ add_library (core
   irc_channel.cpp
   irc_entity_repository.cpp
   irc_user.cpp
-  irc_channel_user.cpp)
+  irc_channel_user.cpp
+  irc_message_handler_mixin.cpp)

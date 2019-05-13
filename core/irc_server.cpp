@@ -24,8 +24,6 @@ namespace core {
     m_msg_handlers["NOTICE"] = std::bind(&IrcServer::handle_notice, this, _1);
     m_msg_handlers["PING"] = std::bind(&IrcServer::handle_ping, this, _1);
     m_msg_handlers["JOIN"] = std::bind(&IrcServer::handle_join, this, _1);
-    m_msg_handlers["QUIT"] = std::bind(&IrcServer::handle_quit, this, _1);
-    m_msg_handlers["NICK"] = std::bind(&IrcServer::handle_nick, this, _1);
 
     if (!network.user_info.password.empty()) {
       m_out << IrcMessage("PASSWORD", { network.user_info.password }).str() << std::flush;
@@ -51,8 +49,12 @@ namespace core {
     m_event_handler.recieved_message(msg_str);
     IrcMessage msg(msg_str);
     boost::optional<IrcChannel &> channel;
+    boost::optional<IrcUser &> user;
     if (channel = m_entity_repo.find_channel(msg)) {
       channel->handle_message(msg);
+    }
+    if (user = m_entity_repo.find_user(msg)) {
+      user->handle_message(msg);
     }
     else {
       auto it = m_msg_handlers.find(msg.command);
@@ -82,7 +84,7 @@ namespace core {
 
   void IrcServer::handle_connection_registration(const IrcMessage &msg) {
     handle_message_default(msg);
-    m_entity_repo.create_user(nick(), m_user_info.username, m_user_info.realname);
+    m_entity_repo.create_user(nick(), m_user_info.username, m_user_info.realname, std::shared_ptr<UserEventHandler>(new UserEventHandler));
     m_event_handler.connected();
   }
 
@@ -135,17 +137,6 @@ namespace core {
       m_event_handler.user_quit(*user, msg.trailing);
       m_entity_repo.foreach_channels([msg] (IrcChannel& ch) { ch.handle_message(msg); });
       m_entity_repo.remove_user(msg.nick);
-    }
-  }
-
-  void IrcServer::handle_nick(const IrcMessage &msg) {
-    boost::optional<IrcUser> user;
-    auto nick_from = msg.nick;
-    if (msg.params.size() > 0 && !msg.nick.empty() && (user = m_entity_repo.find_user(nick_from))) {
-      auto nick_to = msg.params[0];
-      m_entity_repo.change_nick(nick_from, nick_to);
-      m_event_handler.nick_changed(nick_from, nick_to);
-      m_entity_repo.foreach_channels([msg] (IrcChannel &ch) { ch.handle_message(msg); });
     }
   }
 }

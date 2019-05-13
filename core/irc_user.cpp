@@ -7,9 +7,13 @@ namespace core {
                    const std::string &realname) :
     m_nickname(nickname),
     m_username(username),
-    m_realname(realname){
+    m_realname(realname) {
+
+    using std::placeholders::_1;
+    m_msg_handlers["NICK"] = std::bind(&IrcUser::handle_nick, this, _1);
+    m_msg_handlers["QUIT"] = std::bind(&IrcUser::handle_quit, this, _1);
   }
-  
+
   const std::string &IrcUser::nickname() {
     return m_nickname;
   }
@@ -26,4 +30,16 @@ namespace core {
     return m_realname;
   }
 
+  void IrcUser::handle_nick(const IrcMessage &msg) {
+    const std::string &nick_from = msg.nick;
+    if (msg.params.size() > 0) {
+      const std::string &nick_to = msg.params[0];
+      m_nickname = nick_to;
+      send_event([&] (UserEventHandler &h) { h.nick_changed(nick_from, nick_to); });
+    }
+  }
+
+  void IrcUser::handle_quit(const IrcMessage &msg) {
+    send_event([&] (UserEventHandler &h) { h.quit(msg.trailing); });
+  }
 }
