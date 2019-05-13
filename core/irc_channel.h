@@ -17,7 +17,7 @@ namespace core {
 
   class IrcChannel : public IrcMessageHandlerMixin, public IrcEventHandlerMixin<ChannelEventHandler> {
   public:
-    IrcChannel(const std::string &, std::ostream &, std::shared_ptr<ChannelEventHandler>, IrcUserRepository &);
+    IrcChannel(const std::string &, std::ostream &, IrcUserRepository &);
     std::string &name();
     void disconnect(const std::string &msg);
   private:

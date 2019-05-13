@@ -13,9 +13,7 @@ namespace core {
     m_entity_idx["PART"]         = 0;
   }
 
-  void IrcEntityRepository::create_channel(const std::string &channel,
-                                           std::ostream &out,
-                                           std::shared_ptr<ChannelEventHandler> event_handler) {
+  IrcChannel &IrcEntityRepository::create_channel(const std::string &channel, std::ostream &out) {
     struct DisconnectHandler : public ChannelEventHandler {
       IrcEntityRepository &m_entity_repo;
       std::string m_channel;
@@ -26,9 +24,10 @@ namespace core {
         m_entity_repo.m_channels.erase(m_channel);
       }
     };
-    auto ch = new IrcChannel(channel, out, event_handler, *this);
+    auto ch = new IrcChannel(channel, out, *this);
     ch->add_event_handler(std::shared_ptr<DisconnectHandler>(new DisconnectHandler(*this, channel)));
     m_channels[channel] = std::unique_ptr<IrcChannel>(ch);
+    return *ch;
   }
 
   boost::optional<IrcChannel &> IrcEntityRepository::find_channel(const IrcMessage &msg) {
@@ -52,8 +51,7 @@ namespace core {
 
   void IrcEntityRepository::create_user(const std::string &nickname,
                                         const std::string &username,
-                                        const std::string &realname,
-                                        std::shared_ptr<UserEventHandler> event_handler) {
+                                        const std::string &realname) {
     struct NickChangeHandler : public UserEventHandler {
       IrcEntityRepository &m_er;
       std::string m_nick;
@@ -71,7 +69,6 @@ namespace core {
       }
     };
     auto user = new IrcUser(nickname, username, realname);
-    user->add_event_handler(event_handler);
     user->add_event_handler(std::shared_ptr<NickChangeHandler>(new NickChangeHandler(*this, nickname)));
     m_users[nickname] = std::unique_ptr<IrcUser>(user);
   }

@@ -9,8 +9,8 @@ namespace core {
   protected:
     IrcEntityRepositoryTest() {
       std::string channel = "##c++";
-      entity_repo.create_channel(channel, out, std::shared_ptr<ChannelEventHandler>(new ChannelEventHandler()));
-      entity_repo.create_user("nick", "", "", std::shared_ptr<UserEventHandler>(new UserEventHandler()));
+      entity_repo.create_channel(channel, out);
+      entity_repo.create_user("nick", "", "");
     }
 
     std::stringstream out;

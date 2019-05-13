@@ -51,8 +51,8 @@ namespace core {
     IrcChannelTest() :
       event_handler(new StubChannelEventHandlerCT()),
       name ("##c++"),
-      channel (name, ss, std::shared_ptr<ChannelEventHandler>(event_handler), entity_repo),
-      user_event_handler(new UserEventHandler()) {
+      channel(name, ss, entity_repo) {
+      channel.add_event_handler(std::shared_ptr<ChannelEventHandler>(event_handler));
     }
 
     std::stringstream ss;
@@ -60,7 +60,6 @@ namespace core {
     StubChannelEventHandlerCT *event_handler;
     std::string name;
     IrcChannel channel;
-    std::shared_ptr<UserEventHandler> user_event_handler;
   };
 
   TEST_F(IrcChannelTest, should_handle_channel_topic_change) {
@@ -81,7 +80,7 @@ namespace core {
   }
 
   TEST_F(IrcChannelTest, should_handle_names_list) {
-    entity_repo.create_user("nick", "jdoe", "John Doe", user_event_handler);
+    entity_repo.create_user("nick", "jdoe", "John Doe");
     
     IrcMessage msg1 = IrcMessage(RPL_NAMREPLY, { "nick", "*", "##c++" }, "nick nick2 nick3");
     IrcMessage msg2 = IrcMessage(RPL_NAMREPLY, { "nick", "*", "##c++" }, "nick4 nick5 nick6");
@@ -115,7 +114,7 @@ namespace core {
   }
   
   TEST_F(IrcChannelTest, should_handle_channel_prefixes_in_names_list) {
-    entity_repo.create_user("nick", "jdoe", "John Doe", user_event_handler);
+    entity_repo.create_user("nick", "jdoe", "John Doe");
     
     IrcMessage msg1 = IrcMessage(RPL_NAMREPLY, { "nick", "*", "##c++" }, "nick ~nick2 &nick3 nick4");
     IrcMessage msg2 = IrcMessage(RPL_NAMREPLY, { "nick", "*", "##c++" }, "@nick5 %nick6 +nick7 nick8");

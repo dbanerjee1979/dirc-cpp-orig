@@ -10,7 +10,7 @@ namespace core {
 
   class IrcUserRepository {
   public:
-    virtual void create_user(const std::string &nickname, const std::string &username, const std::string &realname, std::shared_ptr<UserEventHandler> event_handler) = 0;
+    virtual void create_user(const std::string &nickname, const std::string &username, const std::string &realname) = 0;
     virtual void remove_user(const std::string &nickname) = 0;
     virtual boost::optional<IrcUser&> find_user(const std::string &nickname) = 0;
   };

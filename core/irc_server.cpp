@@ -84,7 +84,7 @@ namespace core {
 
   void IrcServer::handle_connection_registration(const IrcMessage &msg) {
     handle_message_default(msg);
-    m_entity_repo.create_user(nick(), m_user_info.username, m_user_info.realname, std::shared_ptr<UserEventHandler>(new UserEventHandler));
+    m_entity_repo.create_user(nick(), m_user_info.username, m_user_info.realname);
     m_event_handler.connected();
   }
 
@@ -126,7 +126,7 @@ namespace core {
     if (nick() == msg.nick) {
       std::shared_ptr<ChannelEventHandler> ch(m_event_handler.create_channel_event_handler(channel));
       if (ch) {
-        m_entity_repo.create_channel(channel, m_out, ch);
+        m_entity_repo.create_channel(channel, m_out).add_event_handler(ch);
       }
     }
   }

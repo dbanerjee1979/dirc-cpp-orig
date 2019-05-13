@@ -7,13 +7,10 @@ namespace core {
 
   IrcChannel::IrcChannel(const std::string &name,
                          std::ostream &out,
-                         std::shared_ptr<ChannelEventHandler> event_handler,
                          IrcUserRepository &user_repo) :
     m_name(name),
     m_out(out),
     m_user_repo(user_repo) {
-
-    add_event_handler(event_handler);
 
     using std::placeholders::_1;
     m_msg_handlers[RPL_TOPIC] = std::bind(&IrcChannel::handle_topic, this, _1);
@@ -69,20 +66,20 @@ namespace core {
   IrcChannelUser &IrcChannel::add_user(const std::string &nick, const std::string &username, const std::string &chan_mode) {
     struct ChannelUserHandler : public UserEventHandler {
       IrcChannel &m_ch;
-      IrcChannelUser *m_user;
-      ChannelUserHandler(IrcChannel &ch) : m_ch(ch) {
+      IrcChannelUser &m_user;
+      ChannelUserHandler(IrcChannel &ch, IrcChannelUser &user) : m_ch(ch), m_user(user) {
       }
       void quit(const std::string &msg) {
-        m_ch.send_event([&] (ChannelEventHandler &h) { h.user_quit(*m_user, msg); });
+        m_ch.send_event([&] (ChannelEventHandler &h) { h.user_quit(m_user, msg); });
       }
     };
-    auto ch = new ChannelUserHandler(*this);
     if (!m_user_repo.find_user(nick)) {
-      m_user_repo.create_user(nick, username, "", std::shared_ptr<ChannelUserHandler>(ch));
+      m_user_repo.create_user(nick, username, "");
     }
     m_users.push_back(IrcChannelUser(*m_user_repo.find_user(nick), chan_mode));
-    ch->m_user = &m_users.back();
-    return *ch->m_user;
+    IrcChannelUser &user = m_users.back();
+    user.user().add_event_handler(std::shared_ptr<ChannelUserHandler>(new ChannelUserHandler(*this, user)));
+    return user;
   }
   
   void IrcChannel::handle_name_reply_end(const IrcMessage &msg) {

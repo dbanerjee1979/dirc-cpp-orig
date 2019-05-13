@@ -10,7 +10,7 @@ namespace core {
   class IrcEventHandlerMixin {
   public:
     void add_event_handler(std::shared_ptr<EventType> event_handler) {
-      m_event_handlers.push_back(event_handler);
+      m_event_handlers.insert(m_event_handlers.begin(), event_handler);
     }
   protected:
     void send_event(std::function<void(EventType &)> handler) {
