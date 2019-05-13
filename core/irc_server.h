@@ -20,6 +20,7 @@ namespace core {
     void shutdown();
     void quit(const std::string &);
     void join(const std::string &);
+    void nick(const std::string &);
     void handle_message(const std::string &);
   private:
     const std::string &nick();

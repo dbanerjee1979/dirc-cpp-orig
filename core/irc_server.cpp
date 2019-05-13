@@ -41,6 +41,10 @@ namespace core {
      m_out << IrcMessage("JOIN", { channel }).str() << std::flush;
   }
 
+  void IrcServer::nick(const std::string &nick) {
+    m_out << IrcMessage("NICK", { nick }).str() << std::flush;
+  }
+
   const std::string &IrcServer::nick() {
     return m_user_info.nicks[m_nick_id];
   }
