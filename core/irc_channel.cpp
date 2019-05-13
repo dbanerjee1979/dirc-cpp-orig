@@ -32,7 +32,7 @@ namespace core {
   }
 
   void IrcChannel::handle_topic(const IrcMessage &msg) {
-    send_event([&] (ChannelEventHandler &h) { h.topic_changed(msg.trailing); });
+    send_event([&] (ChannelEventHandler &h) { h.topic_changed(msg.trailing()); });
   }
 
   void IrcChannel::handle_no_topic(const IrcMessage &msg) {
@@ -41,7 +41,7 @@ namespace core {
 
   void IrcChannel::handle_name_reply(const IrcMessage &msg) {
     std::vector<std::string> nicks;
-    boost::split(nicks, msg.trailing, boost::is_any_of(" "));
+    boost::split(nicks, msg.trailing(), boost::is_any_of(" "));
     for (auto it = nicks.begin(); it != nicks.end(); it++) {
       std::string chan_mode;
       std::string nick;
@@ -90,16 +90,16 @@ namespace core {
   }
 
   void IrcChannel::handle_join(const IrcMessage &msg) {
-    auto user = add_user(msg.nick, msg.user, "");
+    auto user = add_user(msg.nick(), msg.user(), "");
     send_event([&] (ChannelEventHandler &h) { h.user_joined(user); });
   }
 
   void IrcChannel::handle_part(const IrcMessage &msg) {
     for (auto it = m_users.begin(); it != m_users.end(); it++) {
-      if (it->user().nickname() == msg.nick) {
-        send_event([&] (ChannelEventHandler &h) { h.user_departed(*it, msg.trailing); });
+      if (it->user().nickname() == msg.nick()) {
+        send_event([&] (ChannelEventHandler &h) { h.user_departed(*it, msg.trailing()); });
         m_users.erase(it);
-        m_user_repo.remove_user(msg.nick);
+        m_user_repo.remove_user(msg.nick());
         break;
       }
     }

@@ -31,8 +31,8 @@ namespace core {
   }
 
   void IrcUser::handle_nick(const IrcMessage &msg) {
-    const std::string &nick_from = msg.nick;
-    const std::string &nick_to = msg.params.size() > 0 ? msg.params[0] : msg.trailing;
+    const std::string &nick_from = msg.nick();
+    const std::string &nick_to = msg.param(0);
     if (!nick_to.empty()) {
       m_nickname = nick_to;
       send_event([&] (UserEventHandler &h) { h.nick_changed(nick_from, nick_to); });
@@ -40,6 +40,6 @@ namespace core {
   }
 
   void IrcUser::handle_quit(const IrcMessage &msg) {
-    send_event([&] (UserEventHandler &h) { h.quit(msg.trailing); });
+    send_event([&] (UserEventHandler &h) { h.quit(msg.trailing()); });
   }
 }
