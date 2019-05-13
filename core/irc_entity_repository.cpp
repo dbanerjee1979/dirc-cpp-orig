@@ -13,7 +13,7 @@ namespace core {
     m_entity_idx["PART"]         = 0;
   }
 
-  IrcChannel &IrcEntityRepository::create_channel(const std::string &channel, std::ostream &out) {
+  void IrcEntityRepository::create_channel(const std::string &channel, std::ostream &out) {
     struct DisconnectHandler : public ChannelEventHandler {
       IrcEntityRepository &m_entity_repo;
       std::string m_channel;
@@ -27,7 +27,6 @@ namespace core {
     auto ch = new IrcChannel(channel, out, *this);
     ch->add_event_handler(std::shared_ptr<DisconnectHandler>(new DisconnectHandler(*this, channel)));
     m_channels[channel] = std::unique_ptr<IrcChannel>(ch);
-    return *ch;
   }
 
   boost::optional<IrcChannel &> IrcEntityRepository::find_channel(const IrcMessage &msg) {

@@ -122,11 +122,27 @@ namespace core {
   }
 
   void IrcServer::handle_join(const IrcMessage &msg) {
+    struct ServerChannelHandler : public ChannelEventHandler {
+      IrcServer &m_s;
+      ServerChannelHandler(IrcServer &s) : m_s(s) {
+      }
+      void nick_changed(const std::string &nick_from, const std::string &nick_to) {
+        m_s.m_event_handler.nick_changed(nick_from, nick_to);
+      }
+      void user_quit(IrcChannelUser &user, const std::string &msg) {
+        m_s.m_event_handler.user_quit(user.user(), msg);
+      }
+    };
     const std::string &channel = msg.params[0];
     if (nick() == msg.nick) {
-      std::shared_ptr<ChannelEventHandler> ch(m_event_handler.create_channel_event_handler(channel));
-      if (ch) {
-        m_entity_repo.create_channel(channel, m_out).add_event_handler(ch);
+      std::shared_ptr<ChannelEventHandler> event_handler(m_event_handler.create_channel_event_handler(channel));
+      if (event_handler) {
+        m_entity_repo.create_channel(channel, m_out);
+        auto ch = m_entity_repo.find_channel(msg);
+        if (ch) {
+          ch->add_event_handler(std::shared_ptr<ServerChannelHandler>(new ServerChannelHandler(*this)));
+          ch->add_event_handler(event_handler);
+        }
       }
     }
   }

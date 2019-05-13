@@ -17,7 +17,7 @@ namespace core {
   class IrcEntityRepository : public IrcUserRepository {
   public:
     IrcEntityRepository();
-    IrcChannel &create_channel(const std::string &channel, std::ostream &out);
+    void create_channel(const std::string &channel, std::ostream &out);
     boost::optional<IrcChannel &> find_channel(const IrcMessage &msg);
     void foreach_channels(std::function<void(IrcChannel &)> handler);
     void create_user(const std::string &nickname, const std::string &username, const std::string &realname);

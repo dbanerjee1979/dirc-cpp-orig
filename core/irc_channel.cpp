@@ -69,6 +69,9 @@ namespace core {
       IrcChannelUser &m_user;
       ChannelUserHandler(IrcChannel &ch, IrcChannelUser &user) : m_ch(ch), m_user(user) {
       }
+      void nick_changed(const std::string &nick_from, const std::string &nick_to) {
+        m_ch.send_event([&] (ChannelEventHandler &h) { h.nick_changed(nick_from, nick_to); });
+      }
       void quit(const std::string &msg) {
         m_ch.send_event([&] (ChannelEventHandler &h) { h.user_quit(m_user, msg); });
       }
