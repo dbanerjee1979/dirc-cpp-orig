@@ -105,18 +105,4 @@ namespace core {
     }
   }
 
-  void IrcChannel::handle_nick(const IrcMessage &msg) {
-    boost::optional<IrcUser> user;
-    auto nickname_from = msg.nick;
-    if (msg.params.size() > 0) {
-      auto nickname_to = msg.params[0];
-      for (auto it = m_users.begin(); it != m_users.end(); it++) {
-        if (it->user().nickname() == nickname_to) {
-          send_event([&] (ChannelEventHandler &h) { h.nick_changed(nickname_from, nickname_to); });
-          break;
-        }
-      }
-    }
-  }
-
 }
