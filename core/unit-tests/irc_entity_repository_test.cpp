@@ -117,4 +117,12 @@ namespace core {
       ASSERT_EQ("nick", user->nickname());
     }
   }
+    
+  TEST_F(IrcEntityRepositoryTest, test_user_lookup_should_not_work_by_join_message) {
+    IrcMessage msg = IrcMessage(":nick!jdoe@foo.org JOIN ##c++");
+    auto user = entity_repo.find_user(msg);
+
+    bool found = (bool) user;
+    ASSERT_EQ(false, found);
+  }
 }

@@ -77,7 +77,7 @@ namespace core {
   }
 
   boost::optional<IrcUser &> IrcEntityRepository::find_user(const IrcMessage &msg) {
-    return msg.nick.empty() ? boost::none : find_user(msg.nick);
+    return (msg.command == "NICK" || msg.command == "QUIT") && !msg.nick.empty() ? find_user(msg.nick) : boost::none;
   }
 
   boost::optional<IrcUser &> IrcEntityRepository::find_user(const std::string &nickname) {
