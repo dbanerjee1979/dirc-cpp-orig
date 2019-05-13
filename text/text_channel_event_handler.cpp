@@ -6,8 +6,8 @@ namespace text {
     m_topic = msg;
   }
 
-  void TextChannelEventHandler::channel_users(const std::vector<core::IrcChannelUser> &_users) {
-    m_user_count = _users.size();
+  void TextChannelEventHandler::channel_users(core::ChannelUserIterator begin, core::ChannelUserIterator end) {
+    m_user_count = std::distance(begin, end);
   }
   
 }
