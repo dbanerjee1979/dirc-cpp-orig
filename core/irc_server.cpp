@@ -53,7 +53,7 @@ namespace core {
     if (channel = m_entity_repo.find_channel(msg)) {
       channel->handle_message(msg);
     }
-    if (user = m_entity_repo.find_user(msg)) {
+    else if (user = m_entity_repo.find_user(msg)) {
       user->handle_message(msg);
     }
     else {
