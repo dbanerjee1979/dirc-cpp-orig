@@ -32,8 +32,8 @@ namespace core {
 
   void IrcUser::handle_nick(const IrcMessage &msg) {
     const std::string &nick_from = msg.nick;
-    if (msg.params.size() > 0) {
-      const std::string &nick_to = msg.params[0];
+    const std::string &nick_to = msg.params.size() > 0 ? msg.params[0] : msg.trailing;
+    if (!nick_to.empty()) {
       m_nickname = nick_to;
       send_event([&] (UserEventHandler &h) { h.nick_changed(nick_from, nick_to); });
     }

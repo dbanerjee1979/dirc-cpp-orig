@@ -668,4 +668,51 @@ namespace core {
       EXPECT_EQ("nick2", *(ch->nick_to));
     }
   }
+
+  TEST_F(IrcServerTest, should_handle_nick_response_in_trailing_parameter) {
+    create_server();
+
+    server->join("##c++");
+    server->handle_message(":wolfe.freenode.net 001 shorugoru :Welcome to the freenode Internet Relay Chat Network nick");
+    server->handle_message(":nick!jdoe@foo.org JOIN ##c++");
+    server->handle_message(":wolfe.freenode.net 332 nick ##c++ :is a topical channel for discussing standard C++ specifications and code.");
+    server->handle_message(":wolfe.freenode.net 353 nick * ##c++ :nick");
+    server->handle_message(":wolfe.freenode.net 366 nick ##c++ :End of /NAMES list.");
+    ss.str("");
+
+    auto user = entity_repo.find_user("nick");
+    EXPECT_EQ(true, (bool) user);
+    
+    server->nick("nick2");
+    std::string line;
+    getline(ss, line);
+    EXPECT_EQ("NICK nick2\r", line);
+
+    server->handle_message(":nick!jdoe@foo.org NICK :nick2");
+
+    user = entity_repo.find_user("nick");
+    EXPECT_EQ(false, (bool) user);
+
+    user = entity_repo.find_user("nick2");
+    EXPECT_EQ(true, (bool) user);
+
+    EXPECT_EQ(true, (bool) sh.nick_from);
+    if (sh.nick_from) {
+      EXPECT_EQ("nick", *sh.nick_from);
+    }
+    EXPECT_EQ(true, (bool) sh.nick_to);
+    if (sh.nick_to) {
+      EXPECT_EQ("nick2", *sh.nick_to);
+    }
+
+    auto ch = sh.channels[0];
+    EXPECT_EQ(true, (bool) ch->nick_from);
+    if (ch->nick_from) {
+      EXPECT_EQ("nick", *(ch->nick_from));
+    }
+    EXPECT_EQ(true, (bool) ch->nick_to);
+    if (ch->nick_to) {
+      EXPECT_EQ("nick2", *(ch->nick_to));
+    }
+  }
 }

@@ -17,6 +17,7 @@ namespace text {
     m_commands["info"] = std::bind(&App::info_handler, this, _1);
     m_commands["list"] = std::bind(&App::list_handler, this, _1);
     m_commands["join"] = std::bind(&App::join_handler, this, _1);
+    m_commands["nick"] = std::bind(&App::nick_handler, this, _1);
   }
   
   void App::run() {
@@ -157,7 +158,7 @@ namespace text {
       return;
     }
 
-    with_network(network, [network, message, this](ServerHandle& h) {
+    with_network(network, [&] (ServerHandle& h) {
       h.server.quit(message);
       m_servers.erase(network);
     });
@@ -206,7 +207,7 @@ namespace text {
       return;
     }
     
-    with_network(network, [nick, log, messages, chat, this](ServerHandle& h) {
+    with_network(network, [&] (ServerHandle& h) {
       TextServerEventHandler &sh = h.server_event_handler;
 
       if (log) {
@@ -230,8 +231,25 @@ namespace text {
       return;
     }
 
-    with_network(network, [channel, this](ServerHandle& h) {
+    with_network(network, [&] (ServerHandle& h) {
       h.server.join(channel);      
+    });
+  }
+  
+  void App::nick_handler(std::stringstream &ss) {
+    std::string network;
+    std::string nick;
+
+    std::getline(ss, network, ' ');
+    std::getline(ss, nick);
+
+    if (network.empty() || nick.empty()) {
+      std::cout << "Usage: nick <network> <nick>" << std::endl;
+      return;
+    }
+
+    with_network(network, [&] (ServerHandle& h) {
+      h.server.nick(nick);      
     });
   }
 }

@@ -38,6 +38,7 @@ namespace text {
     void info_handler(std::stringstream &);
     void list_handler(std::stringstream &);
     void join_handler(std::stringstream &);
+    void nick_handler(std::stringstream &);
     
     std::vector<config::Network> m_networks;
     std::map<std::string, std::function<void(std::stringstream &)>> m_commands;
