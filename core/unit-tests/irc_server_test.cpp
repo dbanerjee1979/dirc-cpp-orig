@@ -70,7 +70,7 @@ namespace core {
       return ch;
     }
 
-    std::shared_ptr<core::ChatEventHandler> create_private_chat_event_handler(const IrcUser &user) {
+    std::shared_ptr<core::ChatEventHandler> create_user_chat_event_handler(const IrcUser &user) {
       std::shared_ptr<StubChatEventHandlerST> pch(new StubChatEventHandlerST());
       private_chats.push_back(pch);
       return pch;

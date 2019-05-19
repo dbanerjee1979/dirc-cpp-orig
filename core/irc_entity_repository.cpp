@@ -70,7 +70,19 @@ namespace core {
         m_er.m_users.erase(m_nick);
       }
     };
-    auto user = new IrcUser(nickname, username, realname, m_chat_factory);
+
+    struct ServerChatFactory : public ChatEventHandlerFactory {
+      IrcEntityRepository &m_er;
+      IrcUser *m_user;
+      ServerChatFactory(IrcEntityRepository &er) : m_er(er) {
+      }
+      std::shared_ptr<ChatEventHandler> create_chat_event_handler() {
+        return m_er.m_server_event_handler.create_user_chat_event_handler(*m_user);
+      }
+    };
+    std::shared_ptr<ServerChatFactory> chat_factory(new ServerChatFactory(*this));
+    auto user = new IrcUser(nickname, username, realname, chat_factory);
+    chat_factory->m_user = user;
     user->add_user_event_handler(std::shared_ptr<NickChangeHandler>(new NickChangeHandler(*this, nickname)));
     m_users[nickname] = std::unique_ptr<IrcUser>(user);
   }

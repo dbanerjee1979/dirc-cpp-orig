@@ -19,7 +19,7 @@ namespace core {
     IrcUser(const std::string &nickname,
             const std::string &username,
             const std::string &realname,
-            ChatEventHandlerFactory &chat_factory);
+            const std::shared_ptr<ChatEventHandlerFactory> chat_factory);
     const std::string &nickname();
     void nickname(const std::string &);
     const std::string &username();
@@ -37,7 +37,8 @@ namespace core {
     std::string m_nickname;
     std::string m_username;
     std::string m_realname;
-    ChatEventHandlerFactory &m_chat_factory;
+    std::shared_ptr<ChatEventHandlerFactory> m_chat_factory;
+    std::shared_ptr<ChatEventHandler> m_chat;
   };
 
 }

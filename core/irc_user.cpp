@@ -6,7 +6,7 @@ namespace core {
   IrcUser::IrcUser(const std::string &nickname,
                    const std::string &username,
                    const std::string &realname,
-                   ChatEventHandlerFactory &chat_factory) :
+                   const std::shared_ptr<ChatEventHandlerFactory> chat_factory) :
     m_nickname(nickname),
     m_username(username),
     m_realname(realname),
@@ -61,6 +61,11 @@ namespace core {
   }
 
   void IrcUser::handle_private_chat(const IrcMessage &msg) {
-    IrcEventHandlerMixin<ChatEventHandler>::send_event([&] (ChatEventHandler &h) { h.recieved_message(msg.trailing()); });
+    if (m_chat_factory && !m_chat) {
+      m_chat = m_chat_factory->create_chat_event_handler();
+    }
+    if (m_chat) {
+      m_chat->recieved_message(msg.trailing());
+    }
   }
 }

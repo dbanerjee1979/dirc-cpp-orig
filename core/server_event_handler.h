@@ -3,6 +3,7 @@
 
 #include <memory>
 #include "channel_event_handler.h"
+#include "chat_event_handler.h"
 
 namespace core {
   
@@ -28,6 +29,10 @@ namespace core {
 
     virtual std::shared_ptr<ChannelEventHandler> create_channel_event_handler(const std::string &channel) {
       return std::shared_ptr<ChannelEventHandler>();
+    }
+
+    virtual std::shared_ptr<ChatEventHandler> create_user_chat_event_handler(const IrcUser &user) {
+      return std::shared_ptr<ChatEventHandler>();
     }
 
     virtual void notice(const std::string &recipient, const std::string &msg) {
