@@ -4,6 +4,7 @@
 #include <core/irc_server.h>
 #include <core/server_event_handler.h>
 #include <core/channel_event_handler.h>
+#include <core/chat_event_handler.h>
 #include <core/config.h>
 
 namespace core {
@@ -34,6 +35,15 @@ namespace core {
     boost::optional<std::string> nick_from;
     boost::optional<std::string> nick_to;
   };
+
+  class StubChatEventHandlerST : public core::ChatEventHandler {
+  public:
+    void recieved_message(const std::string &msg) {
+      private_msgs.push_back(msg);
+    }
+
+    std::vector<std::string> private_msgs;
+  };
   
   class StubServerEventHandler : public core::ServerEventHandler {
   public:
@@ -58,6 +68,12 @@ namespace core {
       std::shared_ptr<StubChannelEventHandlerST> ch(new StubChannelEventHandlerST(channel));
       channels.push_back(ch);
       return ch;
+    }
+
+    std::shared_ptr<core::ChatEventHandler> create_private_chat_event_handler(const IrcUser &user) {
+      std::shared_ptr<StubChatEventHandlerST> pch(new StubChatEventHandlerST());
+      private_chats.push_back(pch);
+      return pch;
     }
 
     void error(const std::string &msg) {
@@ -94,6 +110,7 @@ namespace core {
     std::string motd;
     bool is_shutdown;
     std::vector<std::shared_ptr<StubChannelEventHandlerST>> channels;
+    std::vector<std::shared_ptr<StubChatEventHandlerST>> private_chats;
     boost::optional<std::string> quit_user;
     boost::optional<std::string> quit_message;
     boost::optional<std::string> nick_from;
@@ -106,7 +123,8 @@ namespace core {
       user_info({ "nick", "_nick_", "__nick__" }, "jdoe", "John Doe", ""),
       network("Freenode", { config::Server("irc.freenode.net", 8001) }, user_info),
       user_info_pass({ "nick" }, "jdoe", "John Doe", "secret"),
-      network_pass("Freenode", { config::Server("irc.freenode.net", 8001) }, user_info_pass) {
+      network_pass("Freenode", { config::Server("irc.freenode.net", 8001) }, user_info_pass),
+      entity_repo(sh, chat_factory) {
     }
 
     ~IrcServerTest() {
@@ -133,6 +151,7 @@ namespace core {
     std::stringstream ss;
     StubServerEventHandler sh;
     std::unique_ptr<IrcServer> server;
+    ChatEventHandlerFactory chat_factory;
     IrcEntityRepository entity_repo;
   };
 
@@ -715,4 +734,26 @@ namespace core {
       EXPECT_EQ("nick2", *(ch->nick_to));
     }
   }
+
+  TEST_F(IrcServerTest, should_create_private_chat_event_handler_when_private_message_message_recieved) {
+    create_server();
+
+    server->handle_message(":wolfe.freenode.net 001 shorugoru :Welcome to the freenode Internet Relay Chat Network nick");
+    server->handle_message(":freenode-connect!frigg@freenode/utility-bot/frigg PRIVMSG shorugoru :Hello");
+    server->handle_message(":freenode-connect!frigg@freenode/utility-bot/frigg PRIVMSG shorugoru :World");
+    ss.str("");
+
+    auto user = entity_repo.find_user("freenode-connect");
+    EXPECT_EQ(true, (bool) user);
+
+    EXPECT_EQ(1, sh.private_chats.size());
+    if (sh.private_chats.size() == 1) {
+      EXPECT_EQ(2, sh.private_chats[0]->private_msgs.size());
+      if (sh.private_chats[0]->private_msgs.size() == 2) {
+        EXPECT_EQ("Hello", sh.private_chats[0]->private_msgs[0]);
+        EXPECT_EQ("World", sh.private_chats[0]->private_msgs[1]);
+      }
+    }
+  }
+
 }

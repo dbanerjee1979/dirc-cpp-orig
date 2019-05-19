@@ -24,6 +24,7 @@ namespace core {
     m_msg_handlers["NOTICE"] = std::bind(&IrcServer::handle_notice, this, _1);
     m_msg_handlers["PING"] = std::bind(&IrcServer::handle_ping, this, _1);
     m_msg_handlers["JOIN"] = std::bind(&IrcServer::handle_join, this, _1);
+    m_msg_handlers["PRIVMSG"] = std::bind(&IrcServer::handle_private_chat, this, _1);
 
     if (!network.user_info.password.empty()) {
       m_out << IrcMessage("PASSWORD", { network.user_info.password }).str() << std::flush;
@@ -139,11 +140,21 @@ namespace core {
   }
 
   void IrcServer::handle_quit(const IrcMessage &msg) {
-    boost::optional<IrcUser> user;
+    boost::optional<IrcUser &> user;
     if (!msg.nick().empty() && (user = m_entity_repo.find_user(msg.nick()))) {
       m_event_handler.user_quit(*user, msg.trailing());
       m_entity_repo.foreach_channels([msg] (IrcChannel& ch) { ch.handle_message(msg); });
       m_entity_repo.remove_user(msg.nick());
+    }
+  }
+
+  void IrcServer::handle_private_chat(const IrcMessage &msg) {
+    boost::optional<IrcUser &> user;
+    if (!msg.nick().empty()) {
+      m_entity_repo.create_user(msg.nick(), msg.user(), "");
+      if (user = m_entity_repo.find_user(msg.nick())) {
+        user->handle_message(msg);
+      }
     }
   }
 }

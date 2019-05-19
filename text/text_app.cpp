@@ -73,6 +73,7 @@ namespace text {
     stream(ServerHandle::connect(network)),
     server_run_loop(stream),
     server_event_handler(text::TextServerEventHandler(network.name, server_run_loop)),
+    entity_repo(server_event_handler, chat_event_handler_factory),
     server(network, stream, server_event_handler, entity_repo) {
     server_run_loop.set_server(&server);
     server_thread = std::thread(&ServerRunLoop::run, &server_run_loop);

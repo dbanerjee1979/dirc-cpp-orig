@@ -13,16 +13,6 @@ namespace core {
                    ChanModeNone) {
   }
 
-  IrcChannelUser::IrcChannelUser(const IrcChannelUser &user) :
-    m_user(user.m_user),
-    m_channel_mode(user.m_channel_mode) {
-  }
-
-  void IrcChannelUser::operator=(const IrcChannelUser &user) {
-    m_user = user.m_user;
-    m_channel_mode = user.m_channel_mode;
-  }
-  
   IrcUser &IrcChannelUser::user() {
     return m_user;
   }

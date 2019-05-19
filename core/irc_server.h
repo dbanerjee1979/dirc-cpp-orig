@@ -34,6 +34,7 @@ namespace core {
     void handle_ping(const IrcMessage &);
     void handle_join(const IrcMessage &);
     void handle_quit(const IrcMessage &);
+    void handle_private_chat(const IrcMessage &);
 
     std::ostream &m_out;
     ServerEventHandler &m_event_handler;

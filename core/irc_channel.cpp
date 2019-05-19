@@ -79,9 +79,9 @@ namespace core {
     if (!m_user_repo.find_user(nick)) {
       m_user_repo.create_user(nick, username, "");
     }
-    m_users.push_back(IrcChannelUser(*m_user_repo.find_user(nick), chan_mode));
-    IrcChannelUser &user = m_users.back();
-    user.user().add_event_handler(std::shared_ptr<ChannelUserHandler>(new ChannelUserHandler(*this, user)));
+    m_users.push_back(std::unique_ptr<IrcChannelUser>(new IrcChannelUser(*m_user_repo.find_user(nick), chan_mode)));
+    IrcChannelUser &user = *m_users.back();
+    user.user().add_user_event_handler(std::shared_ptr<ChannelUserHandler>(new ChannelUserHandler(*this, user)));
     return user;
   }
   
@@ -96,8 +96,8 @@ namespace core {
 
   void IrcChannel::handle_part(const IrcMessage &msg) {
     for (auto it = m_users.begin(); it != m_users.end(); it++) {
-      if (it->user().nickname() == msg.nick()) {
-        send_event([&] (ChannelEventHandler &h) { h.user_departed(*it, msg.trailing()); });
+      if ((*it)->user().nickname() == msg.nick()) {
+        send_event([&] (ChannelEventHandler &h) { h.user_departed(**it, msg.trailing()); });
         m_users.erase(it);
         m_user_repo.remove_user(msg.nick());
         break;

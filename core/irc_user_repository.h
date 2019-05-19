@@ -5,6 +5,7 @@
 #include <boost/optional.hpp>
 #include "irc_user.h"
 #include "user_event_handler.h"
+#include "chat_event_handler.h"
 
 namespace core {
 

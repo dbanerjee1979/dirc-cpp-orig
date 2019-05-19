@@ -39,7 +39,7 @@ namespace core {
 
     std::string topic;
     std::vector<IrcChannelUser> users;
-    boost::optional<IrcChannelUser> joined_user;
+    boost::optional<IrcChannelUser &> joined_user;
     bool is_disconnected;
     std::string part_nick;
     std::string part_user;
@@ -50,12 +50,15 @@ namespace core {
   protected:
     IrcChannelTest() :
       event_handler(new StubChannelEventHandlerCT()),
+      entity_repo(server_event_handler, chat_event_handler_factory),
       name ("##c++"),
       channel(name, ss, entity_repo) {
       channel.add_event_handler(std::shared_ptr<ChannelEventHandler>(event_handler));
     }
 
     std::stringstream ss;
+    ServerEventHandler server_event_handler;
+    ChatEventHandlerFactory chat_event_handler_factory;
     IrcEntityRepository entity_repo;
     StubChannelEventHandlerCT *event_handler;
     std::string name;

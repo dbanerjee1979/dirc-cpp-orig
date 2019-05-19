@@ -32,7 +32,7 @@ namespace core {
     std::string m_name;
     std::ostream &m_out;
 
-    std::vector<IrcChannelUser> m_users;
+    std::vector<std::unique_ptr<IrcChannelUser>> m_users;
     IrcUserRepository &m_user_repo;
   };
   

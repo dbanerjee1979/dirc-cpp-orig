@@ -9,14 +9,16 @@
 #include <boost/optional.hpp>
 #include "irc_message.h"
 #include "irc_channel.h"
+#include "server_event_handler.h"
 #include "channel_event_handler.h"
+#include "chat_event_handler.h"
 #include "irc_user_repository.h"
 
 namespace core {
 
   class IrcEntityRepository : public IrcUserRepository {
   public:
-    IrcEntityRepository();
+    IrcEntityRepository(ServerEventHandler &server_event_handler, ChatEventHandlerFactory &chat_factory);
     void create_channel(const std::string &channel, std::ostream &out);
     boost::optional<IrcChannel &> find_channel(const IrcMessage &msg);
     void foreach_channels(std::function<void(IrcChannel &)> handler);
@@ -25,6 +27,8 @@ namespace core {
     boost::optional<IrcUser &> find_user(const IrcMessage &msg);
     boost::optional<IrcUser &> find_user(const std::string &nickname);
   private:
+    ServerEventHandler &m_server_event_handler;
+    ChatEventHandlerFactory &m_chat_factory;
     std::unordered_map<std::string, std::unique_ptr<IrcChannel>> m_channels;
     std::unordered_map<std::string, std::unique_ptr<IrcUser>> m_users;
     std::unordered_map<std::string, int> m_entity_idx;

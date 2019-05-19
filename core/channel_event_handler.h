@@ -1,21 +1,22 @@
-#ifndef _CORE_CHAT_HANDLER_H
-#define _CORE_CHAT_HANDLER_H
+#ifndef _CORE_CHANNEL_HANDLER_H
+#define _CORE_CHANNEL_HANDLER_H
 
 #include <vector>
+#include <memory>
 #include "irc_channel_user.h"
 
 namespace core {
 
   class ChannelUserIterator : public std::iterator<std::input_iterator_tag, IrcChannelUser> {
-    std::vector<IrcChannelUser>::iterator m_it;
+    std::vector<std::unique_ptr<IrcChannelUser>>::iterator m_it;
   public:
-    ChannelUserIterator(const std::vector<IrcChannelUser>::iterator &it) : m_it(it) {}
+    ChannelUserIterator(const std::vector<std::unique_ptr<IrcChannelUser>>::iterator &it) : m_it(it) {}
     ChannelUserIterator(const ChannelUserIterator &it) : m_it(it.m_it) {}
     ChannelUserIterator &operator++() { ++m_it; return *this; }
     ChannelUserIterator operator++(int) { ChannelUserIterator tmp(*this); operator++(); return tmp; }
     bool operator==(const ChannelUserIterator &rhs) const { return m_it == rhs.m_it; }
     bool operator!=(const ChannelUserIterator &rhs) const { return m_it != rhs.m_it; }
-    IrcChannelUser &operator*() { return *m_it; }
+    IrcChannelUser &operator*() { return **m_it; }
   };
 
   class ChannelEventHandler {

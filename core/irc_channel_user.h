@@ -11,8 +11,6 @@ namespace core {
   class IrcChannelUser {
   public:
     IrcChannelUser(IrcUser &user, const std::string &channel_mode);
-    IrcChannelUser(const IrcChannelUser &user);
-    void operator=(const IrcChannelUser &user);
     IrcUser &user();
     ChannelUserMode channel_mode();
   private:

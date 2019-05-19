@@ -1,10 +1,13 @@
 #include "irc_message_commands.h"
 #include "irc_entity_repository.h"
 #include "user_event_handler.h"
+#include "chat_event_handler.h"
 
 namespace core {
 
-  IrcEntityRepository::IrcEntityRepository() {
+  IrcEntityRepository::IrcEntityRepository(ServerEventHandler &server_event_handler, ChatEventHandlerFactory &chat_factory) :
+    m_server_event_handler(server_event_handler),
+    m_chat_factory(chat_factory) {
     m_entity_idx[RPL_TOPIC]      = 1;
     m_entity_idx[RPL_NOTOPIC]    = 1;
     m_entity_idx[RPL_NAMREPLY]   = 2;
@@ -67,8 +70,8 @@ namespace core {
         m_er.m_users.erase(m_nick);
       }
     };
-    auto user = new IrcUser(nickname, username, realname);
-    user->add_event_handler(std::shared_ptr<NickChangeHandler>(new NickChangeHandler(*this, nickname)));
+    auto user = new IrcUser(nickname, username, realname, m_chat_factory);
+    user->add_user_event_handler(std::shared_ptr<NickChangeHandler>(new NickChangeHandler(*this, nickname)));
     m_users[nickname] = std::unique_ptr<IrcUser>(user);
   }
 
@@ -77,7 +80,7 @@ namespace core {
   }
 
   boost::optional<IrcUser &> IrcEntityRepository::find_user(const IrcMessage &msg) {
-    return (msg.command() == "NICK" || msg.command() == "QUIT") && !msg.nick().empty() ? find_user(msg.nick()) : boost::none;
+    return (msg.command() == "NICK" || msg.command() == "QUIT" || msg.command() == "PRIVMSG") && !msg.nick().empty() ? find_user(msg.nick()) : boost::none;
   }
 
   boost::optional<IrcUser &> IrcEntityRepository::find_user(const std::string &nickname) {

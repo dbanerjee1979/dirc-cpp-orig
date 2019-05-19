@@ -1,6 +1,9 @@
 #ifndef _CORE_USER_HANDLER_H
 #define _CORE_USER_HANDLER_H
 
+#include <memory>
+#include "irc_user.h"
+
 namespace core {
 
   class UserEventHandler {
