@@ -124,7 +124,7 @@ namespace core {
       network("Freenode", { config::Server("irc.freenode.net", 8001) }, user_info),
       user_info_pass({ "nick" }, "jdoe", "John Doe", "secret"),
       network_pass("Freenode", { config::Server("irc.freenode.net", 8001) }, user_info_pass),
-      entity_repo(sh, chat_factory) {
+      entity_repo(sh) {
     }
 
     ~IrcServerTest() {
@@ -151,7 +151,6 @@ namespace core {
     std::stringstream ss;
     StubServerEventHandler sh;
     std::unique_ptr<IrcServer> server;
-    ChatEventHandlerFactory chat_factory;
     IrcEntityRepository entity_repo;
   };
 

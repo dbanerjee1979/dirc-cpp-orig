@@ -9,7 +9,6 @@
 #include <boost/asio.hpp>
 #include <core/config.h>
 #include <core/irc_server.h>
-#include <core/chat_event_handler.h>
 #include "server_run_loop.h"
 #include "text_server_event_handler.h"
 
@@ -19,7 +18,6 @@ namespace text {
     boost::asio::ip::tcp::iostream stream;
     ServerRunLoop server_run_loop;
     TextServerEventHandler server_event_handler;
-    core::ChatEventHandlerFactory chat_event_handler_factory;
     core::IrcEntityRepository entity_repo;
     core::IrcServer server;
     std::thread server_thread;

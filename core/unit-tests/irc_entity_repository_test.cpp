@@ -8,7 +8,7 @@ namespace core {
   class IrcEntityRepositoryTest : public testing::Test {
   protected:
     IrcEntityRepositoryTest() :
-      entity_repo(sh, chat_factory) {
+      entity_repo(sh) {
       std::string channel = "##c++";
       entity_repo.create_channel(channel, out);
       entity_repo.create_user("nick", "", "");
@@ -16,7 +16,6 @@ namespace core {
 
     std::stringstream out;
     ServerEventHandler sh;
-    ChatEventHandlerFactory chat_factory;
     IrcEntityRepository entity_repo;
   };
 

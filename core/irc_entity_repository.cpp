@@ -5,9 +5,8 @@
 
 namespace core {
 
-  IrcEntityRepository::IrcEntityRepository(ServerEventHandler &server_event_handler, ChatEventHandlerFactory &chat_factory) :
-    m_server_event_handler(server_event_handler),
-    m_chat_factory(chat_factory) {
+  IrcEntityRepository::IrcEntityRepository(ServerEventHandler &server_event_handler) :
+    m_server_event_handler(server_event_handler) {
     m_entity_idx[RPL_TOPIC]      = 1;
     m_entity_idx[RPL_NOTOPIC]    = 1;
     m_entity_idx[RPL_NAMREPLY]   = 2;
